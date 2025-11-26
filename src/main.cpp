@@ -23,5 +23,13 @@ int main(int ac, char **av)
         Log::Logger::error(e.what());
         Log::Logger::info("init parser failed.");
     }
-    RayTracer(parser.getConfig());
+    RayTracer::RayTracer raytracer(parser.getConfig());
+    try {
+        raytracer.run();
+    }
+    catch(const std::exception& e) {
+        Log::Logger::error(e.what());
+        Log::Logger::info("init parser failed.");
+    }
+    
 }

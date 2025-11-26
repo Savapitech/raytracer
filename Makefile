@@ -21,6 +21,7 @@ CMDPARSER += src/CmdParser/BuildConfig.cpp
 CMDPARSER += src/CmdParser/ShowConfig.cpp
 
 RAYTRACER = src/RayTracer/RayTracer.cpp
+RAYTRACER += src/RayTracer/run.cpp
 #ENGINE  = src/Engine/builder/build_engine.cpp
 #ENGINE += src/Engine/seter/set_config.cpp
 #ENGINE += src/Engine/run.cpp
