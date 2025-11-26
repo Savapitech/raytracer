@@ -8,6 +8,7 @@ INC = -I include
 INC += -I include/logger
 INC += -I include/CmdParser
 INC += -I include/CmdConfig
+INC += -I include/RayTracer
 
 SRC = src/main.cpp
 
@@ -18,6 +19,8 @@ CMDPARSER += src/CmdParser/InitParser.cpp
 CMDPARSER += src/CmdParser/Constructor.cpp
 CMDPARSER += src/CmdParser/BuildConfig.cpp
 CMDPARSER += src/CmdParser/ShowConfig.cpp
+
+RAYTRACER = src/RayTracer/RayTracer.cpp
 #ENGINE  = src/Engine/builder/build_engine.cpp
 #ENGINE += src/Engine/seter/set_config.cpp
 #ENGINE += src/Engine/run.cpp
@@ -34,6 +37,7 @@ CMDPARSER += src/CmdParser/ShowConfig.cpp
 #SRC += $(PARSING)
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
+SRC += $(RAYTRACER)
 
 OBJ = $(SRC:.cpp=.o)
 

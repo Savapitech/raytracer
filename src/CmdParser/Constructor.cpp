@@ -22,13 +22,13 @@ namespace ParserCmd {
             }
             pos = Cmd.find('=');
             if (pos == std::string::npos) {
-                CmdArg.push_back(Cmd);
+                this->CmdArg.push_back(Cmd);
                 continue;
             }
             Value = Cmd.substr(pos + 1);   
             Cmd.erase(pos);
-            CmdArg.push_back(Cmd);
-            CmdArg.push_back(Value);       
+            this->CmdArg.push_back(Cmd);
+            this->CmdArg.push_back(Value);       
         }
         for (std::string str : CmdArg){
             Log::Logger::debug("List Arg: " + str);
