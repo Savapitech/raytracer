@@ -12,8 +12,17 @@ int main(int ac, char **av)
 {
     std::cout << "start..." << std::endl;
     Log::Logger::SetLogLvl(Log::Logger::DEBUG);
-    ParserCmd::Parser parser(ac, av);
 
-    parser.InitParser();
-    parser.BuildConfig();
+    try
+    {
+        ParserCmd::Parser parser(ac, av);
+
+        parser.InitParser();
+        parser.BuildConfig();
+    }
+    catch(const std::exception& e)
+    {
+        Log::Logger::error(e.what());
+    }
+    
 }

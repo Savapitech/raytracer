@@ -8,6 +8,8 @@ namespace ParserCmd {
     {
         Log::Logger::info("start init parser");
         bindField(config.LogLvl, "log");
+        bindField(config.scene, "scene");
+        bindField(config.pathtracing, "pathtracing");
         Log::Logger::info("end init parser");
     }
 }

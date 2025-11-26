@@ -9,5 +9,7 @@ namespace CmdConfig {
         int LogLvl = Log::Logger::NONE;
 
         std::string scene;
+
+        bool pathtracing;
     };
 }

@@ -4,12 +4,6 @@
 
 namespace ParserCmd {
 
-    /*Fill Vector CmdArg with parameter*/
-    /*
-    **If we got -- or - there will be remove
-    **If we find = in the str we will cut the str in two at the frist =
-    **
-    */
     Parser::Parser(int argc, char **argv)
     {
         std::string Cmd;
