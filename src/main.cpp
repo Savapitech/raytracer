@@ -6,12 +6,14 @@
 */
 #include <iostream>
 #include "logger.hpp"
+#include "ParserCmd.hpp"
 
-int main(void)
+int main(int ac, char **av)
 {
     std::cout << "start..." << std::endl;
+    Log::Logger::SetLogLvl(Log::Logger::DEBUG);
+    ParserCmd::Parser parser(ac, av);
 
-    Log::Logger::SetLogLvl(Log::Logger::INFO);
-
-    Log::Logger::info("Test de l'info test");
+    parser.InitParser();
+    parser.BuildConfig();
 }

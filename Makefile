@@ -6,11 +6,17 @@ LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm
 
 INC = -I include
 INC += -I include/logger
+INC += -I include/CmdParser
+INC += -I include/CmdConfig
 
 SRC = src/main.cpp
 
 LOGGER = src/logger/logger.cpp
 
+CMDPARSER = src/CmdParser/CmdParser.cpp
+CMDPARSER += src/CmdParser/InitParser.cpp
+CMDPARSER += src/CmdParser/Constructor.cpp
+CMDPARSER += src/CmdParser/BuildConfig.cpp
 #ENGINE  = src/Engine/builder/build_engine.cpp
 #ENGINE += src/Engine/seter/set_config.cpp
 #ENGINE += src/Engine/run.cpp
@@ -26,6 +32,7 @@ LOGGER = src/logger/logger.cpp
 #SRC += $(ENGINE)
 #SRC += $(PARSING)
 SRC += $(LOGGER)
+SRC += $(CMDPARSER)
 
 OBJ = $(SRC:.cpp=.o)
 
