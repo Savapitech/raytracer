@@ -29,6 +29,11 @@ namespace Log {
             static void error(const std::string &str) noexcept;
             static void debug(const std::string &str) noexcept;
             static void SetLogLvl(const LogLvl lvl) noexcept;
+            template<typename T>
+            static void logVar(const T& var) noexcept {
+                Logger::debug(std::to_string(var));
+            }
+
         private:
             static LogLvl LoggerLvl;
             static void log_info(LogLvl lvl, const std::string &msg) noexcept;

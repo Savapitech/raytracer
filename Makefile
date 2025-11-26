@@ -17,6 +17,7 @@ CMDPARSER = src/CmdParser/CmdParser.cpp
 CMDPARSER += src/CmdParser/InitParser.cpp
 CMDPARSER += src/CmdParser/Constructor.cpp
 CMDPARSER += src/CmdParser/BuildConfig.cpp
+CMDPARSER += src/CmdParser/ShowConfig.cpp
 #ENGINE  = src/Engine/builder/build_engine.cpp
 #ENGINE += src/Engine/seter/set_config.cpp
 #ENGINE += src/Engine/run.cpp

@@ -13,6 +13,7 @@ namespace ParserCmd {
             Parser(int ac, char **av);
             void BuildConfig(void);
             void InitParser(void);
+            void ShowConfig(void);
             const CmdConfig::config_t &getConfig() const;
 
 

@@ -25,5 +25,4 @@ int main(int ac, char **av)
         Log::Logger::error(e.what());
         Log::Logger::info("init parser failed.");
     }
-
 }

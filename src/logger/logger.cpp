@@ -2,6 +2,7 @@
 
 namespace Log{
 
+    
     void Logger::log_info(Logger::LogLvl lvl, const std::string &msg) noexcept
     {
         if (lvl == Logger::NONE)
