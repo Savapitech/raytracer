@@ -23,6 +23,7 @@ int main(int ac, char **av)
     catch(const std::exception& e)
     {
         Log::Logger::error(e.what());
+        Log::Logger::info("init parser failed.");
     }
-    
+
 }

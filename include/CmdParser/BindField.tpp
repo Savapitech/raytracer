@@ -18,6 +18,8 @@ void Parser::bindField(T& target, const std::string& name)
     else if constexpr (std::is_same_v<T, bool>){
         Log::Logger::debug("bind bool: " + name);
         bind[name] = [&](const std::string& value){
+            if (value != "true" && value != "false")
+                throw std::invalid_argument("Error: Bool");
             target = (value == "true");
         };
     }
