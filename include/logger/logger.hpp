@@ -24,13 +24,13 @@ namespace Log {
                 ERROR = 3,
                 DEBUG = 4
             };
-            static void info(const std::string &str);
-            static void warning(const std::string &str);
-            static void error(const std::string &str);
-            static void debug(const std::string &str);
-            static void SetLogLvl(const LogLvl lvl);
+            static void info(const std::string &str) noexcept;
+            static void warning(const std::string &str) noexcept;
+            static void error(const std::string &str) noexcept;
+            static void debug(const std::string &str) noexcept;
+            static void SetLogLvl(const LogLvl lvl) noexcept;
         private:
             static LogLvl LoggerLvl;
-            static void log_info(LogLvl lvl, const std::string &msg);
+            static void log_info(LogLvl lvl, const std::string &msg) noexcept;
     };
 }
