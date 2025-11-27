@@ -1,42 +1,54 @@
-MAKE_FLAGS += -j
+TARGET = raytracer
 
-BIN_NAME := raytracer
+CXX = clang++
+CXXFLAGS = -Wall -Wextra -std=c++17 -g
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm
 
-SRC := $(wildcard src/*.cpp)
-SRC += $(wildcard src/*/*.cpp)
+INC = -I include
+INC += -I include/logger
+INC += -I include/CmdParser
+INC += -I include/CmdConfig
+INC += -I include/RayTracer
 
-BUILD_DIR := .build
+SRC = src/main.cpp
 
-CFLAGS += -std=c++17 -iquote include/CmdConfig -iquote include/logger -iquote include/CmdParser -iquote include/Plugin -iquote include/RayTracer
-CFLAGS += $(shell cat $/warning_flags.txt)
+LOGGER = src/logger/logger.cpp
 
-LDFLAGS += -lsfml-graphics -lsfml-window -lsfml-system -lm 
+CMDPARSER = src/CmdParser/CmdParser.cpp
+CMDPARSER += src/CmdParser/InitParser.cpp
+CMDPARSER += src/CmdParser/Constructor.cpp
+CMDPARSER += src/CmdParser/BuildConfig.cpp
+CMDPARSER += src/CmdParser/ShowConfig.cpp
 
-.PHONY: _start all
-_start: all
+RAYTRACER = src/RayTracer/RayTracer.cpp
+RAYTRACER += src/RayTracer/run.cpp
+#ENGINE  = src/Engine/builder/build_engine.cpp
+#ENGINE += src/Engine/seter/set_config.cpp
+#ENGINE += src/Engine/run.cpp
+#ENGINE += src/Engine/debug/display_config.cpp
+#
+#PARSING  = src/ParserCmd/parse_flag.cpp
+#PARSING += src/ParserCmd/getter/get_config.cpp
+#PARSING += src/ParserCmd/getter/get_error.cpp
+#PARSING += src/ParserCmd/flag_tab.cpp
+#PARSING += src/ParserCmd/Fill_flag/check_flag_G.cpp
+#PARSING += src/ParserCmd/config/builder.cpp
+#
+#SRC += $(ENGINE)
+#SRC += $(PARSING)
+SRC += $(LOGGER)
+SRC += $(CMDPARSER)
+SRC += $(RAYTRACER)
 
-# call mk-profile release, SRC, additional CFLAGS
-define mk-profile
+OBJ = $(SRC:.cpp=.o)
 
-NAME_$(strip $1) := $4
-OBJ_$(strip $1) := $$($(strip $2):%.cpp=$$(BUILD_DIR)/$(strip $1)/%.o)
+all: $(TARGET)
 
-$$(BUILD_DIR)/$(strip $1)/%.o: %.cpp
-	@ mkdir -p $$(dir $$@)
-	$$(COMPILE.cpp) $$(CFLAGS) $$< -o $$@
-	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
 
-$$(NAME_$(strip $1)): $$(OBJ_$(strip $1))
-	$$(LINK.cpp) $$(OBJ_$(strip $1)) $$(LDFLAGS) $$(LDLIBS) -o $$@
-	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
-	@ $$(LOG_TIME) "$$(C_GREEN) OK  Compilation finished $$(C_RESET)"
-
-endef
-
-$(eval $(call mk-profile, release, SRC, , $(BIN_NAME)))
-$(eval $(call mk-profile, debug, SRC, -D DEBUG_MODE -fanalyzer -g3, debug))
-
-all: $(NAME_release)
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) $(LIBS)
 
 clean:
 	@ $(RM) $(OBJ)

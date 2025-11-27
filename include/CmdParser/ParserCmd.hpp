@@ -1,9 +1,10 @@
 #pragma once
 
 #include <iostream>
-#include "CmdConfig.hpp"
 #include <map>
 #include <functional>
+
+#include "CmdConfig.hpp"
 
 namespace ParserCmd {
 
@@ -15,7 +16,6 @@ namespace ParserCmd {
             void InitParser(void);
             void ShowConfig(void);
             const CmdConfig::config_t &getConfig() const;
-
 
         private:
             std::vector<std::string> CmdArg;
