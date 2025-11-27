@@ -1,62 +1,105 @@
-TARGET = raytracer
+MAKE_FLAGS += -j
 
-CXX = clang++
-CXXFLAGS = -Wall -Wextra -std=c++17 -g
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm
+BIN_NAME := raytracer
 
-INC = -I include
-INC += -I include/logger
-INC += -I include/CmdParser
-INC += -I include/CmdConfig
-INC += -I include/RayTracer
+SRC := $(wildcard src/*.cpp)
+SRC += $(wildcard src/*/*.cpp)
 
-SRC = src/main.cpp
+BUILD_DIR := .build
 
-LOGGER = src/logger/logger.cpp
+CFLAGS += -std=c++17 -iquote include/CmdConfig -iquote include/logger -iquote include/CmdParser -iquote include/Plugin -iquote include/RayTracer
+CFLAGS += $(shell cat $/warning_flags.txt)
 
-CMDPARSER = src/CmdParser/CmdParser.cpp
-CMDPARSER += src/CmdParser/InitParser.cpp
-CMDPARSER += src/CmdParser/Constructor.cpp
-CMDPARSER += src/CmdParser/BuildConfig.cpp
-CMDPARSER += src/CmdParser/ShowConfig.cpp
+LDFLAGS += -lsfml-graphics -lsfml-window -lsfml-system -lm 
 
-RAYTRACER = src/RayTracer/RayTracer.cpp
-RAYTRACER += src/RayTracer/run.cpp
-#ENGINE  = src/Engine/builder/build_engine.cpp
-#ENGINE += src/Engine/seter/set_config.cpp
-#ENGINE += src/Engine/run.cpp
-#ENGINE += src/Engine/debug/display_config.cpp
-#
-#PARSING  = src/ParserCmd/parse_flag.cpp
-#PARSING += src/ParserCmd/getter/get_config.cpp
-#PARSING += src/ParserCmd/getter/get_error.cpp
-#PARSING += src/ParserCmd/flag_tab.cpp
-#PARSING += src/ParserCmd/Fill_flag/check_flag_G.cpp
-#PARSING += src/ParserCmd/config/builder.cpp
-#
-#SRC += $(ENGINE)
-#SRC += $(PARSING)
-SRC += $(LOGGER)
-SRC += $(CMDPARSER)
-SRC += $(RAYTRACER)
+.PHONY: _start all
+_start: all
 
-OBJ = $(SRC:.cpp=.o)
+# call mk-profile release, SRC, additional CFLAGS
+define mk-profile
 
-all: $(TARGET)
+NAME_$(strip $1) := $4
+OBJ_$(strip $1) := $$($(strip $2):%.cpp=$$(BUILD_DIR)/$(strip $1)/%.o)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+$$(BUILD_DIR)/$(strip $1)/%.o: %.cpp
+	@ mkdir -p $$(dir $$@)
+	$$(COMPILE.cpp) $$(CFLAGS) $$< -o $$@
+	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
 
-$(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) $(LIBS)
+$$(NAME_$(strip $1)): $$(OBJ_$(strip $1))
+	$$(LINK.cpp) $$(OBJ_$(strip $1)) $$(LDFLAGS) $$(LDLIBS) -o $$@
+	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
+	@ $$(LOG_TIME) "$$(C_GREEN) OK  Compilation finished $$(C_RESET)"
+
+endef
+
+$(eval $(call mk-profile, release, SRC, , $(BIN_NAME)))
+$(eval $(call mk-profile, debug, SRC, -D DEBUG_MODE -fanalyzer -g3, debug))
+
+all: $(NAME_release)
 
 clean:
-	rm -f $(OBJ)
+	@ $(RM) $(OBJ)
+	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(OBJ) $(C_RESET)"
 
-fclean: clean
-	rm -f $(TARGET)
+fclean:
+	@ $(RM) -r $(NAME_release) $(NAME_debug) $(BUILD_DIR)
+	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(NAME_release) $(NAME_debug) $(BUILD_DIR) \
+		$(C_RESET)"
 
-re: fclean all
+.NOTPARALLEL: re
+re:	fclean all
 
 .PHONY: all clean fclean re
 
+PREFIX ?=
+BINDIR ?= $(PREFIX)/bin
+
+.PHONY: install uninstall
+install: $(NAME_release)
+	install -Dm755 -t $(BINDIR) $(NAME_release)
+
+uninstall:
+	$(RM) $(BINDIR)/$(NAME_release)
+
+V ?= 0
+ifneq ($(V),0)
+  Q :=
+else
+  Q := @
+endif
+
+ifneq ($(shell command -v tput),)
+  ifneq ($(shell tput colors),0)
+
+mk-color = \e[$(strip $1)m
+
+C_BEGIN := \033[A
+C_RESET := $(call mk-color, 00)
+
+C_RED := $(call mk-color, 31)
+C_GREEN := $(call mk-color, 32)
+C_YELLOW := $(call mk-color, 33)
+C_BLUE := $(call mk-color, 34)
+C_PURPLE := $(call mk-color, 35)
+C_CYAN := $(call mk-color, 36)
+
+  endif
+endif
+
+NOW = $(shell date +%s%3N)
+
+ifndef STIME
+STIME := $(call NOW)
+endif
+
+TIME_NS = $(shell expr $(call NOW) - $(STIME))
+TIME_MS = $(shell expr $(call TIME_NS))
+
+BOXIFY = "[$(C_BLUE)$(1)$(C_RESET)] $(2)"
+
+ifneq ($(shell command -v printf),)
+  LOG_TIME = printf $(call BOXIFY, %6s ,$(strip %b\n)) "$(call TIME_MS)"
+else
+  LOG_TIME = echo -e $(call BOXIFY, $(call TIME_MS) ,)
+endif

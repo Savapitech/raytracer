@@ -1,7 +1,8 @@
 #pragma once
 
+#include "logger.hpp"
+
 #include <iostream>
-#include <logger.hpp>
 
 namespace CmdConfig {
     struct config_t

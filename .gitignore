@@ -1,3 +1,7 @@
+.direnv
+.envrc
+.build
+
 *.o
 
 raytracer
