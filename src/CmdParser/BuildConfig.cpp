@@ -10,10 +10,8 @@ namespace ParserCmd {
     {
         std::string Arg;
         std::string Value;
-        if (CmdArg.size() % 2 != 0){
-            Log::Logger::error("CmdArg odd size");
-            return;
-        }
+        if (CmdArg.size() % 2 != 0)
+            throw std::invalid_argument("CmdArg odd size");
         for (size_t i = 0; i < CmdArg.size(); i += 2){
             Arg = CmdArg[i];
             Value = CmdArg[i + 1];

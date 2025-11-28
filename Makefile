@@ -2,13 +2,15 @@ TARGET = raytracer
 
 CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++17 -g
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++
 
 INC = -I include
 INC += -I include/logger
 INC += -I include/CmdParser
 INC += -I include/CmdConfig
 INC += -I include/RayTracer
+INC += -I include/PluginInterface
+INC += -I include/Scene
 
 SRC = src/main.cpp
 
@@ -22,22 +24,12 @@ CMDPARSER += src/CmdParser/ShowConfig.cpp
 
 RAYTRACER = src/RayTracer/RayTracer.cpp
 RAYTRACER += src/RayTracer/run.cpp
-#ENGINE  = src/Engine/builder/build_engine.cpp
-#ENGINE += src/Engine/seter/set_config.cpp
-#ENGINE += src/Engine/run.cpp
-#ENGINE += src/Engine/debug/display_config.cpp
-#
-#PARSING  = src/ParserCmd/parse_flag.cpp
-#PARSING += src/ParserCmd/getter/get_config.cpp
-#PARSING += src/ParserCmd/getter/get_error.cpp
-#PARSING += src/ParserCmd/flag_tab.cpp
-#PARSING += src/ParserCmd/Fill_flag/check_flag_G.cpp
-#PARSING += src/ParserCmd/config/builder.cpp
-#
-#SRC += $(ENGINE)
-#SRC += $(PARSING)
+
+SCENE = src/Scene/Constructor.cpp
+
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
+SRC += $(SCENE)
 SRC += $(RAYTRACER)
 
 OBJ = $(SRC:.cpp=.o)
@@ -54,10 +46,10 @@ clean:
 	@ $(RM) $(OBJ)
 	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(OBJ) $(C_RESET)"
 
-fclean:
-	@ $(RM) -r $(NAME_release) $(NAME_debug) $(BUILD_DIR)
-	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(NAME_release) $(NAME_debug) $(BUILD_DIR) \
-		$(C_RESET)"
+fclean: clean
+	@ $(RM) $(TARGET)
+	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(TARGET) $(C_RESET)"
+
 
 .NOTPARALLEL: re
 re:	fclean all

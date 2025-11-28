@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <memory>
 struct Vec3
 {
     double x;
@@ -27,21 +27,34 @@ class IShape
 {
     public:
         virtual ~IShape() = default;
-        virtual bool intersect(const Ray&, Hit&) const = 0;
+        virtual bool intersect(Ray&, Hit&) const = 0;
         virtual AABB getObjectAABB() const = 0;
-    private:
-        std::string type;
+        virtual const Vec3& getPos(void) const = 0;
 };
 
 class AShape : IShape
 {
     public:
         void ShowShape(void);
+    protected:
+        std::string type;
+        
 };
 
+class Sphere final : AShape  
+{
+    float radius;
+    Vec3 pos;
+    Sphere(const Vec3& c, float r) : radius(r), pos(c) {}
+    
+    const Vec3& getPos(void) const override;
+    bool intersect(Ray& ray, Hit& hit) const override;
+    AABB getObjectAABB() const override;
+};
 
 class Object
 {
     public:
-    private:
+        AABB aabb;
+        std::unique_ptr<IShape> shape;
 };

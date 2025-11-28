@@ -18,18 +18,10 @@ int main(int ac, char **av)
     try {
         parser.InitParser();
         parser.BuildConfig();
-    }
-    catch(const std::exception& e) {
-        Log::Logger::error(e.what());
-        Log::Logger::info("init parser failed.");
-    }
-    RayTracer::RayTracer raytracer(parser.getConfig());
-    try {
+        RayTracer::RayTracer raytracer(parser.getConfig());
         raytracer.run();
     }
     catch(const std::exception& e) {
         Log::Logger::error(e.what());
-        Log::Logger::info("init parser failed.");
-    }
-    
+    }    
 }

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "CmdConfig.hpp"
+#include "Scene.hpp"
 
 namespace RayTracer {
 
@@ -14,5 +15,6 @@ namespace RayTracer {
     
         private:
             const CmdConfig::config_t &config;
+            const scene::Scene scene;
     };
 }
