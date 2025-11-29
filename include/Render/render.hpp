@@ -1,11 +1,18 @@
 #pragma once
 
-class render
+#include <memory>
+#include <vector>
+#include "Scene.hpp"
+#include <SFML/Graphics.hpp>
+
+
+class Render
 {
-private:
-    /* data */
-public:
-    render(/* args */);
-    ~render();
+    public:
+        void StartRender(void);
+        Render(const std::vector<std::unique_ptr<Object>> &objects);
+    private:
+        const std::vector<std::unique_ptr<Object>> &objects;
+        sf::RenderWindow window;
 };
 

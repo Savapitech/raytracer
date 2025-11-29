@@ -5,7 +5,8 @@ namespace RayTracer {
 
 RayTracer::RayTracer(const CmdConfig::config_t &config) :
     config(config),
-    scene(config.scene)
+    scene(config.scene),
+    render(scene.getObject())
     {
         Log::Logger::info("Start Ray Tracer");
     }

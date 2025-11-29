@@ -13,6 +13,7 @@ INC += -I include/PluginInterface
 INC += -I include/Scene
 INC += -I include/Math3d
 INC += -I include/bvh
+INC += -I include/Render/
 
 SRC = src/main.cpp
 
@@ -32,11 +33,14 @@ SCENE += src/Scene/Factory/ShapeFactory.cpp
 
 PLUGIN = src/Plugin/object.cpp
 
+RENDER = src/Render/render.cpp
+
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
 SRC += $(SCENE)
 SRC += $(RAYTRACER)
 SRC += $(PLUGIN)
+SRC += $(RENDER)
 
 OBJ = $(SRC:.cpp=.o)
 

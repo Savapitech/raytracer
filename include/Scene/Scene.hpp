@@ -33,7 +33,6 @@ namespace scene
     private:
         Factory factory;
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
-        const std::string &scene_path;
         camera_t cameraInfo;
 
         std::vector<std::unique_ptr<Object>> objects;

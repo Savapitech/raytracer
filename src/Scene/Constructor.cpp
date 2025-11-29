@@ -64,7 +64,7 @@ namespace scene {
     }
 
 
-    Scene::Scene(const std::string &scene_path) : scene_path(scene_path) 
+    Scene::Scene(const std::string &scene_path)
         {
             if (scene_path.empty() == true)
                 throw std::invalid_argument("Error Scene Path is empty");
