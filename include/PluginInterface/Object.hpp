@@ -1,60 +1,58 @@
 #include <iostream>
 #include <memory>
-struct Vec3
-{
-    double x;
-    double y;
-    double z;
-};
+#include <libconfig.h++>
 
-struct AABB
-{
-    Vec3 max;
-    Vec3 min;
-};
-
-struct Ray
-{
-    /* data */
-};
-
-struct Hit
-{
-    /* data */
-};
+#include "bvh.hpp"
+#include "logger.hpp"
+#include "math3d.hpp"
 
 class IShape
 {
     public:
         virtual ~IShape() = default;
-        virtual bool intersect(Ray&, Hit&) const = 0;
-        virtual AABB getObjectAABB() const = 0;
-        virtual const Vec3& getPos(void) const = 0;
+        //virtual bool intersect(Ray&, Hit&) const = 0;
+        //virtual AABB getObjectAABB() const = 0;
+        //virtual const Vec3& getPos(void) const = 0;
 };
 
-class AShape : IShape
+class AShape : public IShape
 {
     public:
-        void ShowShape(void);
-    protected:
+        void ShowShape(void){Log::Logger::debug("Object Shape:" + type);}
         std::string type;
-        
 };
 
-class Sphere final : AShape  
+class Sphere final : public AShape  
 {
+public:
     float radius;
     Vec3 pos;
-    Sphere(const Vec3& c, float r) : radius(r), pos(c) {}
-    
-    const Vec3& getPos(void) const override;
-    bool intersect(Ray& ray, Hit& hit) const override;
-    AABB getObjectAABB() const override;
+
+    Sphere(const Vec3& c, float r) {
+        type = "Sphere";
+        radius = r;
+        pos = c;
+    }
+};
+
+class ShapeFactory{
+    public:
+        ShapeFactory();
+        std::unique_ptr<AShape> GetShape(const libconfig::Setting &s);
+};
+
+class ObjectFactory{
+        public:
+            /*std::unique_ptr<IMaterial> GetShape(const Setting &s);*/
+            ShapeFactory SFactory;
 };
 
 class Object
 {
     public:
+        Object(const libconfig::Setting &s, bool materialExist);
         AABB aabb;
-        std::unique_ptr<IShape> shape;
+        std::unique_ptr<AShape> shape;
+    private:
+        static ObjectFactory OFactory;
 };

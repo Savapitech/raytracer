@@ -7,5 +7,6 @@ namespace RayTracer {
 
 void RayTracer::run(void) {
         Log::Logger::info("Start Running...");
+        
     }
 }

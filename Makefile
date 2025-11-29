@@ -11,6 +11,8 @@ INC += -I include/CmdConfig
 INC += -I include/RayTracer
 INC += -I include/PluginInterface
 INC += -I include/Scene
+INC += -I include/Math3d
+INC += -I include/bvh
 
 SRC = src/main.cpp
 
@@ -26,11 +28,15 @@ RAYTRACER = src/RayTracer/RayTracer.cpp
 RAYTRACER += src/RayTracer/run.cpp
 
 SCENE = src/Scene/Constructor.cpp
+SCENE += src/Scene/Factory/ShapeFactory.cpp
+
+PLUGIN = src/Plugin/object.cpp
 
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
 SRC += $(SCENE)
 SRC += $(RAYTRACER)
+SRC += $(PLUGIN)
 
 OBJ = $(SRC:.cpp=.o)
 
