@@ -16,6 +16,15 @@ void Render::writePixel(int x, int y, sf::Color color)
     RayBuffer[A(acutalPixel)] = color.a;
 }
 
+Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha)
+{
+    Vec3 lightColor(255, 255, 255);
+    Vec3 R = normalize( N * (2.0f * dot(N, L)) - L );
+    float specAngle = std::max(dot(R, V), 0.0f);
+    float spec = std::pow(specAngle, alpha);
+    return lightColor * spec;
+}
+
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
     Vec3 light(0, 0, this->a);
@@ -27,11 +36,16 @@ sf::Color Render::shade(Ray &ray, Hit &minHit)
 
     float diff = std::max(dot(N, L), 0.0f);
 
-    Vec3 finalColor = colorShape * diff;
+    
+
+    Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
+    
+    Vec3 finalColor = spec + (colorShape * diff);
 
     finalColor.x = std::clamp(finalColor.x, 0.0f, 255.0f);
     finalColor.y = std::clamp(finalColor.y, 0.0f, 255.0f);
     finalColor.z = std::clamp(finalColor.z, 0.0f, 255.0f);
+
     return sf::Color(finalColor.x, finalColor.y, finalColor.z, 255);
 }
 

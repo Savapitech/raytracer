@@ -17,7 +17,6 @@ struct Vec3 {
     Vec3 operator+(const Vec3& other) const {
         return Vec3(x + other.x, y + other.y, z + other.z);
     }
-
     Vec3 operator*(float s) const { return Vec3(x*s, y*s, z*s); }
     Vec3 operator/(float s) const { return Vec3(x/s, y/s, z/s); }
 };
