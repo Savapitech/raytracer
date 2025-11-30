@@ -14,6 +14,7 @@ class Render
         void FindObject(int x, int y);
         void writePixel(int x, int y, sf::Color color);
         sf::Color shade(Ray &ray, Hit &hit);
+        bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L);
         Render(const scene::Scene &scene);
 
     private:

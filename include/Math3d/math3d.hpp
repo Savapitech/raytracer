@@ -32,8 +32,9 @@ inline float norm(const Vec3& v) {
 inline Vec3 normalize(const Vec3& v) {
     const float EPS = 1e-8f;
     float n = norm(v);
+    
     if (n < EPS) return Vec3(0.f, 0.f, 0.f);
-    return v / n;
+        return v / n;
 }
 
 struct AABB

@@ -25,15 +25,40 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha)
     return lightColor * spec;
 }
 
+bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
+{
+    Ray shadowRay(P + minHit.normal * 0.001f, L);
+    shadowRay.minHit = 0.001f;
+    shadowRay.maxHit = norm(light - P) - 0.001f;
+
+    Hit tmp;
+
+    for (auto& obj : scene.getObjects()) {
+        if (obj.get() == minHit.object)
+            continue;
+        if (obj->shape->intersect(shadowRay, tmp))
+            if (tmp.t > shadowRay.minHit && tmp.t < shadowRay.maxHit){
+                //std::cout << "Shadow Ray: " << tmp.t << std::endl;
+                return true;
+            }
+    }
+    return false;
+}
+
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
-    Vec3 light(10, 0, 9);
+    Vec3 light(10, 0, 10);
     Vec3 colorShape = minHit.object->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
     Vec3 N = normalize(P - minHit.object->shape->pos);
 
+
+    if (ShadowRay(light, minHit, P, L) == true)
+        return sf::Color::Black;
+
+    
     float diff = std::max(dot(N, L), 0.0f);
 
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
