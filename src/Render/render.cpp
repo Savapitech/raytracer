@@ -25,6 +25,11 @@ void Render::InitRender(void)
         if (this->ImageRender == false){
             this->StartRender();
         }
+        if (this->ImageRender == true){
+            this->a-=0.1f;
+            std::cout << a << std::endl;
+            this->ImageRender = false;
+        }
         while (this->window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 this->window.close();

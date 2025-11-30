@@ -18,7 +18,7 @@ void Render::writePixel(int x, int y, sf::Color color)
 
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
-    Vec3 light(0, 0, -15);
+    Vec3 light(0, 0, this->a);
     Vec3 colorShape(0, 0, 255);
 
     Vec3 P = ray.origin + ray.dir * minHit.t;

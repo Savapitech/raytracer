@@ -17,6 +17,7 @@ class Render
         Render(const scene::Scene &scene);
 
     private:
+        float a = 15;
         const scene::Scene& scene;
         sf::RenderWindow window;
         std::vector<sf::Uint8> RayBuffer;
