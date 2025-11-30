@@ -79,14 +79,11 @@ void Render::FindObject(int x, int y)
     {
         Hit tmpHit;
         if (obj->shape->intersect(ray, tmpHit) == true)
-        {
-            if (tmpHit.t > 0 && tmpHit.t < minHit.t)
-            {
+            if (tmpHit.t > 0 && tmpHit.t < minHit.t) {
                 minHit = tmpHit;
                 minHit.object = obj.get();
                 found = true;
             }
-        }
     }
     if (found == true) {
         sf::Color color = this->shade(ray, minHit);
