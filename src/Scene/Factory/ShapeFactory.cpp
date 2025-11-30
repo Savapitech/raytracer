@@ -12,12 +12,16 @@ std::map<std::string, ShapeCtor> shapeRegistry;
 ShapeFactory::ShapeFactory()
 {
     shapeRegistry["sphere"] = [](const libconfig::Setting& s) {
-        return std::make_unique<Sphere>(
-            scene::readVec3(s["pos"]),
-            (float)s["radius"]
-        );
+        return std::make_unique<Sphere>(s);
     };
 }
+
+Sphere::Sphere(const libconfig::Setting& s){
+    type = "Sphere";
+    radius = (float)s["radius"];
+    pos = scene::readVec3(s["pos"]);
+    color = scene::readVec3(s["color"]);
+}            
 
 
 std::unique_ptr<AShape> ShapeFactory::GetShape(const libconfig::Setting &s)

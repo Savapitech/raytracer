@@ -27,16 +27,14 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha)
 
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
-    Vec3 light(0, 0, this->a);
-    Vec3 colorShape(0, 0, 255);
+    Vec3 light(10, 0, 9);
+    Vec3 colorShape = minHit.object->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
     Vec3 N = normalize(P - minHit.object->shape->pos);
 
     float diff = std::max(dot(N, L), 0.0f);
-
-    
 
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
     
@@ -51,11 +49,11 @@ sf::Color Render::shade(Ray &ray, Hit &minHit)
 
 void Render::FindObject(int x, int y)
 {
-    Ray ray(scene.getCamera(), x, y); /*Les Ray sont dans la bonne direction*/
+    Ray ray(scene.getCamera(), x, y);
 
     Hit minHit;
     bool found = false;
-    
+
     for (auto& obj : scene.getObjects())
     {
         Hit tmpHit;

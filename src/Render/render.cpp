@@ -26,9 +26,9 @@ void Render::InitRender(void)
             this->StartRender();
         }
         if (this->ImageRender == true){
-            this->a-=0.1f;
-            std::cout << a << std::endl;
-            this->ImageRender = false;
+            //this->a-=0.1f;
+            //std::cout << a << std::endl;
+            //this->ImageRender = false;
         }
         while (this->window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)

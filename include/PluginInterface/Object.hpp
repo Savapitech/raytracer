@@ -24,20 +24,15 @@ class AShape : public IShape
         void ShowShape(void){Log::Logger::debug("Object Shape:" + type);}
         std::string type;
         Vec3 pos;
+        Vec3 color;
 };
 
 class Sphere final : public AShape  
 {
     public:
         float radius;
-        
-
         bool intersect(Ray &ray, Hit &hit) const override;
-        Sphere(const Vec3& c, float r) {
-            type = "Sphere";
-            radius = r;
-            pos = c;
-        }
+        Sphere(const libconfig::Setting& s);
 };
 
 class ShapeFactory{
