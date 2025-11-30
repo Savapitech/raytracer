@@ -47,18 +47,14 @@ bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
 
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
-    Vec3 light(10, 0, 10);
+    Vec3 light(6.4, -2.2, -28.54);
     Vec3 colorShape = minHit.object->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
     Vec3 N = normalize(P - minHit.object->shape->pos);
-
-
     if (ShadowRay(light, minHit, P, L) == true)
         return sf::Color::Black;
-
-    
     float diff = std::max(dot(N, L), 0.0f);
 
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
