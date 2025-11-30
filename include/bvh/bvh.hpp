@@ -1,11 +1,24 @@
 #pragma once
 
-struct Ray
+#include "Scene.hpp"
+
+class Ray
 {
-    /* data */
+    public:
+        Vec3 origin;
+        Vec3 dir;
+        float minHit = 0.001f;
+        float maxHit = 1e30f;
+
+        Ray(const scene::camera_t &camera, int x, int y);
 };
 
-struct Hit
-{
-    /* data */
+class Hit {
+    public:
+        float t = 1e30f;
+        Vec3 position;
+        Vec3 normal;
+        Object *object = nullptr;
+
+        bool hit() const { return object != nullptr;}
 };

@@ -1,30 +1,36 @@
 #include "render.hpp"
+
+#include <cmath>
 #include <SFML/Graphics.hpp>
 
 #define WIDTH 1920
 #define HEIGHT 1080
 
-Render::Render(const std::vector<std::unique_ptr<Object>>& objects)
-    : objects(objects),
-    window(sf::VideoMode(WIDTH, HEIGHT), "Raytracer")
-
+Render::Render(const scene::Scene &scene)
+    : scene(scene),
+      window(sf::VideoMode(WIDTH, HEIGHT), "Raytracer"),
+      RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 100),
+      ImageRender(false),
+      distance(0)
 {
     Log::Logger::info("Window Open");
 }
 
-void Render::StartRender(void)
+void Render::InitRender(void)
 {
-    for (size_t i = 0; i < objects.size(); ++i) {
-        objects[i]->shape->ShowShape();
-    }
     Log::Logger::info("Start Render");
+    sf::Event event;
+    
     while (this->window.isOpen()) {
-        sf::Event event;
+        if (this->ImageRender == false){
+            this->StartRender();
+        }
         while (this->window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 this->window.close();
         }
         this->window.clear();
+        this->window.draw(sprite);
         this->window.display();
     }
     Log::Logger::info("Window Close");

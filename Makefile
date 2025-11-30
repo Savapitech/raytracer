@@ -5,15 +5,15 @@ CXXFLAGS = -Wall -Wextra -std=c++17 -g
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++
 
 INC = -I include
-INC += -I include/logger
-INC += -I include/CmdParser
-INC += -I include/CmdConfig
-INC += -I include/RayTracer
 INC += -I include/PluginInterface
+INC += -I include/CmdConfig
+INC += -I include/CmdParser
+INC += -I include/logger
+INC += -I include/RayTracer
 INC += -I include/Scene
 INC += -I include/Math3d
-INC += -I include/bvh
 INC += -I include/Render/
+INC += -I include/bvh
 
 SRC = src/main.cpp
 
@@ -27,13 +27,16 @@ CMDPARSER += src/CmdParser/ShowConfig.cpp
 
 RAYTRACER = src/RayTracer/RayTracer.cpp
 RAYTRACER += src/RayTracer/run.cpp
+RAYTRACER += src/RayTracer/buildRay.cpp
 
 SCENE = src/Scene/Constructor.cpp
 SCENE += src/Scene/Factory/ShapeFactory.cpp
 
 PLUGIN = src/Plugin/object.cpp
+PLUGIN += src/Shape/sphere.cpp
 
 RENDER = src/Render/render.cpp
+RENDER += src/Render/StartRender.cpp
 
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)

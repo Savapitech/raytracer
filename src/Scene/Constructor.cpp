@@ -2,12 +2,20 @@
 #include <libconfig.h++>
 using namespace libconfig;
 
+#define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
+
 namespace scene {
     Vec3 readVec3(const Setting &s)
     {
         if (s.getLength() != 3)
             throw std::runtime_error("Expected array of 3 elements");
         return Vec3{ (float)s[0], (float)s[1], (float)s[2] };
+    }
+
+    void getDistance(scene::camera_t &cam)
+    {
+        cam.distance = ((cam.height / 2) / tan(DEG_TO_RAD(cam.fov) / 2));
+        Log::Logger::debug("Distance=" + std::to_string(cam.distance));
     }
 
     camera_t readcam(const Setting &s)
@@ -24,6 +32,7 @@ namespace scene {
             throw std::runtime_error("Missing 'pos' field in scene");
         camera.dir = readVec3(s["pos"]);
         Log::Logger::debug("Camera Pos set");
+        getDistance(camera);
         return camera;
     }
 
@@ -36,14 +45,6 @@ namespace scene {
         return std::make_unique<Object>(s, true);
     }
 
-    //void Scene::readObject(const Setting &s, std::vector<std::unique_ptr<Object>> &objects)
-    //{
-    //    if (!s.exists("objects") && s["objects"].isGroup())
-    //         throw std::runtime_error("'objects' field in scene must be an array or existed");
-    //    Log::Logger::debug("Objects size: " + std::to_string(s["objects"].getLength()));
-    //    for (int i = 0; i != s["objects"].getLength(); i++)
-    //        objects.push_back(factory.GetObject(s[i]));
-    //}
     void Scene::readObject(const Setting &s, std::vector<std::unique_ptr<Object>> &objects)
     {
         if (!s.exists("objects"))
@@ -64,6 +65,7 @@ namespace scene {
     }
 
 
+
     Scene::Scene(const std::string &scene_path)
         {
             if (scene_path.empty() == true)
@@ -74,6 +76,7 @@ namespace scene {
             cfg.readFile(scene_path.data());
             Setting &root = cfg.getRoot();
             Setting &scene = root["scene"];
+            
             this->cameraInfo = readcam(scene);
             readObject(scene, this->objects);
         }

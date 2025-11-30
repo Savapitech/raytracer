@@ -6,6 +6,6 @@ namespace ParserCmd {
 
     void Parser::ShowConfig(void)
     {
-        Log::Logger::logVar(config.LogLvl);
+        //Log::Logger::logVar(config.LogLvl);
     }
 }

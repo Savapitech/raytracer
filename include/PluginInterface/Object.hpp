@@ -1,16 +1,19 @@
+#pragma once
 #include <iostream>
 #include <memory>
 #include <libconfig.h++>
 
-#include "bvh.hpp"
 #include "logger.hpp"
 #include "math3d.hpp"
+
+class Ray;
+class Hit;
 
 class IShape
 {
     public:
         virtual ~IShape() = default;
-        //virtual bool intersect(Ray&, Hit&) const = 0;
+        virtual bool intersect(Ray &ray, Hit &hit) const = 0;
         //virtual AABB getObjectAABB() const = 0;
         //virtual const Vec3& getPos(void) const = 0;
 };
@@ -20,19 +23,21 @@ class AShape : public IShape
     public:
         void ShowShape(void){Log::Logger::debug("Object Shape:" + type);}
         std::string type;
+        Vec3 pos;
 };
 
 class Sphere final : public AShape  
 {
-public:
-    float radius;
-    Vec3 pos;
+    public:
+        float radius;
+        
 
-    Sphere(const Vec3& c, float r) {
-        type = "Sphere";
-        radius = r;
-        pos = c;
-    }
+        bool intersect(Ray &ray, Hit &hit) const override;
+        Sphere(const Vec3& c, float r) {
+            type = "Sphere";
+            radius = r;
+            pos = c;
+        }
 };
 
 class ShapeFactory{

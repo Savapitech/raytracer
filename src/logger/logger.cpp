@@ -51,4 +51,20 @@ namespace Log{
     {
         Logger::LoggerLvl = lvl;
     }
+
+    void Logger::SetLogLvlStr(const std::string &lvl) noexcept
+    {
+        if (lvl == "NONE")
+            Logger::LoggerLvl = LogLvl::NONE;
+        else if (lvl == "INFO")
+            Logger::LoggerLvl = LogLvl::INFO;
+        else if (lvl == "WARNING")
+            Logger::LoggerLvl = LogLvl::WARNING;
+        else  if (lvl == "ERROR")
+            Logger::LoggerLvl = LogLvl::ERROR;
+        else if (lvl == "DEBUG")
+            Logger::LoggerLvl= LogLvl::DEBUG;
+        else 
+            Logger::LoggerLvl= LogLvl::NONE;
+    }
 }

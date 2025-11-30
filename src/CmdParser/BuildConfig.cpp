@@ -23,5 +23,6 @@ namespace ParserCmd {
                 Log::Logger::debug("Didn't find Bind: " + Arg + " With Value: " + Value);
             }
         }
+        Log::Logger::SetLogLvlStr(config.LogLvl);
     }
 }

@@ -7,7 +7,7 @@
 namespace CmdConfig {
     struct config_t
     {
-        int LogLvl = Log::Logger::NONE;
+        std::string LogLvl;
 
         std::string scene;
 

@@ -4,9 +4,7 @@
 #include <memory>
 #include <vector>
 #include <libconfig.h++>
-#include "logger.hpp"
 
-#include "math3d.hpp"
 #include "Object.hpp"
 
 namespace scene
@@ -16,7 +14,11 @@ namespace scene
     typedef struct camera_s{
         Vec3 pos;
         Vec3 dir;
-        double fov = 90;
+        float fov = 90;
+        double distance = 540;
+        int width = 1920;
+        int height = 1080;
+
     } camera_t;
 
     class Factory{
@@ -29,7 +31,8 @@ namespace scene
     {
     public:
         Scene(const std::string &scene_path);
-        const std::vector<std::unique_ptr<Object>> &getObject(void) const{return objects;}
+        const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return objects;}
+        const camera_t &getCamera(void) const{return cameraInfo;}
     private:
         Factory factory;
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);

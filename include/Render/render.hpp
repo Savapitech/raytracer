@@ -9,10 +9,22 @@
 class Render
 {
     public:
+        void InitRender(void);
         void StartRender(void);
-        Render(const std::vector<std::unique_ptr<Object>> &objects);
+        void FindObject(int x, int y);
+        void writePixel(int x, int y, sf::Color color);
+        sf::Color shade(Ray &ray, Hit &hit);
+        Render(const scene::Scene &scene);
+
     private:
-        const std::vector<std::unique_ptr<Object>> &objects;
+        const scene::Scene& scene;
         sf::RenderWindow window;
+        std::vector<sf::Uint8> RayBuffer;
+        bool ImageRender;
+        float distance;
+        sf::Image image;
+        sf::Texture texture;
+        sf::Sprite sprite;
+       
 };
 
