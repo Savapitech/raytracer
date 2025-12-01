@@ -1,6 +1,17 @@
-#include "bvh.hpp"
+#include "RayTracer.hpp"
 #include "Object.hpp"
 
+AABB Sphere::getObjectAABB() const
+{
+    return {
+        { pos.x - radius, pos.y - radius, pos.z - radius },
+        { pos.x + radius, pos.y + radius, pos.z + radius }
+    };
+} 
+
+Vec3 Sphere::getCentroid() const {
+    return this->pos;
+}
 
 bool Sphere::intersect(Ray &ray, Hit &hit) const
 {

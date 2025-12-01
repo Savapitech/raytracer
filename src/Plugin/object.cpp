@@ -15,4 +15,6 @@ Object::Object(const libconfig::Setting &s, bool materialExist)
     this->shape = this->OFactory.SFactory.GetShape(s["shape"]);
     if (shape == nullptr)
         throw std::invalid_argument("Need type to implement shape");
+    this->aabb = this->shape->getObjectAABB();
+    this->centroid = this->shape->getCentroid();
 }

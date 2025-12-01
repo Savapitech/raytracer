@@ -5,6 +5,10 @@
 #include "Scene.hpp"
 #include <SFML/Graphics.hpp>
 
+#define R(x) (x)
+#define G(x) (x + 1)
+#define B(x) (x + 2)
+#define A(x) (x + 3)
 
 class Render
 {
@@ -18,6 +22,7 @@ class Render
         Render(const scene::Scene &scene);
 
     private:
+        BVH bvh;
         const scene::Scene& scene;
         sf::RenderWindow window;
         std::vector<sf::Uint8> RayBuffer;

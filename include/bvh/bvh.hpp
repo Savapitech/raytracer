@@ -1,25 +1,45 @@
 #pragma once
+    #include <memory>
+    #include <vector>
 
-#include "Scene.hpp"
+    #include "Object.hpp"
 
-class Ray
-{
+    #define THREE_ALLOC(x) ((x * 2) - 1)
+
+typedef struct bvh_stack_s {
+    int start = -1;
+    int end = -1;
+
+    int parentIndex = -1;
+    bool isLeftChild = false; /* Pour suprimé */
+} bvh_stack_t;
+
+typedef struct node_s {
+    int left = -1;
+    int right = -1;
+
+    int start = -1;
+    int count = -1;
+    AABB nodeShape;
+
+    bool isLeaf = false;
+} node_t;
+
+
+using VObjects = const std::vector<std::unique_ptr<Object>>&;
+
+class BVH {
     public:
-        Vec3 origin;
-        Vec3 dir;
-        float minHit = 0.001f;
-        float maxHit = 1e30f;
-
-        Ray(const scene::camera_t &camera, int x, int y);
-        Ray(const Vec3& origin, const Vec3& direction);
-};
-
-class Hit {
-    public:
-        float t = 1e30f;
-        Vec3 position;
-        Vec3 normal;
-        Object *object = nullptr;
-
-        bool hit() const { return object != nullptr;}
+        void BuildSpacePartitionning(VObjects Objects);
+        /*Find Object*/
+    private:
+        void CentroidSort(bvh_stack_t &stack, int axis, VObjects Objects);
+        void FindBiggestAABB(VObjects Objects);
+        void FillNode(VObjects Object, std::vector<bvh_stack_t> &myStacks);
+        std::vector<node_t> SpThree;
+        std::vector<int> IndexTab;
+        std::vector<bvh_stack_t> myStacks;
+        std::vector<AABB> LeftSide;
+        std::vector<AABB> RightSide;
+        //size_t NodeBuild;
 };

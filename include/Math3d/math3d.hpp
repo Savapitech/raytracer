@@ -1,7 +1,7 @@
 #pragma once
 
-#include <algorithm> 
 #include <cmath>
+#include <iostream>
 
 struct Vec3 {
     float x, y, z;
@@ -25,6 +25,10 @@ inline float dot(const Vec3& a, const Vec3& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+inline void display(const Vec3& v) {
+    std::cout << "X=" << v.x << ",Y=" << v.y << ",Z=" << v.z << std::endl;
+}
+
 inline float norm(const Vec3& v) {
     return std::sqrt(dot(v, v));
 }
@@ -32,7 +36,7 @@ inline float norm(const Vec3& v) {
 inline Vec3 normalize(const Vec3& v) {
     const float EPS = 1e-8f;
     float n = norm(v);
-    
+
     if (n < EPS) return Vec3(0.f, 0.f, 0.f);
         return v / n;
 }

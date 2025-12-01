@@ -23,6 +23,7 @@ void Render::InitRender(void)
     
     while (this->window.isOpen()) {
         if (this->ImageRender == false){
+            this->bvh.BuildSpacePartitionning(scene.getObjects());
             this->StartRender();
         }
         while (this->window.pollEvent(event)) {

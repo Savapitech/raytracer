@@ -1,6 +1,6 @@
 TARGET = raytracer
 
-CXX = clang++
+CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17 -g
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++
 
@@ -30,6 +30,7 @@ RAYTRACER += src/RayTracer/run.cpp
 RAYTRACER += src/RayTracer/buildRay.cpp
 
 SCENE = src/Scene/Constructor.cpp
+SCENE += src/Scene/scene.cpp
 SCENE += src/Scene/Factory/ShapeFactory.cpp
 
 PLUGIN = src/Plugin/object.cpp
@@ -38,12 +39,15 @@ PLUGIN += src/Shape/sphere.cpp
 RENDER = src/Render/render.cpp
 RENDER += src/Render/StartRender.cpp
 
+BVH = src/SpacePartitionning/bvh.cpp
+
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
 SRC += $(SCENE)
 SRC += $(RAYTRACER)
 SRC += $(PLUGIN)
 SRC += $(RENDER)
+SRC += $(BVH)
 
 OBJ = $(SRC:.cpp=.o)
 

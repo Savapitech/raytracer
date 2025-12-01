@@ -14,7 +14,8 @@ class IShape
     public:
         virtual ~IShape() = default;
         virtual bool intersect(Ray &ray, Hit &hit) const = 0;
-        //virtual AABB getObjectAABB() const = 0;
+        virtual AABB getObjectAABB() const = 0;
+        virtual Vec3 getCentroid() const = 0;
         //virtual const Vec3& getPos(void) const = 0;
 };
 
@@ -32,6 +33,8 @@ class Sphere final : public AShape
     public:
         float radius;
         bool intersect(Ray &ray, Hit &hit) const override;
+        AABB getObjectAABB() const override;
+        Vec3 getCentroid() const override;
         Sphere(const libconfig::Setting& s);
 };
 
@@ -53,6 +56,10 @@ class Object
         Object(const libconfig::Setting &s, bool materialExist);
         AABB aabb;
         std::unique_ptr<AShape> shape;
+        Vec3 getCentroid() const {
+            return centroid;
+}
     private:
+        Vec3 centroid;
         static ObjectFactory OFactory;
 };

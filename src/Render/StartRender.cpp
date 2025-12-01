@@ -1,10 +1,5 @@
 #include "render.hpp"
-#include "bvh.hpp"
-
-#define R(x) (x)
-#define G(x) (x + 1)
-#define B(x) (x + 2)
-#define A(x) (x + 3)
+#include "RayTracer.hpp"
 
 void Render::writePixel(int x, int y, sf::Color color)
 {
@@ -47,7 +42,8 @@ bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
 
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
-    Vec3 light(6.4, -2.2, -28.54);
+    /*Vec3 light(6.4, -2.2, -28.54);*/
+    Vec3 light(0, 0, 10);
     Vec3 colorShape = minHit.object->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
