@@ -11,11 +11,6 @@ void BVH::FindBiggestAABB(VObjects Objects)
 }
 
 #define OBJECT_LEAF 1 /*Provisoire*/
-enum Axis {
-  X,
-  Y,
-  Z
-}; 
 
 void BVH::CentroidSort(bvh_stack_t &stack, int axis, VObjects Objects)
 {
@@ -35,7 +30,106 @@ void BVH::CentroidSort(bvh_stack_t &stack, int axis, VObjects Objects)
     );
 }
 
+Vec3 GetMax(Vec3 a, Vec3 b)
+{
+    Vec3 newMax;
+    newMax.x = (a.x > b.x) ? a.x : b.x;
+    newMax.y = (a.y > b.y) ? a.y : b.y;
+    newMax.z = (a.z > b.z) ? a.z : b.z;
+    return newMax;
+}
 
+Vec3 GetMin(Vec3 a, Vec3 b)
+{
+    Vec3 newMin;
+    newMin.x = (a.x < b.x) ? a.x : b.x;
+    newMin.y = (a.y < b.y) ? a.y : b.y;
+    newMin.z = (a.z < b.z) ? a.z : b.z;
+    return newMin;
+}
+
+AABB BVH::Union(AABB a, AABB b)
+{
+    Vec3 max = GetMax(a.max, b.max);
+    Vec3 min = GetMin(a.min, b.min);
+    return (AABB){max, min};
+}
+
+void BVH::buildleftrightAABB(VObjects Objects, bvh_stack_t &stack)
+{
+    int count = stack.end - stack.start;
+
+    LeftSide.resize(count);
+    RightSide.resize(count);
+    LeftSide[0] = Objects[IndexTab[stack.start]]->aabb;
+    for (int i = 1; i < count; i++) {
+        LeftSide[i] = Union(
+            LeftSide[i - 1],
+            Objects[IndexTab[stack.start + i]]->aabb
+        );
+    }
+    RightSide[count - 1] = Objects[IndexTab[stack.end - 1]]->aabb;
+
+    for (int i = count - 2; i >= 0; i--) {
+        RightSide[i] = Union(
+            RightSide[i + 1],
+            Objects[IndexTab[stack.start + i]]->aabb
+        );
+    }
+}
+
+Axis BVH::getAxis(Vec3 &AAtoBB)
+{
+    if (AAtoBB.x >= AAtoBB.y && AAtoBB.x >= AAtoBB.z)
+        return Axis::X;
+    if (AAtoBB.y >= AAtoBB.z)
+        return Axis::Y;
+    return Axis::Z;
+}
+
+Axis BVH::setAxis(AABB &a, VObjects Objects, bvh_stack_t &stack)
+{
+    Vec3 max(-INFINITY, -INFINITY, -INFINITY);
+    Vec3 min(INFINITY, INFINITY, INFINITY);
+
+    for (int i = stack.start ; i < stack.end; i++){
+        if (max.x < Objects[IndexTab[i]]->aabb.max.x)
+            max.x = Objects[IndexTab[i]]->aabb.max.x;
+        if (max.y < Objects[IndexTab[i]]->aabb.max.y)
+            max.y = Objects[IndexTab[i]]->aabb.max.y;
+        if (max.z < Objects[IndexTab[i]]->aabb.max.z)
+            max.z = Objects[IndexTab[i]]->aabb.max.z;
+        if (min.x > Objects[IndexTab[i]]->aabb.min.x)
+            min.x = Objects[IndexTab[i]]->aabb.min.x;
+        if (min.y > Objects[IndexTab[i]]->aabb.min.y)
+            min.y = Objects[IndexTab[i]]->aabb.min.y;
+        if (min.z > Objects[IndexTab[i]]->aabb.min.z)
+            min.z = Objects[IndexTab[i]]->aabb.min.z;
+    }
+    a.max = max;
+    a.min = min;
+    Vec3 AAtoBB = max - min;
+    return getAxis(AAtoBB);
+}
+
+int BVH::AppliedSah(bvh_stack_t &stack)
+{
+    int count = stack.end - stack.start;
+    float maxCost = std::numeric_limits<float>::infinity();
+    int   pivot = stack.start + 1;
+
+    for (int i = 0; i < count - 1; i++) {
+        int leftCount  = i + 1;
+        int rightCount = count - (i + 1);
+        float cost = LeftSide[i].surfaceArea()  * leftCount + RightSide[i + 1].surfaceArea() * rightCount;
+
+        if (cost < maxCost) {
+            maxCost = cost;
+            pivot = stack.start + (i + 1);
+        }
+    }
+    return pivot;
+}
 
 void BVH::FillNode(VObjects Objects, std::vector<bvh_stack_t> &myStacks)
 {
@@ -45,19 +139,22 @@ void BVH::FillNode(VObjects Objects, std::vector<bvh_stack_t> &myStacks)
     bvh_stack_t stack = myStacks.back();
     Axis axis;
     
+    /* Init */
+    myStacks.pop_back();
     newNode.start = stack.start;
     newNode.count = stack.end - stack.start;
-    myStacks.pop_back();
+
+    /*Construction Node*/
     if (newNode.count == OBJECT_LEAF){
         newNode.isLeaf = true;
         newNode.count = OBJECT_LEAF;
     }
     if (newNode.isLeaf != true){
-        newNode.nodeShape = buildleftrightAABB();
-        /*axis = setaxis();*/
+        axis = setAxis(newNode.nodeShape, Objects, stack);
+            std::cout << axis  << std::endl;
         CentroidSort(stack, X, Objects);
-        pivot = stack.start + (stack.end - stack.start) / 2;/*RECUPERER PIVOT*/ /*Via le test de chaque AABB*/
-        //newNode.nodeShape; /*= suffixe 0*/
+        buildleftrightAABB(Objects, stack);
+        pivot = this->AppliedSah(stack);/*RECUPERER PIVOT*/ /*Via le test de chaque AABB*/
     }
     if (stack.parentIndex != -1){
         if (stack.isLeftChild == true)
@@ -68,21 +165,33 @@ void BVH::FillNode(VObjects Objects, std::vector<bvh_stack_t> &myStacks)
     SpThree.push_back(newNode);
     if (newNode.isLeaf == true)
         return;
-    myStacks.push_back((bvh_stack_t){.start = stack.start, .end = pivot, .parentIndex=nodeIndex, .isLeftChild=false,});
+    /*Création récursif*/
+    myStacks.push_back((bvh_stack_t){.start = stack.start, .end = pivot, .parentIndex=nodeIndex, .isLeftChild=false});
     myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=true});
 }
 
 void BVH::BuildSpacePartitionning(VObjects Objects)
 {
-    this->SpThree.reserve(THREE_ALLOC(Objects.size()));
-    this->IndexTab.reserve(Objects.size());
-    this->myStacks.reserve(THREE_ALLOC(Objects.size()));
+    this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Arbre*/
+    this->IndexTab.reserve(Objects.size()); /*Liste d'index pour trier les obj*/
+    this->myStacks.reserve(THREE_ALLOC(Objects.size())); /**/
+    this->LeftSide.reserve(Objects.size());
+    this->RightSide.reserve(Objects.size());
     Log::Logger::debug("Three alloc:" + std::to_string(THREE_ALLOC(Objects.size())));
+
     myStacks.push_back((bvh_stack_t){.start = 0, .end = (int)Objects.size(), .parentIndex = -1, .isLeftChild = false});
 
     for (size_t i = 0; i < Objects.size(); i++)
         IndexTab.push_back(int(i));
+
     while (myStacks.empty() == false){
         FillNode(Objects, myStacks);
-    }    
+    }
+    for (size_t i = 0; i != SpThree.size(); i++)
+        std::cout << 
+        "Node: " << i << " " <<
+        "Is leaf:" << SpThree[i].isLeaf << " " <<
+        "Left" << SpThree[i].left << " " <<
+        "Right" << SpThree[i].right << " " << 
+        std::endl;
 }

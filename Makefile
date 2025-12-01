@@ -1,6 +1,6 @@
 TARGET = raytracer
 
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++17 -g
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++
 

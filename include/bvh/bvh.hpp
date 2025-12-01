@@ -6,6 +6,13 @@
 
     #define THREE_ALLOC(x) ((x * 2) - 1)
 
+    enum Axis {
+      X = 'x',
+      Y = 'y',
+      Z = 'z'
+    }; 
+
+
 typedef struct bvh_stack_s {
     int start = -1;
     int end = -1;
@@ -36,6 +43,12 @@ class BVH {
         void CentroidSort(bvh_stack_t &stack, int axis, VObjects Objects);
         void FindBiggestAABB(VObjects Objects);
         void FillNode(VObjects Object, std::vector<bvh_stack_t> &myStacks);
+        void buildleftrightAABB(VObjects Object, bvh_stack_t &myStack);
+        AABB Union(AABB a, AABB b);
+        Axis setAxis(AABB &a, VObjects Objects, bvh_stack_t &myStack);
+        Axis getAxis(Vec3 &AAtoBB);
+        int  AppliedSah(bvh_stack_t &stack);
+
         std::vector<node_t> SpThree;
         std::vector<int> IndexTab;
         std::vector<bvh_stack_t> myStacks;

@@ -41,8 +41,16 @@ inline Vec3 normalize(const Vec3& v) {
         return v / n;
 }
 
-struct AABB
+class AABB
 {
-    Vec3 max;
-    Vec3 min;
+    public:
+        Vec3 max;
+        Vec3 min;
+        float surfaceArea() const {
+            Vec3 d = max - min;
+
+            if (d.x < 0 || d.y < 0 || d.z < 0)
+                return 0.0f;
+            return 2.0f * (d.x * d.y + d.y * d.z + d.z * d.x);
+            }
 };
