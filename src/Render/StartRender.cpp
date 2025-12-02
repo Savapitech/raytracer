@@ -26,30 +26,22 @@ bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
     shadowRay.minHit = 0.001f;
     shadowRay.maxHit = norm(light - P) - 0.001f;
 
-    Hit tmp;
-
-    for (auto& obj : scene.getObjects()) {
-        if (obj.get() == minHit.object)
-            continue;
-        if (obj->shape->intersect(shadowRay, tmp))
-            if (tmp.t > shadowRay.minHit && tmp.t < shadowRay.maxHit){
-                return true;
-            }
-    }
+    if (this->bvh.intersect(shadowRay, minHit) == true)
+        return true;
     return false;
 }
 
 sf::Color Render::shade(Ray &ray, Hit &minHit)
 {
     /*Vec3 light(6.4, -2.2, -28.54);*/
-    Vec3 light(0, 0, 10);
+    Vec3 light(10, 0, 10);
     Vec3 colorShape = minHit.object->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
     Vec3 N = normalize(P - minHit.object->shape->pos);
-    //if (ShadowRay(light, minHit, P, L) == true)
-    //    return sf::Color::Black;
+    if (ShadowRay(light, minHit, P, L) == true)
+        return sf::Color::Black;
 
     float diff = std::max(dot(N, L), 0.0f);
 
@@ -67,22 +59,9 @@ sf::Color Render::shade(Ray &ray, Hit &minHit)
 void Render::FindObject(int x, int y)
 {
     Ray ray(scene.getCamera(), x, y);
-
     Hit minHit;
 
-    if (1 == 0)
-        for (auto& obj : scene.getObjects())
-        {
-            Hit tmpHit;
-            if (obj->shape->intersect(ray, tmpHit) == true)
-                if (tmpHit.t > 0 && tmpHit.t < minHit.t) {
-                    minHit = tmpHit;
-                    minHit.object = obj.get();
-                }
-        }
-    if (1 == 1)
-        this->bvh.intersect(ray, minHit);
-
+    this->bvh.intersect(ray, minHit);
     if (minHit.object != nullptr) {
         sf::Color color = this->shade(ray, minHit);
         writePixel(x, y, color);
@@ -93,11 +72,17 @@ void Render::StartRender(void)
 {
     const auto &cam = scene.getCamera();
     this->ImageRender = true;
+    sf::Clock clock;
 
     for (int x = 0; x < cam.width; x++)
         for (int y = 0; y < cam.height; y++){
                this->FindObject(x, y);
         }
+    sf::Time RenderTime = clock.getElapsedTime();
+    sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();
+
+    std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
+
     this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());
     this->texture.loadFromImage(image);
     this->sprite.setTexture(this->texture);

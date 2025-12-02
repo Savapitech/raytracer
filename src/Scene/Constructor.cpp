@@ -23,15 +23,15 @@ namespace scene {
         camera_t camera;
         
         camera.fov = s.exists("fov") ? (float)s["fov"] : 90.0f;
-        Log::Logger::debug("Camera Fov set");
+        Log::Logger::info("Camera Fov set");
         if (!s.exists("dir"))
             throw std::runtime_error("Missing 'dir' field in scene");
         camera.dir = readVec3(s["dir"]);
-        Log::Logger::debug("Camera Dir set");
+        Log::Logger::info("Camera Dir set");
         if (!s.exists("pos"))
             throw std::runtime_error("Missing 'pos' field in scene");
         camera.dir = readVec3(s["pos"]);
-        Log::Logger::debug("Camera Pos set");
+        Log::Logger::info("Camera Pos set");
         getDistance(camera);
         return camera;
     }
@@ -63,8 +63,6 @@ namespace scene {
             Log::Logger::debug("Objects add: " + std::to_string(count));
         }
     }
-
-
 
     Scene::Scene(const std::string &scene_path)
         {

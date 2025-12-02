@@ -25,6 +25,7 @@ void Render::InitRender(void)
     while (this->window.isOpen()) {
         if (this->ImageRender == false){
             this->bvh.BuildSpacePartitionning();
+            Log::Logger::info("Push new buffer");
             this->StartRender();
         }
         while (this->window.pollEvent(event)) {
