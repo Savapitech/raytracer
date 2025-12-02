@@ -33,13 +33,17 @@ RAYTRACER += src/RayTracer/buildRay.cpp
 SCENE = src/Scene/Constructor.cpp
 SCENE += src/Scene/scene.cpp
 SCENE += src/Scene/Factory/ShapeFactory.cpp
+SCENE += src/Scene/Factory/MaterialFactory.cpp
 
 PLUGIN = src/Plugin/object.cpp
 PLUGIN += src/Shape/sphere.cpp
+PLUGIN += src/Material/mirror.cpp
 
 RENDER = src/Render/render.cpp
 RENDER += src/Render/constructor.cpp
 RENDER += src/Render/StartRender.cpp
+RENDER += src/Render/shade.cpp
+RENDER += src/Render/shadow.cpp
 
 BVH = src/SpacePartitionning/bvh.cpp
 BVH += src/SpacePartitionning/AABBIntersect.cpp

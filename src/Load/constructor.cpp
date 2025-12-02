@@ -34,8 +34,10 @@ void GLoad::pushPercent(sf::RenderWindow &window, int percent)
     window.draw(this->percent);
 }
 
+
+
 bool GLoad::pushLoad(sf::RenderWindow &window){
-    if (clock.getElapsedTime().asMilliseconds() > 100){
+    if (clock.getElapsedTime().asMilliseconds() > FPS_60){
         this->setFrame(this->count);
         clock.restart();
         window.draw(this->percent);

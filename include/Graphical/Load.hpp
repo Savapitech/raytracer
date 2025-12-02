@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#define FPS_60 160
+
 class GLoad
 {
     public:

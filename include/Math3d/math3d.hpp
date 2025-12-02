@@ -58,6 +58,10 @@ inline Vec3 normalize(const Vec3& v) {
         return v / n;
 }
 
+inline Vec3 reflect(const Vec3& v, const Vec3& n) {
+    return v - n * (2.0f * dot(v, n));
+}
+
 class AABB
 {
     public:

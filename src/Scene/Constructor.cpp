@@ -40,8 +40,10 @@ namespace scene {
     {
         if (!s.exists("shape"))
             throw std::invalid_argument("Object need a shape");
-        if (!s.exists("matrial"))
+        if (!s.exists("material")){
+            Log::Logger::warning("Materials do not exist");
             return std::make_unique<Object>(s, false);
+        }
         return std::make_unique<Object>(s, true);
     }
 
@@ -57,10 +59,14 @@ namespace scene {
     
         int count = list.getLength();
         Log::Logger::debug("Objects size: " + std::to_string(count));
-    
+        
+
         for (int i = 0; i < count; i++){
             objects.push_back(factory.GetObject(list[i]));
             Log::Logger::debug("Objects add: " + std::to_string(count));
+            Log::Logger::debug("Objects type: Shape:" + objects.back()->shape->type);
+            if (objects.back()->material != nullptr)
+                Log::Logger::debug("Objects type: Material:" + objects.back()->material->type);
         }
     }
 

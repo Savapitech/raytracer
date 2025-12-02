@@ -21,6 +21,7 @@ class Render
         sf::Color shade(Ray &ray, Hit &hit) noexcept;
         bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L) noexcept;
         void HandleWindow(void) noexcept;
+        Vec3 AppliedFong(Ray &ray, Hit &minHit) noexcept;
         Render(const scene::Scene &scene) noexcept;
 
     private:
