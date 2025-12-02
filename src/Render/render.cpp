@@ -8,6 +8,7 @@
 
 Render::Render(const scene::Scene &scene)
     : scene(scene),
+      bvh(scene.getObjects()),
       window(sf::VideoMode(WIDTH, HEIGHT), "Raytracer"),
       RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 100),
       ImageRender(false),
@@ -23,7 +24,7 @@ void Render::InitRender(void)
     
     while (this->window.isOpen()) {
         if (this->ImageRender == false){
-            this->bvh.BuildSpacePartitionning(scene.getObjects());
+            this->bvh.BuildSpacePartitionning();
             this->StartRender();
         }
         while (this->window.pollEvent(event)) {

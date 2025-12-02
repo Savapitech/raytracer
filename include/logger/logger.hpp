@@ -29,6 +29,7 @@ namespace Log {
             static void error(const std::string &str) noexcept;
             static void debug(const std::string &str) noexcept;
             static void SetLogLvl(const LogLvl lvl) noexcept;
+            static const LogLvl &GetLogLvl(void) noexcept {return LoggerLvl;}
             static void SetLogLvlStr(const std::string &lvl) noexcept;
             template<typename T>
             static void logVar(const T& var) noexcept {

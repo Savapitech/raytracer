@@ -1,5 +1,5 @@
 #include <algorithm>
-#include "bvh.hpp"
+#include "RayTracer.hpp"
 
 
 
@@ -12,7 +12,7 @@ void BVH::FindBiggestAABB(VObjects Objects)
 
 #define OBJECT_LEAF 1 /*Provisoire*/
 
-void BVH::CentroidSort(bvh_stack_t &stack, int axis, VObjects Objects)
+void BVH::CentroidSort(bvh_stack_t &stack, int axis)
 {
     std::sort(IndexTab.begin() + stack.start, IndexTab.begin() + stack.end,
         [&](int a, int b) {
@@ -48,14 +48,23 @@ Vec3 GetMin(Vec3 a, Vec3 b)
     return newMin;
 }
 
-AABB BVH::Union(AABB a, AABB b)
+void AABB::normalize()
 {
-    Vec3 max = GetMax(a.max, b.max);
-    Vec3 min = GetMin(a.min, b.min);
-    return (AABB){max, min};
+    if (min.x > max.x) std::swap(min.x, max.x);
+    if (min.y > max.y) std::swap(min.y, max.y);
+    if (min.z > max.z) std::swap(min.z, max.z);
 }
 
-void BVH::buildleftrightAABB(VObjects Objects, bvh_stack_t &stack)
+AABB BVH::Union(AABB a, AABB b)
+{
+    AABB r;
+    r.min = GetMin(a.min, b.min);
+    r.max = GetMax(a.max, b.max);
+    r.normalize();
+    return r;
+}
+
+void BVH::buildleftrightAABB(bvh_stack_t &stack)
 {
     int count = stack.end - stack.start;
 
@@ -87,7 +96,7 @@ Axis BVH::getAxis(Vec3 &AAtoBB)
     return Axis::Z;
 }
 
-Axis BVH::setAxis(AABB &a, VObjects Objects, bvh_stack_t &stack)
+Axis BVH::setAxis(AABB &a, bvh_stack_t &stack)
 {
     Vec3 max(-INFINITY, -INFINITY, -INFINITY);
     Vec3 min(INFINITY, INFINITY, INFINITY);
@@ -131,7 +140,7 @@ int BVH::AppliedSah(bvh_stack_t &stack)
     return pivot;
 }
 
-void BVH::FillNode(VObjects Objects, std::vector<bvh_stack_t> &myStacks)
+void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 {
     int pivot;
     int nodeIndex = this->SpThree.size();
@@ -147,14 +156,16 @@ void BVH::FillNode(VObjects Objects, std::vector<bvh_stack_t> &myStacks)
     /*Construction Node*/
     if (newNode.count == OBJECT_LEAF){
         newNode.isLeaf = true;
+        Objects[IndexTab[stack.start]]->aabb.normalize();
+        newNode.nodeShape =  Objects[IndexTab[stack.start]]->aabb;
         newNode.count = OBJECT_LEAF;
     }
     if (newNode.isLeaf != true){
-        axis = setAxis(newNode.nodeShape, Objects, stack);
-            std::cout << axis  << std::endl;
-        CentroidSort(stack, X, Objects);
-        buildleftrightAABB(Objects, stack);
-        pivot = this->AppliedSah(stack);/*RECUPERER PIVOT*/ /*Via le test de chaque AABB*/
+        newNode.nodeShape.normalize();
+        axis = setAxis(newNode.nodeShape, stack);
+        CentroidSort(stack, axis);
+        buildleftrightAABB(stack);
+        pivot = this->AppliedSah(stack);
     }
     if (stack.parentIndex != -1){
         if (stack.isLeftChild == true)
@@ -166,11 +177,11 @@ void BVH::FillNode(VObjects Objects, std::vector<bvh_stack_t> &myStacks)
     if (newNode.isLeaf == true)
         return;
     /*Création récursif*/
-    myStacks.push_back((bvh_stack_t){.start = stack.start, .end = pivot, .parentIndex=nodeIndex, .isLeftChild=false});
-    myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=true});
+    myStacks.push_back((bvh_stack_t){.start = stack.start, .end = pivot, .parentIndex=nodeIndex, .isLeftChild=true});
+    myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=false});
 }
 
-void BVH::BuildSpacePartitionning(VObjects Objects)
+void BVH::BuildSpacePartitionning(void)
 {
     this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Arbre*/
     this->IndexTab.reserve(Objects.size()); /*Liste d'index pour trier les obj*/
@@ -185,13 +196,16 @@ void BVH::BuildSpacePartitionning(VObjects Objects)
         IndexTab.push_back(int(i));
 
     while (myStacks.empty() == false){
-        FillNode(Objects, myStacks);
+        FillNode(myStacks);
     }
-    for (size_t i = 0; i != SpThree.size(); i++)
-        std::cout << 
-        "Node: " << i << " " <<
-        "Is leaf:" << SpThree[i].isLeaf << " " <<
-        "Left" << SpThree[i].left << " " <<
-        "Right" << SpThree[i].right << " " << 
-        std::endl;
+
+    /*Display node*/
+    if (Log::Logger::GetLogLvl() == Log::Logger::LogLvl::DEBUG)
+        for (size_t i = 0; i != SpThree.size(); i++)
+            std::cout << CLR_BOLD_DEBUG << "Three BVH:" << CLR_DEBUG
+            "Node: " << i << " " <<
+            "Is leaf:" << SpThree[i].isLeaf << " " <<
+            "Left" << SpThree[i].left << " " <<
+            "Right" << SpThree[i].right << " " <<  CLR_RESET <<
+            std::endl;
 }

@@ -40,6 +40,8 @@ RENDER = src/Render/render.cpp
 RENDER += src/Render/StartRender.cpp
 
 BVH = src/SpacePartitionning/bvh.cpp
+BVH += src/SpacePartitionning/AABBIntersect.cpp
+BVH += src/SpacePartitionning/intersect.cpp
 
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)

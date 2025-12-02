@@ -33,7 +33,6 @@ bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
             continue;
         if (obj->shape->intersect(shadowRay, tmp))
             if (tmp.t > shadowRay.minHit && tmp.t < shadowRay.maxHit){
-                //std::cout << "Shadow Ray: " << tmp.t << std::endl;
                 return true;
             }
     }
@@ -49,8 +48,9 @@ sf::Color Render::shade(Ray &ray, Hit &minHit)
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
     Vec3 N = normalize(P - minHit.object->shape->pos);
-    if (ShadowRay(light, minHit, P, L) == true)
-        return sf::Color::Black;
+    //if (ShadowRay(light, minHit, P, L) == true)
+    //    return sf::Color::Black;
+
     float diff = std::max(dot(N, L), 0.0f);
 
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
@@ -69,19 +69,21 @@ void Render::FindObject(int x, int y)
     Ray ray(scene.getCamera(), x, y);
 
     Hit minHit;
-    bool found = false;
 
-    for (auto& obj : scene.getObjects())
-    {
-        Hit tmpHit;
-        if (obj->shape->intersect(ray, tmpHit) == true)
-            if (tmpHit.t > 0 && tmpHit.t < minHit.t) {
-                minHit = tmpHit;
-                minHit.object = obj.get();
-                found = true;
-            }
-    }
-    if (found == true) {
+    if (1 == 0)
+        for (auto& obj : scene.getObjects())
+        {
+            Hit tmpHit;
+            if (obj->shape->intersect(ray, tmpHit) == true)
+                if (tmpHit.t > 0 && tmpHit.t < minHit.t) {
+                    minHit = tmpHit;
+                    minHit.object = obj.get();
+                }
+        }
+    if (1 == 1)
+        this->bvh.intersect(ray, minHit);
+
+    if (minHit.object != nullptr) {
         sf::Color color = this->shade(ray, minHit);
         writePixel(x, y, color);
     }

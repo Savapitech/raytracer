@@ -3,6 +3,9 @@
 #include <cmath>
 #include <iostream>
 
+class Ray;
+class Hit;
+
 struct Vec3 {
     float x, y, z;
     Vec3(float x_=0.f, float y_=0.f, float z_=0.f) : x(x_), y(y_), z(z_) {}
@@ -19,7 +22,21 @@ struct Vec3 {
     }
     Vec3 operator*(float s) const { return Vec3(x*s, y*s, z*s); }
     Vec3 operator/(float s) const { return Vec3(x/s, y/s, z/s); }
+
+    float& operator[](int i) {
+    if (i == 0) return x;
+    if (i == 1) return y;
+    else return z;
+    }
+
+    const float& operator[](int i) const {
+    if (i == 0) return x;
+    if (i == 1) return y;
+    return z;
+    }
 };
+
+
 
 inline float dot(const Vec3& a, const Vec3& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -44,8 +61,8 @@ inline Vec3 normalize(const Vec3& v) {
 class AABB
 {
     public:
-        Vec3 max;
         Vec3 min;
+        Vec3 max;
         float surfaceArea() const {
             Vec3 d = max - min;
 
@@ -53,4 +70,6 @@ class AABB
                 return 0.0f;
             return 2.0f * (d.x * d.y + d.y * d.z + d.z * d.x);
             }
+        bool intersect(const Ray& r) const;
+        void normalize();
 };

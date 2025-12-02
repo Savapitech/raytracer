@@ -37,18 +37,23 @@ using VObjects = const std::vector<std::unique_ptr<Object>>&;
 
 class BVH {
     public:
-        void BuildSpacePartitionning(VObjects Objects);
+        bool intersect(Ray& ray, Hit& hit);
+        void BuildSpacePartitionning(void);
+
+        BVH(VObjects Objects) 
+        : Objects(Objects){}
         /*Find Object*/
     private:
-        void CentroidSort(bvh_stack_t &stack, int axis, VObjects Objects);
+        void CentroidSort(bvh_stack_t &stack, int axis);
         void FindBiggestAABB(VObjects Objects);
-        void FillNode(VObjects Object, std::vector<bvh_stack_t> &myStacks);
-        void buildleftrightAABB(VObjects Object, bvh_stack_t &myStack);
+        void FillNode(std::vector<bvh_stack_t> &myStacks);
+        void buildleftrightAABB(bvh_stack_t &myStack);
         AABB Union(AABB a, AABB b);
-        Axis setAxis(AABB &a, VObjects Objects, bvh_stack_t &myStack);
+        Axis setAxis(AABB &a, bvh_stack_t &myStack);
         Axis getAxis(Vec3 &AAtoBB);
         int  AppliedSah(bvh_stack_t &stack);
 
+        VObjects Objects;
         std::vector<node_t> SpThree;
         std::vector<int> IndexTab;
         std::vector<bvh_stack_t> myStacks;

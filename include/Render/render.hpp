@@ -22,8 +22,8 @@ class Render
         Render(const scene::Scene &scene);
 
     private:
-        BVH bvh;
         const scene::Scene& scene;
+        BVH bvh;
         sf::RenderWindow window;
         std::vector<sf::Uint8> RayBuffer;
         bool ImageRender;
