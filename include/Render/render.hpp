@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include "Load.hpp"
 #include "Scene.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -19,6 +20,7 @@ class Render
         void writePixel(int x, int y, sf::Color color) noexcept;
         sf::Color shade(Ray &ray, Hit &hit) noexcept;
         bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L) noexcept;
+        void HandleWindow(void) noexcept;
         Render(const scene::Scene &scene) noexcept;
 
     private:
@@ -31,6 +33,7 @@ class Render
         sf::Image image;
         sf::Texture texture;
         sf::Sprite sprite;
-       
+
+        GLoad load;     
 };
 

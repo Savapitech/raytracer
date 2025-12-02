@@ -14,6 +14,7 @@ INC += -I include/Scene
 INC += -I include/Math3d
 INC += -I include/Render/
 INC += -I include/bvh
+INC += -I include/Graphical
 
 SRC = src/main.cpp
 
@@ -37,11 +38,14 @@ PLUGIN = src/Plugin/object.cpp
 PLUGIN += src/Shape/sphere.cpp
 
 RENDER = src/Render/render.cpp
+RENDER += src/Render/constructor.cpp
 RENDER += src/Render/StartRender.cpp
 
 BVH = src/SpacePartitionning/bvh.cpp
 BVH += src/SpacePartitionning/AABBIntersect.cpp
 BVH += src/SpacePartitionning/intersect.cpp
+
+GRAPHICAL = src/Load/constructor.cpp
 
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
@@ -50,6 +54,7 @@ SRC += $(RAYTRACER)
 SRC += $(PLUGIN)
 SRC += $(RENDER)
 SRC += $(BVH)
+SRC += $(GRAPHICAL)
 
 OBJ = $(SRC:.cpp=.o)
 

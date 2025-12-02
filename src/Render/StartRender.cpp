@@ -79,8 +79,13 @@ void Render::StartRender(void) noexcept
     int percent = 0;
 
     for (int x = 0; x < cam.width; x++){
+        if (load.pushLoad(window) == true)
+            this->HandleWindow();
+        if (window.isOpen() == false)
+            return;
         if (percent != (count * 100) / nbPixel){
             percent = (count * 100) / nbPixel;
+            this->load.pushPercent(window, percent);
             std::cout << percent << std::endl;
         }
         for (int y = 0; y < cam.height; y++){
@@ -97,12 +102,3 @@ void Render::StartRender(void) noexcept
     this->texture.loadFromImage(image);
     this->sprite.setTexture(this->texture);
 }
-
-/*
-
-count
------       ------
-NbPixel      100
-
-
-*/
