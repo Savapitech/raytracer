@@ -13,13 +13,13 @@
 class Render
 {
     public:
-        void InitRender(void);
-        void StartRender(void);
-        void FindObject(int x, int y);
-        void writePixel(int x, int y, sf::Color color);
-        sf::Color shade(Ray &ray, Hit &hit);
-        bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L);
-        Render(const scene::Scene &scene);
+        void InitRender(void) noexcept;
+        void StartRender(void) noexcept;
+        void FindObject(int x, int y) noexcept;
+        void writePixel(int x, int y, sf::Color color) noexcept;
+        sf::Color shade(Ray &ray, Hit &hit) noexcept;
+        bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L) noexcept;
+        Render(const scene::Scene &scene) noexcept;
 
     private:
         const scene::Scene& scene;

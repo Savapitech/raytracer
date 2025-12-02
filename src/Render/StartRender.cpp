@@ -1,7 +1,7 @@
 #include "render.hpp"
 #include "RayTracer.hpp"
 
-void Render::writePixel(int x, int y, sf::Color color)
+void Render::writePixel(int x, int y, sf::Color color) noexcept
 {
     int acutalPixel = (y * scene.getCamera().width + x) * 4;
 
@@ -11,7 +11,7 @@ void Render::writePixel(int x, int y, sf::Color color)
     RayBuffer[A(acutalPixel)] = color.a;
 }
 
-Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha)
+Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexcept
 {
     Vec3 lightColor(255, 255, 255);
     Vec3 R = normalize( N * (2.0f * dot(N, L)) - L );
@@ -20,7 +20,7 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha)
     return lightColor * spec;
 }
 
-bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
+bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L) noexcept
 {
     Ray shadowRay(P + minHit.normal * 0.001f, L);
     shadowRay.minHit = 0.001f;
@@ -31,7 +31,7 @@ bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L)
     return false;
 }
 
-sf::Color Render::shade(Ray &ray, Hit &minHit)
+sf::Color Render::shade(Ray &ray, Hit &minHit) noexcept
 {
     /*Vec3 light(6.4, -2.2, -28.54);*/
     Vec3 light(10, 0, 10);
@@ -40,8 +40,8 @@ sf::Color Render::shade(Ray &ray, Hit &minHit)
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
     Vec3 N = normalize(P - minHit.object->shape->pos);
-    if (ShadowRay(light, minHit, P, L) == true)
-        return sf::Color::Black;
+    //if (ShadowRay(light, minHit, P, L) == true)
+    //    return sf::Color::Black;
 
     float diff = std::max(dot(N, L), 0.0f);
 
@@ -56,7 +56,7 @@ sf::Color Render::shade(Ray &ray, Hit &minHit)
     return sf::Color(finalColor.x, finalColor.y, finalColor.z, 255);
 }
 
-void Render::FindObject(int x, int y)
+void Render::FindObject(int x, int y) noexcept
 {
     Ray ray(scene.getCamera(), x, y);
     Hit minHit;
@@ -68,16 +68,26 @@ void Render::FindObject(int x, int y)
     }
 }
 
-void Render::StartRender(void)
+void Render::StartRender(void) noexcept
 {
     const auto &cam = scene.getCamera();
     this->ImageRender = true;
     sf::Clock clock;
 
-    for (int x = 0; x < cam.width; x++)
-        for (int y = 0; y < cam.height; y++){
-               this->FindObject(x, y);
+    int nbPixel = cam.width * cam.height;
+    int count = 0;
+    int percent = 0;
+
+    for (int x = 0; x < cam.width; x++){
+        if (percent != (count * 100) / nbPixel){
+            percent = (count * 100) / nbPixel;
+            std::cout << percent << std::endl;
         }
+        for (int y = 0; y < cam.height; y++){
+            this->FindObject(x, y);
+            count++;
+        }
+    }
     sf::Time RenderTime = clock.getElapsedTime();
     sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();
 
@@ -87,3 +97,12 @@ void Render::StartRender(void)
     this->texture.loadFromImage(image);
     this->sprite.setTexture(this->texture);
 }
+
+/*
+
+count
+-----       ------
+NbPixel      100
+
+
+*/

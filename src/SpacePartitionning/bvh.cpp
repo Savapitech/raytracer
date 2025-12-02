@@ -183,9 +183,9 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 
 void BVH::BuildSpacePartitionning(void)
 {
-    this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Arbre*/
-    this->IndexTab.reserve(Objects.size()); /*Liste d'index pour trier les obj*/
-    this->myStacks.reserve(THREE_ALLOC(Objects.size())); /**/
+    this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Binary Space three */
+    this->IndexTab.reserve(Objects.size()); /*Index list for sorting obj*/
+    this->myStacks.reserve(THREE_ALLOC(Objects.size()));
     this->LeftSide.reserve(Objects.size());
     this->RightSide.reserve(Objects.size());
     Log::Logger::debug("Three alloc:" + std::to_string(THREE_ALLOC(Objects.size())));

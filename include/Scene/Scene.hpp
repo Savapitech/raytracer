@@ -33,8 +33,6 @@ namespace scene
     public:
         Scene(const std::string &scene_path);
 
-        //void BuildBvh(void);
-
         const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return objects;}
         const camera_t &getCamera(void) const{return cameraInfo;}
     private:

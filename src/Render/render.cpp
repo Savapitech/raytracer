@@ -6,7 +6,7 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-Render::Render(const scene::Scene &scene)
+Render::Render(const scene::Scene &scene) noexcept
     : scene(scene),
       bvh(scene.getObjects()),
       window(sf::VideoMode(WIDTH, HEIGHT), "Raytracer"),
@@ -17,7 +17,7 @@ Render::Render(const scene::Scene &scene)
     Log::Logger::info("Window Open");
 }
 
-void Render::InitRender(void)
+void Render::InitRender(void) noexcept
 {
     Log::Logger::info("Start Render");
     sf::Event event;

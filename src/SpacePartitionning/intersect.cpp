@@ -1,6 +1,6 @@
 #include "RayTracer.hpp"
 
-bool BVH::intersect(Ray& ray, Hit& hit)
+bool BVH::intersect(Ray& ray, Hit& hit) noexcept
 {
     std::vector<int> NodeIndex;
     NodeIndex.reserve((this->SpThree.size() + 1) / 2);
@@ -33,11 +33,3 @@ bool BVH::intersect(Ray& ray, Hit& hit)
     }
     return Hit_valide;
 }
-//false x: -4 y: -4 z: 4 x: 30 y: 0 z: 47
-
-
-//pos = [-2.0, -2.0, 45.0];
-//false x:-4 y: -4 z: 43 
-//      X:0 y: 0 z: 47
-//false x:-4 y: -4 z: 43 X:0 y: 0 z: 47
-//false x:-4 y: -4 z: 43 X:0 y: 0 z: 47

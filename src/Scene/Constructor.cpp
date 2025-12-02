@@ -30,7 +30,7 @@ namespace scene {
         Log::Logger::info("Camera Dir set");
         if (!s.exists("pos"))
             throw std::runtime_error("Missing 'pos' field in scene");
-        camera.dir = readVec3(s["pos"]);
+        camera.pos = readVec3(s["pos"]);
         Log::Logger::info("Camera Pos set");
         getDistance(camera);
         return camera;

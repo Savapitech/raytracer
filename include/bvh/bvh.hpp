@@ -37,7 +37,7 @@ using VObjects = const std::vector<std::unique_ptr<Object>>&;
 
 class BVH {
     public:
-        bool intersect(Ray& ray, Hit& hit);
+        bool intersect(Ray& ray, Hit& hit) noexcept;
         void BuildSpacePartitionning(void);
 
         BVH(VObjects Objects) 
@@ -59,5 +59,4 @@ class BVH {
         std::vector<bvh_stack_t> myStacks;
         std::vector<AABB> LeftSide;
         std::vector<AABB> RightSide;
-        //size_t NodeBuild;
 };
