@@ -1,15 +1,16 @@
 #include "Scene.hpp"
 #include "RayTracer.hpp"
 
-Vec3 direction(const scene::camera_t &camera, int x, int y){
-    return Vec3(x - camera.width / 2, y - camera.height / 2, camera.distance);
-}
-
-
 Ray::Ray(const scene::camera_t &camera, int x, int y)
 {
+    float aspect = float(camera.width) / float(camera.height);
+    float scale  = tanf((camera.fov * 0.5f) * (M_PI / 180.0f));
+
+    float dirx = (2 * (x + 0.5f) / camera.width  - 1) * aspect * scale;
+    float diry = (1 - 2 * (y + 0.5f) / camera.height) * scale;
+
+    this->dir = normalize(camera.forward + camera.right * dirx + camera.up * diry);
     this->origin = camera.pos;
-    this->dir = normalize(direction(camera, x, y));
 }
 
 Ray::Ray(const Vec3& origin, const Vec3& direction)

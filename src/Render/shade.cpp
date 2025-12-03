@@ -13,7 +13,7 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexce
 /*Il faudrait que je parcours une list de light plus tard la variable Light est provisoire*/
 Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 {
-    Vec3 light(5, 5, -5);
+    Vec3 light(0, 20, -5);
     Vec3 colorShape = minHit.object->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
@@ -23,36 +23,44 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 
     if (ShadowRay(light, minHit, P, L) == true)
         return Vec3(0, 0, 0);
-    
     float diff = std::max(dot(N, L), 0.0f);
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
+    
     Vec3 finalColor = spec + (colorShape * diff);
 
     finalColor.x = std::clamp(finalColor.x, 0.0f, 255.0f);
     finalColor.y = std::clamp(finalColor.y, 0.0f, 255.0f);
     finalColor.z = std::clamp(finalColor.z, 0.0f, 255.0f);
+
     return finalColor;
 }
 
 #define MAX_BOUNCE 10
 
-sf::Color Render::shade(Ray &ray, Hit &hit0) noexcept
+sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
 {
     Vec3 color(0);
+    Vec3 RelfectedIntensity(1, 1, 1);
+    Hit tmpHit = hit;
+    Vec3 reflectedColor;
 
-    if (hit0.object->material->type != "Mirror")
-    {
-        Vec3 phong = AppliedFong(ray, hit0);
+    if (hit.object->material->isFong == true) {
+        Vec3 phong = AppliedFong(ray, hit);
         return sf::Color(phong.x, phong.y, phong.z, 255);
     }
-    Ray reflectedRay(
-        hit0.position + hit0.normal * 0.001f,
-        normalize(reflect(normalize(ray.dir), hit0.normal))
-    );
-
-    Hit hit1;
-    if (!bvh.intersect(reflectedRay, hit1))
+    for (int i = 0; i != MAX_BOUNCE; i++) {
+        Ray reflectedRay(tmpHit.position + tmpHit.normal * 0.001f, normalize(reflect(normalize(ray.dir), tmpHit.normal)));
+        Ray scattered;
+        if (this->bvh.intersect(reflectedRay, tmpHit) == false)
+            return sf::Color(100,100,100,100);
+        reflectedColor = AppliedFong(reflectedRay, tmpHit);
+        if (tmpHit.object->material->scatter(reflectedRay, tmpHit, RelfectedIntensity, scattered) == false)
+            break;
+        reflectedColor *= RelfectedIntensity;
+        if (RelfectedIntensity.length() < 0.01f)
+            break;
+    }
+    if (RelfectedIntensity.x == 1 && RelfectedIntensity.y == 1 && RelfectedIntensity.z == 1)
         return sf::Color(100,100,100,100);
-    Vec3 reflectedColor = AppliedFong(reflectedRay, hit1);
     return sf::Color(reflectedColor.x, reflectedColor.y, reflectedColor.z, 255);
 }

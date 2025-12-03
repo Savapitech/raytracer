@@ -1,12 +1,16 @@
 #include "RayTracer.hpp"
 #include "Object.hpp"
 
+Sphere::Sphere(const libconfig::Setting& s){
+    type = "Sphere";
+    radius = (float)s["radius"];
+    pos = scene::readVec3(s["pos"]);
+    color = scene::readVec3(s["color"]);
+}    
+
 AABB Sphere::getObjectAABB() const
 {
-    return {
-        { pos.x - radius, pos.y - radius, pos.z - radius },
-        { pos.x + radius, pos.y + radius, pos.z + radius }
-    };
+    return {{ pos.x - radius, pos.y - radius, pos.z - radius }, { pos.x + radius, pos.y + radius, pos.z + radius }};
 } 
 
 Vec3 Sphere::getCentroid() const {

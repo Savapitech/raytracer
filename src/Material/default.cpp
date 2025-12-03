@@ -3,6 +3,7 @@
 Default::Default([[maybe_unused]] const libconfig::Setting& s){
     this->type = "Default";
     this->color = {255, 255, 255};
+    this->isFong = true;
 }            
 
 bool Default::scatter(

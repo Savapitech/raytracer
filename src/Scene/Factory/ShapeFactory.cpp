@@ -14,15 +14,10 @@ ShapeFactory::ShapeFactory()
     shapeRegistry["sphere"] = [](const libconfig::Setting& s) {
         return std::make_unique<Sphere>(s);
     };
-}
-
-Sphere::Sphere(const libconfig::Setting& s){
-    type = "Sphere";
-    radius = (float)s["radius"];
-    pos = scene::readVec3(s["pos"]);
-    color = scene::readVec3(s["color"]);
-}            
-
+    shapeRegistry["rectangleXZ"] = [](const libconfig::Setting& s) {
+        return std::make_unique<RectangleXZ>(s);
+    };
+}        
 
 std::unique_ptr<AShape> ShapeFactory::GetShape(const libconfig::Setting &s)
     {

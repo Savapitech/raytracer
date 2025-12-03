@@ -20,6 +20,7 @@ class AMaterial : public IMaterial
     public:
         void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
         std::string type;
+        bool isFong = true;
         Vec3 color;
 };
 

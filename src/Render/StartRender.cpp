@@ -35,7 +35,7 @@ void Render::StartRender(void) noexcept
 
     for (int x = 0; x < cam.width; x++){
         if (load.pushLoad(window) == true)
-            this->HandleWindow();
+            this->HandleWindow(true);
         if (window.isOpen() == false)
             return;
         if (percent != (count * 100) / nbPixel){

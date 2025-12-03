@@ -12,28 +12,11 @@ namespace scene {
         return Vec3{ (float)s[0], (float)s[1], (float)s[2] };
     }
 
-    void getDistance(scene::camera_t &cam)
+    Vec2 readVec2(const Setting &s)
     {
-        cam.distance = ((cam.height / 2) / tan(DEG_TO_RAD(cam.fov) / 2));
-        Log::Logger::debug("Distance=" + std::to_string(cam.distance));
-    }
-
-    camera_t readcam(const Setting &s)
-    {
-        camera_t camera;
-        
-        camera.fov = s.exists("fov") ? (float)s["fov"] : 90.0f;
-        Log::Logger::info("Camera Fov set");
-        if (!s.exists("dir"))
-            throw std::runtime_error("Missing 'dir' field in scene");
-        camera.dir = readVec3(s["dir"]);
-        Log::Logger::info("Camera Dir set");
-        if (!s.exists("pos"))
-            throw std::runtime_error("Missing 'pos' field in scene");
-        camera.pos = readVec3(s["pos"]);
-        Log::Logger::info("Camera Pos set");
-        getDistance(camera);
-        return camera;
+        if (s.getLength() != 2)
+            throw std::runtime_error("Expected array of 3 elements");
+        return Vec2{(float)s[0], (float)s[1]};
     }
 
     std::unique_ptr<Object> Factory::GetObject(const Setting &s)

@@ -25,6 +25,8 @@ void GLoad::setFrame(int index)
     int x = (index % columns) * frameWidth;
     int y = (index / columns) * frameHeight;
 
+    if (this->count == 12)
+        this->count = 0;
     this->spriteLoad.setTextureRect(sf::IntRect(x, y, frameWidth, frameHeight));
 }
 
@@ -37,14 +39,12 @@ void GLoad::pushPercent(sf::RenderWindow &window, int percent)
 
 
 bool GLoad::pushLoad(sf::RenderWindow &window){
-    if (clock.getElapsedTime().asMilliseconds() > FPS_60){
+    if (clock.getElapsedTime().asMilliseconds() > FPS_60 / 2){
         this->setFrame(this->count);
         clock.restart();
         window.draw(this->percent);
         window.draw(this->spriteLoad);
         count++;
-        if (count == 12)
-            count = 0;
         return true;
     }
     return false;

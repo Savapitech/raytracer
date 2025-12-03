@@ -19,13 +19,6 @@ MaterialFactory::MaterialFactory()
     };
 }
 
-Mirror::Mirror(const libconfig::Setting& s){
-    this->type = "Mirror";
-    this->reflectlvl = (float)s["reflect"];
-    this->color = {255, 255, 255};
-
-}            
-
 #define MATERIAL "material"
 
 std::unique_ptr<AMaterial> MaterialFactory::GetMaterial(const libconfig::Setting &s)

@@ -1,5 +1,14 @@
 #include "RayTracer.hpp"
 
+
+Mirror::Mirror(const libconfig::Setting& s){
+    this->type = "Mirror";
+    this->reflectlvl = (float)s["reflect"];
+    this->color = {255, 255, 255};
+    this->isFong = false;
+}            
+
+
 bool Mirror::scatter(const Ray& in, const Hit& hit, Vec3& attenuation, Ray& scattered) const 
 {
     Vec3 unitDir = normalize(in.dir);

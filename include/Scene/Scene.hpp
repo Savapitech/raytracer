@@ -10,17 +10,28 @@
 
 namespace scene
 {   
+    Vec2 readVec2(const libconfig::Setting &s);
     Vec3 readVec3(const libconfig::Setting &s);
 
-    typedef struct camera_s{
-        Vec3 pos;
-        Vec3 dir;
-        float fov = 90;
-        double distance = 540;
-        int width = 1920;
-        int height = 1080;
+    
 
-    } camera_t;
+    class camera_t{
+        public:
+            Vec3 pos;
+            Vec3 dir;
+            Vec3 forward;
+            Vec3 right;
+            Vec3 up;
+            float fov = 90;
+            double distance = 540;
+            int width = 1920;
+            int height = 1080;
+
+            void setupCam();
+
+    };
+
+    camera_t readcam(const libconfig::Setting &s);
 
     class Factory{
         public:

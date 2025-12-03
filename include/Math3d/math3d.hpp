@@ -3,50 +3,52 @@
 #include <cmath>
 #include <iostream>
 
+#define EPS 0.0001f
+
 class Ray;
 class Hit;
 
 class Vec3 {
     public:
-    float x, y, z;
-    Vec3(float x_=0.f, float y_=0.f, float z_=0.f) : x(x_), y(y_), z(z_) {}
+        float x;
+        float y;
+        float z;
+    
+        Vec3(float x_=0.f, float y_=0.f, float z_=0.f) : x(x_), y(y_), z(z_) {}
 
-    Vec3 operator-() const {return Vec3(-x, -y, -z);}
-    Vec3 operator-(const Vec3& other) const {return Vec3(x - other.x, y - other.y, z - other.z);}
+        Vec3 operator-() const {return Vec3(-x, -y, -z);}
+        Vec3 operator-(const Vec3& other) const {return Vec3(x - other.x, y - other.y, z - other.z);}
 
-    Vec3 operator+(const Vec3& other) const { return Vec3(x + other.x, y + other.y, z + other.z);}
-    Vec3& operator+=(const Vec3& o) { x += o.x; y += o.y; z += o.z; return *this;}
+        Vec3 operator+(const Vec3& other) const { return Vec3(x + other.x, y + other.y, z + other.z);}
+        Vec3& operator+=(const Vec3& o) { x += o.x; y += o.y; z += o.z; return *this;}
 
-    Vec3 operator*(float s) const { return Vec3(x*s, y*s, z*s);}
-    Vec3 operator*(const Vec3& o) const { return Vec3(x * o.x, y * o.y, z * o.z);}
-    Vec3& operator*=(const Vec3& o) { x *= o.x; y *= o.y; z *= o.z; return *this;}
-    Vec3& operator*=(float s) { x *= s; y *= s; z *= s; return *this;}
+        Vec3 operator*(float s) const { return Vec3(x*s, y*s, z*s);}
+        Vec3 operator*(const Vec3& o) const { return Vec3(x * o.x, y * o.y, z * o.z);}
+        Vec3& operator*=(const Vec3& o) { x *= o.x; y *= o.y; z *= o.z; return *this;}
+        Vec3& operator*=(float s) { x *= s; y *= s; z *= s; return *this;}
 
+        Vec3 operator/(float s) const { return Vec3(x/s, y/s, z/s);}
 
-    Vec3 operator/(float s) const { return Vec3(x/s, y/s, z/s);}
+        float& operator[](int i) {
+        if (i == 0) return x;
+        if (i == 1) return y;
+        else return z;
+        }
 
-    float& operator[](int i) {
-    if (i == 0) return x;
-    if (i == 1) return y;
-    else return z;
-    }
+        const float& operator[](int i) const {
+        if (i == 0) return x;
+        if (i == 1) return y;
+        return z;
+        }
 
-    const float& operator[](int i) const {
-    if (i == 0) return x;
-    if (i == 1) return y;
-    return z;
-    }
+        inline float length() const {
+            return std::sqrt(x*x + y*y + z*z);
+        }
 
-    inline float length() const {
-        return std::sqrt(x*x + y*y + z*z);
-    }
-
-    inline float lengthSquared() const {
-        return x*x + y*y + z*z;
-    }
-};
-
-
+        inline float lengthSquared() const {
+            return x*x + y*y + z*z;
+        }
+};  
 
 inline float dot(const Vec3& a, const Vec3& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
@@ -61,10 +63,10 @@ inline float norm(const Vec3& v) {
 }
 
 inline Vec3 normalize(const Vec3& v) {
-    const float EPS = 1e-8f;
+    const float eps = 1e-8f;
     float n = norm(v);
 
-    if (n < EPS) return Vec3(0.f, 0.f, 0.f);
+    if (n < eps) return Vec3(0.f, 0.f, 0.f);
         return v / n;
 }
 
@@ -72,13 +74,32 @@ inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - n * (2.0f * dot(v, n));
 }
 
+inline Vec3 cross(const Vec3& a, const Vec3& b)
+{
+    return Vec3(
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    );
+}
 
+
+class Vec2 {
+    public:
+        float x;
+        float y;
+
+        Vec2(float x_=0.f, float y_=0.f) : x(x_), y(y_) {}
+};
 
 class AABB
 {
     public:
         Vec3 min;
         Vec3 max;
+        AABB(Vec3 a, Vec3 b){min = a; max = b;};
+        AABB() = default;
+
         float surfaceArea() const {
             Vec3 d = max - min;
 

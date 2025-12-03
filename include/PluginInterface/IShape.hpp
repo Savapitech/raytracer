@@ -18,7 +18,6 @@ class IShape
         virtual bool intersect(Ray &ray, Hit &hit) const = 0;
         virtual AABB getObjectAABB() const = 0;
         virtual Vec3 getCentroid() const = 0;
-        //virtual const Vec3& getPos(void) const = 0;
 };
 
 class AShape : public IShape
@@ -33,11 +32,25 @@ class AShape : public IShape
 class Sphere final : public AShape  
 {
     public:
-        float radius;
         bool intersect(Ray &ray, Hit &hit) const override;
         AABB getObjectAABB() const override;
         Vec3 getCentroid() const override;
         Sphere(const libconfig::Setting& s);
+
+        float radius;
+};
+
+class RectangleXZ : public AShape
+{
+public:
+    RectangleXZ(const libconfig::Setting& s);
+    bool intersect(Ray& ray, Hit& hit) const override;
+    AABB getObjectAABB() const override;
+    Vec3 getCentroid() const override;
+    
+    Vec2 x;
+    float y;
+    Vec2 z;
 };
 
 class ShapeFactory{

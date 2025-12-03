@@ -3,7 +3,7 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
 
-void Render::HandleWindow(void) noexcept{
+void Render::HandleWindow(bool clear) noexcept{
     sf::Event event;
 
     while (this->window.pollEvent(event)) {
@@ -13,7 +13,8 @@ void Render::HandleWindow(void) noexcept{
     
     this->window.draw(sprite);
     this->window.display();
-    this->window.clear();
+    if (clear)
+        this->window.clear();
 }
 
 void Render::InitRender(void) noexcept
@@ -26,7 +27,7 @@ void Render::InitRender(void) noexcept
             Log::Logger::info("Push new buffer");
             this->StartRender();
         }
-        this->HandleWindow();
+        this->HandleWindow(true);
     }
     Log::Logger::info("Window Close");
 }
