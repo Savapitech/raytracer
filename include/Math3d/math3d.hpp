@@ -6,22 +6,24 @@
 class Ray;
 class Hit;
 
-struct Vec3 {
+class Vec3 {
+    public:
     float x, y, z;
     Vec3(float x_=0.f, float y_=0.f, float z_=0.f) : x(x_), y(y_), z(z_) {}
 
-    Vec3 operator-() const {
-        return Vec3(-x, -y, -z);
-    }
-    Vec3 operator-(const Vec3& other) const {
-        return Vec3(x - other.x, y - other.y, z - other.z);
-    }
+    Vec3 operator-() const {return Vec3(-x, -y, -z);}
+    Vec3 operator-(const Vec3& other) const {return Vec3(x - other.x, y - other.y, z - other.z);}
 
-    Vec3 operator+(const Vec3& other) const {
-        return Vec3(x + other.x, y + other.y, z + other.z);
-    }
-    Vec3 operator*(float s) const { return Vec3(x*s, y*s, z*s); }
-    Vec3 operator/(float s) const { return Vec3(x/s, y/s, z/s); }
+    Vec3 operator+(const Vec3& other) const { return Vec3(x + other.x, y + other.y, z + other.z);}
+    Vec3& operator+=(const Vec3& o) { x += o.x; y += o.y; z += o.z; return *this;}
+
+    Vec3 operator*(float s) const { return Vec3(x*s, y*s, z*s);}
+    Vec3 operator*(const Vec3& o) const { return Vec3(x * o.x, y * o.y, z * o.z);}
+    Vec3& operator*=(const Vec3& o) { x *= o.x; y *= o.y; z *= o.z; return *this;}
+    Vec3& operator*=(float s) { x *= s; y *= s; z *= s; return *this;}
+
+
+    Vec3 operator/(float s) const { return Vec3(x/s, y/s, z/s);}
 
     float& operator[](int i) {
     if (i == 0) return x;
@@ -33,6 +35,14 @@ struct Vec3 {
     if (i == 0) return x;
     if (i == 1) return y;
     return z;
+    }
+
+    inline float length() const {
+        return std::sqrt(x*x + y*y + z*z);
+    }
+
+    inline float lengthSquared() const {
+        return x*x + y*y + z*z;
     }
 };
 
@@ -61,6 +71,8 @@ inline Vec3 normalize(const Vec3& v) {
 inline Vec3 reflect(const Vec3& v, const Vec3& n) {
     return v - n * (2.0f * dot(v, n));
 }
+
+
 
 class AABB
 {

@@ -40,11 +40,7 @@ namespace scene {
     {
         if (!s.exists("shape"))
             throw std::invalid_argument("Object need a shape");
-        if (!s.exists("material")){
-            Log::Logger::warning("Materials do not exist");
-            return std::make_unique<Object>(s, false);
-        }
-        return std::make_unique<Object>(s, true);
+        return std::make_unique<Object>(s);
     }
 
     void Scene::readObject(const Setting &s, std::vector<std::unique_ptr<Object>> &objects)

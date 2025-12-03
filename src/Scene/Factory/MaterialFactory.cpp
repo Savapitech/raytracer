@@ -14,24 +14,42 @@ MaterialFactory::MaterialFactory()
     materialRegistry["mirror"] = [](const libconfig::Setting& s) {
         return std::make_unique<Mirror>(s);
     };
+    materialRegistry["default"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Default>(s);
+    };
 }
 
 Mirror::Mirror(const libconfig::Setting& s){
     this->type = "Mirror";
-    this->reflect = (float)s["reflect"];
+    this->reflectlvl = (float)s["reflect"];
     this->color = {255, 255, 255};
+
 }            
 
+#define MATERIAL "material"
 
 std::unique_ptr<AMaterial> MaterialFactory::GetMaterial(const libconfig::Setting &s)
     {
-        if (!s.exists("type"))
-            throw std::invalid_argument("Need type to implement shape");
-
-        std::string type = s["type"];
+        std::string type = ""; 
+        if (s.exists(MATERIAL)) {
+            const libconfig::Setting &s1 = s[MATERIAL];
+            Log::Logger::debug("Material FOUND");
+            if (!s1.exists("type"))
+                throw std::invalid_argument("Need type to implement shape");
+            Log::Logger::debug("Type FOUND");
+            type = (std::string)s1["type"];
+            Log::Logger::debug("Type load");
+        }
+        else
+            type = "default";
+        
         auto fcntShape = materialRegistry.at(type);
+        if (type == "default")
+            return fcntShape(s);
+        Log::Logger::debug("Map use");
+
         if (fcntShape == nullptr){
             throw std::invalid_argument("Type: " + type + " didn't exist.");
         }
-        return fcntShape(s);
+        return fcntShape(s[MATERIAL]);
     }

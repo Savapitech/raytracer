@@ -19,7 +19,7 @@ class ObjectFactory{
 class Object
 {
     public:
-        Object(const libconfig::Setting &s, bool materialExist);
+        Object(const libconfig::Setting &s);
         AABB aabb;
         std::unique_ptr<AShape> shape;
         std::unique_ptr<AMaterial> material;

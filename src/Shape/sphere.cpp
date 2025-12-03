@@ -45,6 +45,8 @@ bool Sphere::intersect(Ray &ray, Hit &hit) const
 
     hit.t = t;
     hit.position = ray.origin + u * t;
-    hit.normal   = normalize(hit.position - this->pos);
+    Vec3 outwardNormal = normalize(hit.position - this->pos);
+    hit.frontFace = dot(ray.dir, outwardNormal) < 0;
+    hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
     return true;
 }

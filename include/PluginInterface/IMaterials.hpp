@@ -29,7 +29,14 @@ class Mirror final : public AMaterial
         Mirror(const libconfig::Setting& s);
         bool scatter(const Ray& inRay, const Hit& hit, Vec3& attenuation, Ray& scattered) const override;
 
-        float reflect;
+        float reflectlvl;
+};
+
+class Default final : public AMaterial  
+{
+    public:
+        Default(const libconfig::Setting& s);
+        bool scatter(const Ray& inRay, const Hit& hit, Vec3& attenuation, Ray& scattered) const override;
 };
 
 class MaterialFactory{

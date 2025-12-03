@@ -38,6 +38,7 @@ SCENE += src/Scene/Factory/MaterialFactory.cpp
 PLUGIN = src/Plugin/object.cpp
 PLUGIN += src/Shape/sphere.cpp
 PLUGIN += src/Material/mirror.cpp
+PLUGIN += src/Material/default.cpp
 
 RENDER = src/Render/render.cpp
 RENDER += src/Render/constructor.cpp

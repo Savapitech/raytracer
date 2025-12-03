@@ -1,11 +1,13 @@
 #include "RayTracer.hpp"
 
-bool Mirror::scatter(const Ray& in, const Hit& hit, Vec3& attenuation, Ray& scattered) const
+bool Mirror::scatter(const Ray& in, const Hit& hit, Vec3& attenuation, Ray& scattered) const 
 {
     Vec3 unitDir = normalize(in.dir);
-    Vec3 reflected(reflect);
-
-    scattered = Ray(hit.position, reflected);
-    attenuation = Vec3(1.0, 1.0, 1.0);
-    return dot(scattered.dir, hit.normal) > 0;
+    Vec3 reflected = reflect(unitDir, hit.normal);
+    
+        reflected = normalize(reflected);
+    Vec3 offsetOrigin = hit.position + hit.normal * 0.0001f;
+    scattered = Ray(offsetOrigin, reflected);
+    attenuation = Vec3(1.f, 1.0f, 1.0f);
+    return dot(reflected, hit.normal) > 0.0f;
 }
