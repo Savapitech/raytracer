@@ -15,7 +15,7 @@ namespace scene
 
     
 
-    class camera_t{
+    class Camera{
         public:
             Vec3 pos;
             Vec3 dir;
@@ -31,7 +31,7 @@ namespace scene
 
     };
 
-    camera_t readcam(const libconfig::Setting &s);
+    Camera readcam(const libconfig::Setting &s);
 
     class Factory{
         public:
@@ -45,12 +45,12 @@ namespace scene
         Scene(const std::string &scene_path);
 
         const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return objects;}
-        const camera_t &getCamera(void) const{return cameraInfo;}
+        const Camera &getCamera(void) const{return cameraInfo;}
     private:
         Factory factory;
         
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
-        camera_t cameraInfo;
+        Camera cameraInfo;
         std::vector<std::unique_ptr<Object>> objects;
     };
 } 

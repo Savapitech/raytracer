@@ -2,7 +2,7 @@
 
 
 namespace scene{
-    void camera_t::setupCam() {
+    void Camera::setupCam() {
         Vec3 worldUp(0,1,0);
 
         forward = normalize(dir);
@@ -14,9 +14,9 @@ namespace scene{
     }   
 
 
-    camera_t readcam(const libconfig::Setting &s)
+    Camera readcam(const libconfig::Setting &s)
     {
-        camera_t camera;
+        Camera camera;
         
         camera.fov = s.exists("fov") ? (float)s["fov"] : 90.0f;
         Log::Logger::info("Camera Fov set");

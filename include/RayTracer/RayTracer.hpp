@@ -14,7 +14,7 @@ class Ray
         float maxHit = 1e30f;
 
         Ray() = default;
-        Ray(const scene::camera_t &camera, int x, int y);
+        Ray(const scene::Camera &camera, int x, int y);
         Ray(const Vec3& origin, const Vec3& direction);
 };
 
