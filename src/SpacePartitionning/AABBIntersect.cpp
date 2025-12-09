@@ -6,7 +6,6 @@ bool AABB::intersect(const Ray& r) const
     float tMax = r.maxHit;
 
     for (int i = 0; i < 3; i++) {
-
         float invD = 1.0f / r.dir[i];
         float t0 = (min[i] - r.origin[i]) * invD;
         float t1 = (max[i] - r.origin[i]) * invD;

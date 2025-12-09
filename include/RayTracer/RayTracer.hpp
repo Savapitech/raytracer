@@ -23,10 +23,10 @@ class Hit {
         float t = 1e30f;
         Vec3 position;
         Vec3 normal;
-        Object *object = nullptr;
+        int ObjectIdx = -1;
         bool frontFace = false;
 
-        bool hit() const { return object != nullptr;}
+  //      bool hit() const { return object != nullptr;}
 };
 
 namespace RayTracer {

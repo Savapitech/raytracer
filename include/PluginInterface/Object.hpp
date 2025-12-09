@@ -25,7 +25,7 @@ class Object
         std::unique_ptr<AMaterial> material;
         Vec3 getCentroid() const {
             return centroid;
-}
+        }
     private:
         Vec3 centroid;
         static ObjectFactory OFactory;

@@ -17,7 +17,7 @@ void Render::FindObject(int x, int y) noexcept
     Hit minHit;
 
     this->bvh.intersect(ray, minHit);
-    if (minHit.object != nullptr) {
+    if (minHit.ObjectIdx != -1) {
         sf::Color color = this->shade(ray, minHit);
         writePixel(x, y, color);
     }
