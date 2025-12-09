@@ -14,7 +14,7 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexce
 Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 {
     Vec3 light(0, 20, -5);
-    Vec3 colorShape = minHit.object->shape->color;
+    Vec3 colorShape = this->scene.getObjects()[minHit.ObjectIdx]->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);
@@ -44,7 +44,7 @@ sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
     Hit tmpHit = hit;
     Vec3 reflectedColor;
 
-    if (hit.object->material->isFong == true) {
+    if (this->scene.getObjects()[hit.ObjectIdx]->material->isFong == true) {
         Vec3 phong = AppliedFong(ray, hit);
         return sf::Color(phong.x, phong.y, phong.z, 255);
     }
@@ -54,7 +54,7 @@ sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
         if (this->bvh.intersect(reflectedRay, tmpHit) == false)
             return sf::Color(100,100,100,100);
         reflectedColor = AppliedFong(reflectedRay, tmpHit);
-        if (tmpHit.object->material->scatter(reflectedRay, tmpHit, RelfectedIntensity, scattered) == false)
+        if (this->scene.getObjects()[tmpHit.ObjectIdx]->material->scatter(reflectedRay, tmpHit, RelfectedIntensity, scattered) == false)
             break;
         reflectedColor *= RelfectedIntensity;
         if (RelfectedIntensity.length() < 0.01f)

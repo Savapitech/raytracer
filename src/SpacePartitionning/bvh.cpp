@@ -155,6 +155,7 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 
     /*Construction Node*/
     if (newNode.count == OBJECT_LEAF){
+        //Log::Logger::error("Nodecount" + std::to_string(newNode.count));
         newNode.isLeaf = true;
         Objects[IndexTab[stack.start]]->aabb.normalize();
         newNode.nodeShape =  Objects[IndexTab[stack.start]]->aabb;

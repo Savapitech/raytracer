@@ -19,7 +19,8 @@ bool BVH::intersect(Ray& ray, Hit& hit) noexcept
             if (Objects[IndexTab[SpThree[index].start]]->shape->intersect(ray, tmpHit) == true){
                 if (tmpHit.t > 0 && tmpHit.t < hit.t) {
                     hit = tmpHit;
-                    hit.object = Objects[IndexTab[SpThree[index].start]].get();
+                    //hit.object = Objects[IndexTab[SpThree[index].start]].get();
+                    hit.ObjectIdx = IndexTab[SpThree[index].start];
                     ray.maxHit = tmpHit.t;
                     Hit_valide = true;
                 }

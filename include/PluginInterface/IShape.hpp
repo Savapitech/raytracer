@@ -36,7 +36,7 @@ class Sphere final : public AShape
         AABB getObjectAABB() const override;
         Vec3 getCentroid() const override;
         Sphere(const libconfig::Setting& s);
-
+    private:
         float radius;
 };
 
