@@ -24,4 +24,6 @@ Object::Object(std::unique_ptr<AShape> shape, std::unique_ptr<AMaterial> materia
 {
     this->shape = std::move(shape);
     this->material = std::move(material);
+    this->aabb = this->shape->getObjectAABB();
+    this->centroid = this->shape->getCentroid();
 }
