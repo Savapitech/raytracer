@@ -39,6 +39,15 @@ namespace scene
             //void GetILight();
     };
 
+    class Obj{
+        public:
+            Obj(std::string path);
+            std::vector<std::unique_ptr<Object>> &getObjects(void) {return objects;}
+        private:
+            std::vector<Vec3> vertices;
+            std::vector<std::unique_ptr<Object>> objects;
+    };
+
     class Scene
     {
     public:
@@ -48,7 +57,8 @@ namespace scene
         const Camera &getCamera(void) const{return cameraInfo;}
     private:
         Factory factory;
-        
+
+        void insertObjInObjects(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         Camera cameraInfo;
         std::vector<std::unique_ptr<Object>> objects;

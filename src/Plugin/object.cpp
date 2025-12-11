@@ -19,3 +19,9 @@ Object::Object(const libconfig::Setting &s)
     this->aabb = this->shape->getObjectAABB();
     this->centroid = this->shape->getCentroid();
 }
+
+Object::Object(std::unique_ptr<AShape> shape, std::unique_ptr<AMaterial> material)
+{
+    this->shape = std::move(shape);
+    this->material = std::move(material);
+}

@@ -35,10 +35,12 @@ SCENE += src/Scene/scene.cpp
 SCENE += src/Scene/Factory/ShapeFactory.cpp
 SCENE += src/Scene/Factory/MaterialFactory.cpp
 SCENE += src/Scene/camera/camera.cpp
+SCENE += src/Scene/ParseObj.cpp
 
 PLUGIN = src/Plugin/object.cpp
 PLUGIN += src/Shape/sphere.cpp
 PLUGIN += src/Shape/RectangleXZ.cpp
+PLUGIN += src/Shape/triangle.cpp
 PLUGIN += src/Material/mirror.cpp
 PLUGIN += src/Material/default.cpp
 
