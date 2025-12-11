@@ -53,6 +53,19 @@ public:
     Vec2 z;
 };
 
+class Triangle : public AShape
+{
+public:
+    Triangle(const libconfig::Setting& s);
+    bool intersect(Ray& ray, Hit& hit) const override;
+    AABB getObjectAABB() const override;
+    Vec3 getCentroid() const override;
+
+    Vec3 x;
+    Vec3 y;
+    Vec3 z;
+};
+
 class ShapeFactory{
     public:
         ShapeFactory();

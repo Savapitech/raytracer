@@ -39,6 +39,7 @@ SCENE += src/Scene/camera/camera.cpp
 PLUGIN = src/Plugin/object.cpp
 PLUGIN += src/Shape/sphere.cpp
 PLUGIN += src/Shape/RectangleXZ.cpp
+PLUGIN += src/Shape/triangle.cpp
 PLUGIN += src/Material/mirror.cpp
 PLUGIN += src/Material/default.cpp
 

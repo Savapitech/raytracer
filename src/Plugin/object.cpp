@@ -18,4 +18,7 @@ Object::Object(const libconfig::Setting &s)
     this->material = this->OFactory.MFactory.GetMaterial(s);
     this->aabb = this->shape->getObjectAABB();
     this->centroid = this->shape->getCentroid();
+    if (s.exists("obj")){
+        std::cout << "ça va **** des bulles carré\n";
+    }
 }

@@ -17,6 +17,9 @@ ShapeFactory::ShapeFactory()
     shapeRegistry["rectangleXZ"] = [](const libconfig::Setting& s) {
         return std::make_unique<RectangleXZ>(s);
     };
+    shapeRegistry["triangle"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Triangle>(s);
+    };
 }        
 
 std::unique_ptr<AShape> ShapeFactory::GetShape(const libconfig::Setting &s)

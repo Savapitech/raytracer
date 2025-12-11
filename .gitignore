@@ -7,3 +7,6 @@ Exemple
 *.o
 
 raytracer
+
+*.exccalidraw
+
