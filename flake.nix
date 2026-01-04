@@ -22,6 +22,7 @@
           sfml
           compiledb
           clang
+          libconfig
         ];
 
         env.NIX_CFLAGS_COMPILE =
