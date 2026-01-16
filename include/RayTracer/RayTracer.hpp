@@ -36,11 +36,15 @@ namespace RayTracer {
     {
         public:
             RayTracer(const CmdConfig::config_t &config);
+            /*Load image*/
             void run();
+
+            /*Real Time CPU*/
+            void runRT();
     
         private:
-            const CmdConfig::config_t &config;
-            const scene::Scene scene;
+            CmdConfig::config_t config;
+            scene::Scene scene;
             Render render;
     };
 }
