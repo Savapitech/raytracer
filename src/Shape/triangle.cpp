@@ -21,6 +21,10 @@ Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
     this->color = {255, 255, 255};
 }
 
+Vec2 Triangle::getUv(Vec3 &hitPos) const {
+    return {0, 0};
+}
+
 
 AABB Triangle::getObjectAABB() const
 {

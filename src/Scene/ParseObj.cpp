@@ -19,12 +19,5 @@ void scene::Scene::insertObjInObjects(const Setting &s, std::vector<std::unique_
         return;    
     }
     Log::Logger::info("Parse Obj");
-    //Obj newObj("./Exemple/pedkzlpvxb-LowPolySpaceShip/SpaceShip.obj");
-    //auto &src = newObj.getObjects();
-    //for (auto &obj : src) {
-    //    if (obj) {
-    //        objects.push_back(std::move(obj));
-    //    }
-    //}
     Log::Logger::info("End of parsing Obj");
 }

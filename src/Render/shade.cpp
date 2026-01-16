@@ -43,11 +43,19 @@ sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
     Vec3 RelfectedIntensity(1, 1, 1);
     Hit tmpHit = hit;
     Vec3 reflectedColor;
+    Vec3 textureColor = {1, 1, 1};
+
+    if (this->scene.getObjects()[tmpHit.ObjectIdx]->material->textureIndex > -1) {
+        Vec2 uv = this->scene.getObjects()[tmpHit.ObjectIdx]->shape->getUv(hit.position);
+        textureColor = this->scene.getObjects()[tmpHit.ObjectIdx]->material->textureManager.getTexturePix(this->scene.getObjects()[tmpHit.ObjectIdx]->material->textureIndex, uv);
+    }
 
     if (this->scene.getObjects()[hit.ObjectIdx]->material->isFong == true) {
-        Vec3 phong = AppliedFong(ray, hit);
-        return sf::Color(phong.x, phong.y, phong.z, 255);
+        Vec3 fong = AppliedFong(ray, hit);
+        fong = fong * textureColor;
+        return sf::Color(fong.x, fong.y, fong.z, 255);
     }
+
     for (int i = 0; i != MAX_BOUNCE; i++) {
         Ray reflectedRay(tmpHit.position + tmpHit.normal * 0.001f, normalize(reflect(normalize(ray.dir), tmpHit.normal)));
         Ray scattered;

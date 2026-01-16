@@ -14,7 +14,7 @@
 class Render
 {
     public:
-        void InitRender(void) noexcept;
+        void RunRender(void) noexcept;
         void StartRender(void) noexcept;
         void FindObject(int x, int y) noexcept;
         void writePixel(int x, int y, sf::Color color) noexcept;

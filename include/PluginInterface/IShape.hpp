@@ -18,6 +18,7 @@ class IShape
         virtual bool intersect(Ray &ray, Hit &hit) const = 0;
         virtual AABB getObjectAABB() const = 0;
         virtual Vec3 getCentroid() const = 0;
+        virtual Vec2 getUv(Vec3 &hitPos) const = 0;
 };
 
 class AShape : public IShape
@@ -27,6 +28,7 @@ class AShape : public IShape
         std::string type;
         Vec3 pos;
         Vec3 color;
+        
 };
 
 class Sphere final : public AShape  
@@ -35,6 +37,7 @@ class Sphere final : public AShape
         bool intersect(Ray &ray, Hit &hit) const override;
         AABB getObjectAABB() const override;
         Vec3 getCentroid() const override;
+        Vec2 getUv(Vec3 &hitPos) const override;
         Sphere(const libconfig::Setting& s);
     private:
         float radius;
@@ -47,6 +50,7 @@ public:
     bool intersect(Ray& ray, Hit& hit) const override;
     AABB getObjectAABB() const override;
     Vec3 getCentroid() const override;
+    Vec2 getUv(Vec3 &hitPos) const override;
     
     Vec2 x;
     float y;
@@ -62,6 +66,7 @@ public:
     bool intersect(Ray& ray, Hit& hit) const override;
     AABB getObjectAABB() const override;
     Vec3 getCentroid() const override;
+    Vec2 getUv(Vec3 &hitPos) const override;
 
     Vec3 x;
     Vec3 y;

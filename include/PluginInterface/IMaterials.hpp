@@ -4,6 +4,7 @@
 #include <libconfig.h++>
 
 #include "math3d.hpp"
+#include "TextureManager.hpp"
 
 class Ray;
 class Hit;
@@ -19,9 +20,12 @@ class AMaterial : public IMaterial
 {
     public:
         void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
+        static TextureManager textureManager;
+
         std::string type;
         bool isFong = true;
         Vec3 color;
+        int textureIndex;
 };
 
 class Mirror final : public AMaterial  
@@ -44,5 +48,6 @@ class Default final : public AMaterial
 class MaterialFactory{
     public:
         MaterialFactory();
+        TextureManager textureManager;
         std::unique_ptr<AMaterial> GetMaterial(const libconfig::Setting &s);
 };

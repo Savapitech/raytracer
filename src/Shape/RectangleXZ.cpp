@@ -18,6 +18,10 @@ Vec3 RectangleXZ::getCentroid() const {
     return Vec3((this->x.x + this->x.y) / 2, this->y, (this->z.x + this->z.y) / 2);
 }
 
+Vec2 RectangleXZ::getUv(Vec3 &hitPos) const {
+    return  {0, 0};
+}
+
 bool RectangleXZ::intersect(Ray& ray, Hit& hit) const
 {
     float t = (y - ray.origin.y) / ray.dir.y;

@@ -1,5 +1,6 @@
 #include "RayTracer.hpp"
 #include "Object.hpp"
+#include <cmath>
 
 Sphere::Sphere(const libconfig::Setting& s){
     type = "Sphere";
@@ -15,6 +16,15 @@ AABB Sphere::getObjectAABB() const
 
 Vec3 Sphere::getCentroid() const {
     return this->pos;
+}
+
+Vec2 Sphere::getUv(Vec3 &hitPos) const {
+    Vec2 uv;
+    Vec3 localP = (hitPos - this->pos) / this->radius;
+
+    uv.x = 0.5 + (atan2(localP.z, localP.x) / (2 * M_PI));
+    uv.y = 0.5 + (asin(localP.y) / M_PI);
+    return uv;
 }
 
 bool Sphere::intersect(Ray &ray, Hit &hit) const

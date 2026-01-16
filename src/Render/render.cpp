@@ -17,7 +17,7 @@ void Render::HandleWindow(bool clear) noexcept{
         this->window.clear();
 }
 
-void Render::InitRender(void) noexcept
+void Render::RunRender(void) noexcept
 {
     Log::Logger::info("Start Render");
     
