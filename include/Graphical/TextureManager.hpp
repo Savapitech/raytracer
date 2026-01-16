@@ -23,8 +23,7 @@ class TextureManager
                 TexturePool.push_back(texture);
                 return TexturePool.size() - 1;
             }
-        sf::Image getTexture(int index){};
-        
+
         Vec3 getTexturePix(int index, Vec2 uv)
         {
             if (index < 0 || index >= (int)TexturePool.size())

@@ -47,6 +47,7 @@ void Render::StartRender(void) noexcept
             count++;
         }
     }
+    std::cout << "End\n";
     sf::Time RenderTime = clock.getElapsedTime();
     sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;

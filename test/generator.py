@@ -1,6 +1,6 @@
 import random
 
-with open('./scene_100000_spheres.cfg', 'w') as f:
+with open('./scene_1000000_spheres.cfg', 'w') as f:
     f.write("scene : {\n")
     f.write("    pos = [0.0, 0.0, 0.0];\n")
     f.write("    dir = [0.0, 0.0, 1.0];\n")
@@ -9,7 +9,7 @@ with open('./scene_100000_spheres.cfg', 'w') as f:
     f.write("    objects = (\n")
 
     idx = 0
-    while (idx < 100000):
+    while (idx < 1000000):
         # petite randomisation
         rx = random.uniform(1000, -1000)
         ry = random.uniform(1000, -1000)
