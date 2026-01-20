@@ -50,6 +50,8 @@ RENDER += src/Render/StartRender.cpp
 RENDER += src/Render/shade.cpp
 RENDER += src/Render/shadow.cpp
 
+RENDER += src/realTimeCPU/runRT.cpp
+
 BVH = src/SpacePartitionning/bvh.cpp
 BVH += src/SpacePartitionning/AABBIntersect.cpp
 BVH += src/SpacePartitionning/intersect.cpp

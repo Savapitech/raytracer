@@ -7,6 +7,9 @@ namespace RayTracer {
 
 void RayTracer::run(void) {
         Log::Logger::info("Start Running...");
-        this->render.RunRender();   
+        if (this->config.realTimeCPU == false)
+            this->render.RunRender();
+        else
+            this->render.RunRenderRT();   
     }
 }

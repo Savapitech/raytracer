@@ -8,7 +8,7 @@ void Render::writePixel(int x, int y, sf::Color color) noexcept
     RayBuffer[R(acutalPixel)] = color.r;
     RayBuffer[G(acutalPixel)] = color.g;
     RayBuffer[B(acutalPixel)] = color.b;
-    RayBuffer[A(acutalPixel)] = color.a;
+    RayBuffer[A(acutalPixel)] = 255;
 }
 
 void Render::FindObject(int x, int y) noexcept
@@ -20,6 +20,9 @@ void Render::FindObject(int x, int y) noexcept
     if (minHit.ObjectIdx != -1) {
         sf::Color color = this->shade(ray, minHit);
         writePixel(x, y, color);
+    }
+    else{
+        writePixel(x, y, {0, 0, 0, 0});
     }
 }
 
@@ -33,6 +36,9 @@ void Render::StartRender(void) noexcept
     int count = 0;
     int percent = 0;
 
+    for (sf::Uint8 &u: this->RayBuffer){
+        u = 100;
+    }
     for (int x = 0; x < cam.width; x++){
         if (load.pushLoad(window) == true)
             this->HandleWindow(true);
@@ -52,7 +58,10 @@ void Render::StartRender(void) noexcept
     sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
 
+    
     this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());
     this->texture.loadFromImage(image);
     this->sprite.setTexture(this->texture);
+    this->image.saveToFile("3.png");
+
 }

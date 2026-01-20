@@ -12,5 +12,7 @@ namespace CmdConfig {
         std::string scene;
 
         bool pathtracing;
+
+        bool realTimeCPU;
     };
 }
