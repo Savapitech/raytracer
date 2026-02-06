@@ -18,7 +18,7 @@ typedef struct bvh_stack_s {
     int end = -1;
 
     int parentIndex = -1;
-    bool isLeftChild = false; /* Pour suprimé */
+    bool isLeftChild = false;
 } bvh_stack_t;
 
 typedef struct node_s {

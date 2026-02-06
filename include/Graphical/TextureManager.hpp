@@ -34,8 +34,8 @@ class TextureManager
             if (size.x == 0 || size.y == 0) 
                 return Vec3(0,0,0);
 
-            int x = (int)(uv.x * size.x) % size.x;
-            int y = (int)(uv.y * size.y) % size.y;
+            int x = (int)(uv.x * size.x) + 1500 % size.x;
+            int y = (int)(uv.y * size.y) - 1000 % size.y;
 
             if (x < 0) 
                 x += size.x;
