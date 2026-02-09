@@ -1,9 +1,13 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixgl.url = "github:nix-community/nixGL";
+  };
 
   outputs = {
     self,
     nixpkgs,
+    nixgl,
   }: let
     inherit (nixpkgs) lib;
 
@@ -11,18 +15,21 @@
       lib.genAttrs [
         "x86_64-linux"
         "aarch64-linux"
-        "aarch64-darwin"
-      ] (system: function nixpkgs.legacyPackages.${system});
+      ] (system: function {
+        pkgs = nixpkgs.legacyPackages.${system};
+        gl = nixgl.packages.${system}; 
+      });
   in {
-    devShells = forAllSystems (pkgs: {
+    devShells = forAllSystems ({ pkgs, gl }: {
       default = pkgs.mkShell {
         hardeningDisable = ["fortify"];
 
         packages = with pkgs; [
-          sfml
+          sfml_2
           compiledb
           clang
           libconfig
+          gl.nixGLIntel 
         ];
 
         env.NIX_CFLAGS_COMPILE =
@@ -33,6 +40,6 @@
       };
     });
 
-    formatter = forAllSystems (pkgs: pkgs.alejandra);
+    formatter = forAllSystems ({ pkgs, ... }: pkgs.alejandra);
   };
 }
