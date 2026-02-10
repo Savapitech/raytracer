@@ -40,6 +40,7 @@ PLUGIN += src/Material/default.cpp
 
 RENDER = src/Render/render.cpp
 RENDER += src/Render/shade.cpp
+RENDER += src/Render/fillRayBuffer.cpp
 
 BVH += src/SpacePartitionning/bvh.cpp
 BVH += src/SpacePartitionning/AABB.cpp
