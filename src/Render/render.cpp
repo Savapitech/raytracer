@@ -23,7 +23,7 @@ void Render::createRayBuffer(void) noexcept
 {
     const auto &cam = scene.getCamera();
     this->ImageRender = true;
-    sf::Clock clock;
+    sf::Clock clock;/*SFML*/
 
     int nbPixel = cam.width * cam.height;
     int count = 0;
@@ -44,12 +44,12 @@ void Render::createRayBuffer(void) noexcept
         }
     }
     std::cout << "End\n";
-    sf::Time RenderTime = clock.getElapsedTime();
-    sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();
+    sf::Time RenderTime = clock.getElapsedTime();/*SFML*/
+    sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();/*SFML*/
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
-    this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());
-    this->texture.loadFromImage(image);
-    this->sprite.setTexture(this->texture);
+    this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());/*SFML*/
+    this->texture.loadFromImage(image);/*SFML*/
+    this->sprite.setTexture(this->texture);/*SFML*/
 }
 
 void Render::HandleWindow(bool clear) noexcept{
@@ -73,7 +73,7 @@ void Render::RunRender(void) noexcept
         if (this->ImageRender == false){
             this->bvh.BuildSpacePartitionning();
             Log::Logger::info("Push new buffer");
-            this->image.saveToFile("Legend.png");
+            this->image.saveToFile("Legend.png");/*SFML*/
         }
         scene::Camera cam = this->scene.getCamera();
         this->scene.updateCamera({cam.pos.x + static_cast<float>(0.1),cam.pos.y, cam.pos.z });
