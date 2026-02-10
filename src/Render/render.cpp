@@ -65,6 +65,9 @@ void Render::HandleWindow(bool clear) noexcept{
     std::fill(RayBuffer.begin(), RayBuffer.end(), 100);
 }
 
+/*
+**Build the bvh, create a ray buffer and push it into the context
+*/
 void Render::RunRender(void) noexcept
 {
     Log::Logger::info("Start Render");

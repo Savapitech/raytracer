@@ -27,6 +27,7 @@ void BVH::CentroidSort(bvh_stack_t &stack, int axis)
     );
 }
 
+/*Fast methode to link two AABB*/
 AABB BVH::Union(AABB a, AABB b)
 {
     AABB r;
@@ -36,6 +37,8 @@ AABB BVH::Union(AABB a, AABB b)
     return r;
 }
 
+
+/*Update the left side and the right side of each element for estimate the cost in the SAH*/
 void BVH::buildleftrightAABB(bvh_stack_t &stack)
 {
     int count = stack.end - stack.start;
@@ -58,7 +61,7 @@ void BVH::buildleftrightAABB(bvh_stack_t &stack)
         );
     }
 }
-
+/*Returne the most use axis*/
 Axis BVH::getAxis(Vec3 &AAtoBB)
 {
     if (AAtoBB.x >= AAtoBB.y && AAtoBB.x >= AAtoBB.z)
@@ -93,6 +96,8 @@ Axis BVH::setAxis(AABB &a, bvh_stack_t &stack)
     return getAxis(AAtoBB);
 }
 
+
+/*Applied the SAH algorythme to know the must efficient spatial pivot*/
 int BVH::AppliedSah(bvh_stack_t &stack)
 {
     int count = stack.end - stack.start;
@@ -112,6 +117,7 @@ int BVH::AppliedSah(bvh_stack_t &stack)
     return pivot;
 }
 
+/*Create every single node of the bvh with a simulate stack alloc on the heaps*/
 void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 {
     int pivot = 0;
@@ -133,7 +139,6 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
         newNode.count = OBJECT_LEAF;
     }
     if (newNode.isLeaf != true){
-        newNode.nodeShape.normalize();
         axis = setAxis(newNode.nodeShape, stack);
         CentroidSort(stack, axis);
         buildleftrightAABB(stack);
@@ -153,6 +158,9 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
     myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=false});
 }
 
+/*
+**Init the bvh construction
+*/
 void BVH::BuildSpacePartitionning(void)
 {
     this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Binary Space three */
