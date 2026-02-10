@@ -22,10 +22,10 @@ class Render
         bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L) noexcept;
         void HandleWindow(bool clear) noexcept;
         Vec3 AppliedFong(Ray &ray, Hit &minHit) noexcept;
-        Render(const scene::Scene &scene) noexcept;
+        Render(scene::Scene &scene) noexcept;
 
     private:
-        const scene::Scene& scene;
+        scene::Scene& scene;
         BVH bvh;
         sf::RenderWindow window;
         std::vector<sf::Uint8> RayBuffer;

@@ -8,6 +8,8 @@
 #include "Object.hpp"
 #include "bvh.hpp"
 
+#define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
+
 namespace scene
 {   
     Vec2 readVec2(const libconfig::Setting &s);
@@ -55,6 +57,12 @@ namespace scene
 
         const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return objects;}
         const Camera &getCamera(void) const{return cameraInfo;}
+        void updateCamera(Vec3 pos){
+            cameraInfo.pos.x = pos.x;
+            cameraInfo.pos.y = pos.y; 
+            cameraInfo.pos.z = pos.z;
+        }
+        
     private:
         Factory factory;
 

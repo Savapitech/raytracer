@@ -40,7 +40,7 @@ namespace RayTracer {
     
         private:
             const CmdConfig::config_t &config;
-            const scene::Scene scene;
+            scene::Scene scene;
             Render render;
     };
 }

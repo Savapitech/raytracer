@@ -2,7 +2,7 @@
 #include <libconfig.h++>
 using namespace libconfig;
 
-#define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
+
 
 namespace scene {
     Vec3 readVec3(const Setting &s)

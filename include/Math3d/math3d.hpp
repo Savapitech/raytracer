@@ -116,6 +116,24 @@ inline Vec3 cross(const Vec3 &a, const Vec3 &b)
         a.x * b.y - a.y * b.x);
 }
 
+inline Vec3 GetMax(Vec3 a, Vec3 b)
+{
+    Vec3 newMax;
+    newMax.x = (a.x > b.x) ? a.x : b.x;
+    newMax.y = (a.y > b.y) ? a.y : b.y;
+    newMax.z = (a.z > b.z) ? a.z : b.z;
+    return newMax;
+}
+
+inline Vec3 GetMin(Vec3 a, Vec3 b)
+{
+    Vec3 newMin;
+    newMin.x = (a.x < b.x) ? a.x : b.x;
+    newMin.y = (a.y < b.y) ? a.y : b.y;
+    newMin.z = (a.z < b.z) ? a.z : b.z;
+    return newMin;
+}
+
 class Vec2
 {
 public:
@@ -127,24 +145,24 @@ public:
 
 class AABB
 {
-public:
-    Vec3 min;
-    Vec3 max;
-    AABB(Vec3 a, Vec3 b)
-    {
-        min = a;
-        max = b;
-    };
-    AABB() = default;
+    public:
+        Vec3 min;
+        Vec3 max;
+        AABB(Vec3 a, Vec3 b)
+        {
+            min = a;
+            max = b;
+        };
+        AABB() = default;
 
-    float surfaceArea() const
-    {
-        Vec3 d = max - min;
+        float surfaceArea() const
+        {
+            Vec3 d = max - min;
 
-        if (d.x < 0 || d.y < 0 || d.z < 0)
-            return 0.0f;
-        return 2.0f * (d.x * d.y + d.y * d.z + d.z * d.x);
-    }
-    bool intersect(const Ray &r) const;
-    void normalize();
+            if (d.x < 0 || d.y < 0 || d.z < 0)
+                return 0.0f;
+            return 2.0f * (d.x * d.y + d.y * d.z + d.z * d.x);
+        }
+        bool intersect(const Ray &r) const;
+        void normalize();
 };

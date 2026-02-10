@@ -1,8 +1,8 @@
 TARGET = raytracer
 
-CXX = clang++
-CXXFLAGS = -Wall -Wextra -std=c++17 -O3
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++
+CXX = g++
+CXXFLAGS = -Wall -Wextra -std=c++20 -O3
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++ -g
 
 INC = -I include
 INC += -I include/PluginInterface
@@ -20,24 +20,18 @@ SRC = src/main.cpp
 
 LOGGER = src/logger/logger.cpp
 
-CMDPARSER = src/CmdParser/CmdParser.cpp
-CMDPARSER += src/CmdParser/InitParser.cpp
-CMDPARSER += src/CmdParser/Constructor.cpp
 CMDPARSER += src/CmdParser/BuildConfig.cpp
-CMDPARSER += src/CmdParser/ShowConfig.cpp
 
 RAYTRACER = src/RayTracer/RayTracer.cpp
-RAYTRACER += src/RayTracer/run.cpp
 RAYTRACER += src/RayTracer/buildRay.cpp
 
-SCENE = src/Scene/Constructor.cpp
-SCENE += src/Scene/scene.cpp
+SCENE = src/Scene/BuildScene.cpp
 SCENE += src/Scene/Factory/ShapeFactory.cpp
 SCENE += src/Scene/Factory/MaterialFactory.cpp
 SCENE += src/Scene/camera/camera.cpp
 SCENE += src/Scene/ParseObj.cpp
 
-PLUGIN = src/Plugin/object.cpp
+PLUGIN = src/Object/object.cpp
 PLUGIN += src/Shape/sphere.cpp
 PLUGIN += src/Shape/RectangleXZ.cpp
 PLUGIN += src/Shape/triangle.cpp
@@ -45,16 +39,12 @@ PLUGIN += src/Material/mirror.cpp
 PLUGIN += src/Material/default.cpp
 
 RENDER = src/Render/render.cpp
-RENDER += src/Render/constructor.cpp
-RENDER += src/Render/StartRender.cpp
 RENDER += src/Render/shade.cpp
-RENDER += src/Render/shadow.cpp
 
-BVH = src/SpacePartitionning/bvh.cpp
-BVH += src/SpacePartitionning/AABBIntersect.cpp
-BVH += src/SpacePartitionning/intersect.cpp
+BVH += src/SpacePartitionning/bvh.cpp
+BVH += src/SpacePartitionning/AABB.cpp
 
-GRAPHICAL = src/Load/constructor.cpp
+GRAPHICAL = src/Load/graphicLoad.cpp
 
 SRC += $(LOGGER)
 SRC += $(CMDPARSER)
