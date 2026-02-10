@@ -77,10 +77,11 @@ void Render::RunRender(void) noexcept
             this->bvh.BuildSpacePartitionning();
             Log::Logger::info("Push new buffer");
             this->image.saveToFile("Legend.png");/*SFML*/
+            this->createRayBuffer();
         }
         scene::Camera cam = this->scene.getCamera();
-        this->scene.updateCamera({cam.pos.x + static_cast<float>(0.1),cam.pos.y, cam.pos.z });
-        this->createRayBuffer();
+        //this->scene.updateCamera({cam.pos.x + static_cast<float>(0.1),cam.pos.y, cam.pos.z });
+        //
 
         this->HandleWindow(true);
     }
