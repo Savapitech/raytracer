@@ -21,8 +21,24 @@ Render::Render(scene::Scene &scene) noexcept
     Log::Logger::info("Window Open");
 }
 
+bool change = false;
+int count_change = 0;
+int binary_sample = 0;
+
 void Render::createRayBuffer(void) noexcept
 {
+    if (change == true)
+        count_change = 0;
+    if (count_change == 0)
+        binary_sample = 7;
+    if (count_change == 1)
+        binary_sample = 3;
+    if (count_change == 2)
+        binary_sample = 1;
+    if (count_change == 3)
+        binary_sample = 0;
+    if (count_change > 3)
+        return;
     const auto &cam = scene.getCamera();
     this->ImageRender = true;
     sf::Clock clock;/*SFML*/
@@ -41,7 +57,7 @@ void Render::createRayBuffer(void) noexcept
             this->load.pushPercent(window, percent);
         }
         for (int y = 0; y < cam.height; y++){
-            if ((x | y) & 3)/*1 3 7 */ /*Sampling Hard Code */
+            if ((x | y) & binary_sample)/*1 3 7 */ /*Sampling Hard Code */
                 continue;
             this->fillRayBuffer(x, y);
             count++;
@@ -55,6 +71,8 @@ void Render::createRayBuffer(void) noexcept
     //this->texture.loadFromImage(image);/*SFML*/
     this->texture.update(RayBuffer.data());
     this->sprite.setTexture(this->texture);/*SFML*/
+    count_change++;
+    change = false;
 }
 
 void Render::HandleWindow(bool clear) noexcept{
@@ -84,14 +102,22 @@ void Render::RunRender(void) noexcept
             this->image.saveToFile("Legend.png");/*SFML*/
         }
         scene::Camera cam = this->scene.getCamera();
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))    
-        this->scene.updateCamera({cam.pos.x + static_cast<float>(-0.2),cam.pos.y, cam.pos.z });
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))    
-        this->scene.updateCamera({cam.pos.x + static_cast<float>(0.2),cam.pos.y, cam.pos.z });
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))    
-        this->scene.updateCamera({cam.pos.x, cam.pos.y, cam.pos.z  + static_cast<float>(-0.2)});
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))    
-        this->scene.updateCamera({cam.pos.x ,cam.pos.y, cam.pos.z + static_cast<float>(0.2) });
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
+            this->scene.updateCamera({cam.pos.x + static_cast<float>(-0.2),cam.pos.y, cam.pos.z });
+            change = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))    {
+            this->scene.updateCamera({cam.pos.x + static_cast<float>(0.2),cam.pos.y, cam.pos.z });
+            change = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))    {
+            change = true;
+            this->scene.updateCamera({cam.pos.x, cam.pos.y, cam.pos.z  + static_cast<float>(-0.2)});
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))    {
+            change = true;
+            this->scene.updateCamera({cam.pos.x ,cam.pos.y, cam.pos.z + static_cast<float>(0.2) });
+        }
         this->createRayBuffer();
         
 
