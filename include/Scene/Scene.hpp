@@ -24,7 +24,7 @@ namespace scene
             Vec3 forward;
             Vec3 right;
             Vec3 up;
-            float fov = 90;
+            float fov = 60;
             double distance = 540;
             int width = 1920;
             int height = 1080;
