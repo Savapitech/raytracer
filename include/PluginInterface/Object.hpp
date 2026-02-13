@@ -29,5 +29,4 @@ class Object
         }
     private:
         Vec3 centroid;
-        static ObjectFactory OFactory;
 };

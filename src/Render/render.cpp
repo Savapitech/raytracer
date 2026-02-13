@@ -30,14 +30,14 @@ void Render::createRayBuffer(void) noexcept
     if (change == true)
         count_change = 0;
     if (count_change == 0)
-        binary_sample = 7;
-    if (count_change == 1)
         binary_sample = 3;
-    if (count_change == 2)
+    if (count_change == 1)
         binary_sample = 1;
-    if (count_change == 3)
+    if (count_change == 2)
         binary_sample = 0;
-    if (count_change > 3)
+    //if (count_change == 3)
+    //    binary_sample = 0;
+    if (count_change > 2)
         return;
     const auto &cam = scene.getCamera();
     this->ImageRender = true;

@@ -7,7 +7,7 @@ namespace RayTracer {
         config(config),
         scene(config.scene),
         render(scene)
-        {
+    {
             Log::Logger::info("Start Ray Tracer");
     }
 
