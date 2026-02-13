@@ -1,5 +1,5 @@
 #include "render.hpp"
-
+/*SFML*/
 GLoad::GLoad(std::string path, int widht, int height)
 {
     this->textLoad.loadFromFile(path);
@@ -27,17 +27,17 @@ void GLoad::setFrame(int index)
 
     if (this->count == 12)
         this->count = 0;
-    this->spriteLoad.setTextureRect(sf::IntRect(x, y, frameWidth, frameHeight));
+    this->spriteLoad.setTextureRect(sf::IntRect(x, y, frameWidth, frameHeight));/*SFML*/
 }
 
 void GLoad::pushPercent(sf::RenderWindow &window, int percent)
 {
-    this->percent.setString(std::to_string(percent) + "%");
-    window.draw(this->percent);
+    this->percent.setString(std::to_string(percent) + "%");/*SFML*/
+    window.draw(this->percent);/*SFML*/
 }
 
 
-
+/*SFML*/
 bool GLoad::pushLoad(sf::RenderWindow &window){
     if (clock.getElapsedTime().asMilliseconds() > FPS_60 / 2){
         this->setFrame(this->count);

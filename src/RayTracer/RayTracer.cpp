@@ -3,11 +3,17 @@
 
 namespace RayTracer {
 
-RayTracer::RayTracer(const CmdConfig::config_t &config) :
-    config(config),
-    scene(config.scene),
-    render(scene)
+    RayTracer::RayTracer(const CmdConfig::config_t &config) :
+        config(config),
+        scene(config.scene),
+        render(scene)
     {
-        Log::Logger::info("Start Ray Tracer");
+            Log::Logger::info("Start Ray Tracer");
+    }
+
+    void RayTracer::run(void) {
+        Log::Logger::info("Start Running...");
+        this->render.RunRender();   
     }
 }
+

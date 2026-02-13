@@ -22,15 +22,17 @@ class Render
         void StartRenderRT(void) noexcept;
 
         void FindObject(int x, int y) noexcept;
+        void createRayBuffer(void) noexcept;
+        void fillRayBuffer(int x, int y) noexcept;
         void writePixel(int x, int y, sf::Color color) noexcept;
         sf::Color shade(Ray &ray, Hit &minHit) noexcept;
         bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L) noexcept;
         void HandleWindow(bool clear) noexcept;
         Vec3 AppliedFong(Ray &ray, Hit &minHit) noexcept;
-        Render(const scene::Scene &scene) noexcept;
+        Render(scene::Scene &scene) noexcept;
 
     private:
-        const scene::Scene& scene;
+        scene::Scene& scene;
         BVH bvh;
         sf::RenderWindow window;
         std::vector<sf::Uint8> RayBuffer;

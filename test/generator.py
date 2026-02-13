@@ -9,16 +9,16 @@ with open('./scene_1000000_spheres.cfg', 'w') as f:
     f.write("    objects = (\n")
 
     idx = 0
-    while (idx < 1000000):
+    while (idx < 10000000):
         # petite randomisation
-        rx = random.uniform(1000, -1000)
-        ry = random.uniform(1000, -1000)
-        rz = random.uniform(1000, -1000)
+        rx = random.uniform(900, -900)
+        ry = random.uniform(900, -900)
+        rz = random.uniform(900, -900)
         r = 0.5  # radius constant
         # couleurs pseudo-aléatoires mais déterministes
-        col_r = idx % 255
-        col_g = idx % 255
-        col_b = idx % 255
+        col_r = random.randint(0, 255)
+        col_g =  random.randint(0, 255)
+        col_b =  random.randint(0, 255)
         f.write("        {\n")
         f.write("            shape = {\n")
         f.write('                type = "sphere";\n')

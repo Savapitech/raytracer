@@ -9,6 +9,17 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexce
     return lightColor * spec;
 }
 
+bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L) noexcept
+{
+    Ray shadowRay(P + minHit.normal * 0.001f, L);
+    shadowRay.minHit = 0.001f;
+    shadowRay.maxHit = norm(light - P) - 0.001f;
+
+    if (this->bvh.intersect(shadowRay, minHit) == true)
+        return true;
+    return false;
+}
+
 
 /*Il faudrait que je parcours une list de light plus tard la variable Light est provisoire*/
 Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept

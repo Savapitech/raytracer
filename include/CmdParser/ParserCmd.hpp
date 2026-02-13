@@ -12,9 +12,8 @@ namespace ParserCmd {
     {
         public:
             Parser(int ac, char **av);
-            void BuildConfig(void);
-            void InitParser(void);
-            void ShowConfig(void);
+            void buildConfig(void);
+            void initParser(void);
             const CmdConfig::config_t &getConfig() const;
 
         private:

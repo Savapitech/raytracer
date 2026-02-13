@@ -8,16 +8,18 @@
 #include "logger.hpp"
 #include "ParserCmd.hpp"
 #include "RayTracer.hpp"
+#include "Object.hpp"
 
 int main(int ac, char **av)
 {
     std::cout << "start..." << std::endl;
     Log::Logger::SetLogLvl(Log::Logger::DEBUG);
     
+    std::cout << sizeof(Object) << std::endl;
     ParserCmd::Parser parser(ac, av);
     try {
-        parser.InitParser();
-        parser.BuildConfig();
+        parser.initParser();
+        parser.buildConfig();
         RayTracer::RayTracer raytracer(parser.getConfig());
         raytracer.run();
     }

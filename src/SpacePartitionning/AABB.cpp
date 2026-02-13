@@ -1,5 +1,12 @@
 #include "RayTracer.hpp"
 
+void AABB::normalize()
+{
+    if (min.x > max.x) std::swap(min.x, max.x);
+    if (min.y > max.y) std::swap(min.y, max.y);
+    if (min.z > max.z) std::swap(min.z, max.z);
+}
+
 bool AABB::intersect(const Ray& r) const
 {
     float tMin = r.minHit;

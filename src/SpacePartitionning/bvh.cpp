@@ -1,9 +1,6 @@
 #include <algorithm>
 #include "RayTracer.hpp"
 
-
-
-
 void BVH::FindBiggestAABB(VObjects Objects)
 {
     for (size_t i = 0; i != Objects.size(); i++) {
@@ -30,31 +27,7 @@ void BVH::CentroidSort(bvh_stack_t &stack, int axis)
     );
 }
 
-Vec3 GetMax(Vec3 a, Vec3 b)
-{
-    Vec3 newMax;
-    newMax.x = (a.x > b.x) ? a.x : b.x;
-    newMax.y = (a.y > b.y) ? a.y : b.y;
-    newMax.z = (a.z > b.z) ? a.z : b.z;
-    return newMax;
-}
-
-Vec3 GetMin(Vec3 a, Vec3 b)
-{
-    Vec3 newMin;
-    newMin.x = (a.x < b.x) ? a.x : b.x;
-    newMin.y = (a.y < b.y) ? a.y : b.y;
-    newMin.z = (a.z < b.z) ? a.z : b.z;
-    return newMin;
-}
-
-void AABB::normalize()
-{
-    if (min.x > max.x) std::swap(min.x, max.x);
-    if (min.y > max.y) std::swap(min.y, max.y);
-    if (min.z > max.z) std::swap(min.z, max.z);
-}
-
+/*Fast methode to link two AABB*/
 AABB BVH::Union(AABB a, AABB b)
 {
     AABB r;
@@ -64,6 +37,8 @@ AABB BVH::Union(AABB a, AABB b)
     return r;
 }
 
+
+/*Update the left side and the right side of each element for estimate the cost in the SAH*/
 void BVH::buildleftrightAABB(bvh_stack_t &stack)
 {
     int count = stack.end - stack.start;
@@ -86,7 +61,7 @@ void BVH::buildleftrightAABB(bvh_stack_t &stack)
         );
     }
 }
-
+/*Returne the most use axis*/
 Axis BVH::getAxis(Vec3 &AAtoBB)
 {
     if (AAtoBB.x >= AAtoBB.y && AAtoBB.x >= AAtoBB.z)
@@ -121,6 +96,8 @@ Axis BVH::setAxis(AABB &a, bvh_stack_t &stack)
     return getAxis(AAtoBB);
 }
 
+
+/*Applied the SAH algorythme to know the must efficient spatial pivot*/
 int BVH::AppliedSah(bvh_stack_t &stack)
 {
     int count = stack.end - stack.start;
@@ -140,9 +117,10 @@ int BVH::AppliedSah(bvh_stack_t &stack)
     return pivot;
 }
 
+/*Create every single node of the bvh with a simulate stack alloc on the heaps*/
 void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 {
-    int pivot;
+    int pivot = 0;
     int nodeIndex = this->SpThree.size();
     node_t newNode;
     bvh_stack_t stack = myStacks.back();
@@ -155,14 +133,12 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 
     /*Construction Node*/
     if (newNode.count == OBJECT_LEAF){
-        //Log::Logger::error("Nodecount" + std::to_string(newNode.count));
         newNode.isLeaf = true;
         Objects[IndexTab[stack.start]]->aabb.normalize();
         newNode.nodeShape =  Objects[IndexTab[stack.start]]->aabb;
         newNode.count = OBJECT_LEAF;
     }
     if (newNode.isLeaf != true){
-        newNode.nodeShape.normalize();
         axis = setAxis(newNode.nodeShape, stack);
         CentroidSort(stack, axis);
         buildleftrightAABB(stack);
@@ -182,6 +158,9 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
     myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=false});
 }
 
+/*
+**Init the bvh construction
+*/
 void BVH::BuildSpacePartitionning(void)
 {
     this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Binary Space three */
@@ -199,7 +178,14 @@ void BVH::BuildSpacePartitionning(void)
     while (myStacks.empty() == false){
         FillNode(myStacks);
     }
-
+    this->myStacks.clear();
+    this->myStacks.shrink_to_fit();
+    
+    this->LeftSide.clear();
+    this->LeftSide.shrink_to_fit();
+    
+    this->RightSide.clear();
+    this->RightSide.shrink_to_fit();
     /*Display node*/
     if (Log::Logger::GetLogLvl() == Log::Logger::LogLvl::DEBUG)
         for (size_t i = 0; i != SpThree.size(); i++)
@@ -209,4 +195,37 @@ void BVH::BuildSpacePartitionning(void)
             "Left" << SpThree[i].left << " " <<
             "Right" << SpThree[i].right << " " <<  CLR_RESET <<
             std::endl;
+}
+
+bool BVH::intersect(Ray& ray, Hit& hit) noexcept
+{
+    std::vector<int> NodeIndex;
+    NodeIndex.reserve((this->SpThree.size() + 1) / 2);
+    NodeIndex.push_back(0);
+    bool Hit_valide = false;
+
+    while (NodeIndex.empty() == false) {
+        Hit tmpHit;
+        int index = NodeIndex.back();
+        NodeIndex.pop_back();
+
+        if (SpThree[index].nodeShape.intersect(ray) == false)
+            continue;
+        if (SpThree[index].isLeaf == true){
+            if (Objects[IndexTab[SpThree[index].start]]->shape->intersect(ray, tmpHit) == true){
+                if (tmpHit.t > 0 && tmpHit.t < hit.t) {
+                    hit = tmpHit;
+                    hit.ObjectIdx = IndexTab[SpThree[index].start];
+                    ray.maxHit = tmpHit.t;
+                    Hit_valide = true;
+                }
+            }
+            continue;
+        }
+        if (SpThree[index].right != -1)
+                NodeIndex.push_back(SpThree[index].right);   
+        if (SpThree[index].left != -1)
+                NodeIndex.push_back(SpThree[index].left);
+    }
+    return Hit_valide;
 }

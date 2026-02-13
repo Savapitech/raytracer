@@ -60,13 +60,17 @@ bool Triangle::intersect(Ray &ray, Hit &hit) const
     float invDet = 1.0f / det;
     Vec3 tvec = ray.origin - x;
     float u = dot(tvec, pvec) * invDet;
+
     if (u < 0.0f || u > 1.0f)
         return false;
+
     Vec3 qvec = cross(tvec, edge1);
     float v = dot(ray.dir, qvec) * invDet;
     if (v < 0.0f || u + v > 1.0f)
         return false;
+
     float t = dot(edge2, qvec) * invDet;
+
     if (t < ray.minHit || t > ray.maxHit)
         return false;
     hit.t = t;
