@@ -7,9 +7,94 @@
 
 using namespace libconfig;
 
-scene::Obj::Obj(std::string path)
+scene::Obj::Obj(std::string path, const libconfig::Setting &s)
 {
-    /*PARSE OBJ*/
+    Vec3 pos = s.exists("pos") ? scene::readVec3(s["pos"]) : Vec3(0, 0, 0);
+    Vec3 rot = s.exists("rot") ? scene::readVec3(s["rot"]) : Vec3(0, 0, 0);
+    Vec3 scale = s.exists("scale") ? scene::readVec3(s["scale"]) : Vec3(1, 1, 1);
+
+    float rx = DEG_TO_RAD(rot.x);
+    float ry = DEG_TO_RAD(rot.y);
+    float rz = DEG_TO_RAD(rot.z);
+
+    std::ifstream file(path);
+    if (!file.is_open()) {
+        Log::Logger::warning("Error with the path obj:" + path);
+        return;
+    }
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string type;
+        iss >> type;
+
+        if (type == "v") {
+            float x, y, z;
+            iss >> x >> y >> z;
+            Vec3 v(x, y, z);
+
+            v.x *= scale.x;
+            v.y *= scale.y;
+            v.z *= scale.z;
+
+            float tempX = v.x * cos(ry) + v.z * sin(ry);
+            float tempZ = -v.x * sin(ry) + v.z * cos(ry);
+            v.x = tempX;
+            v.z = tempZ;
+
+            float tempY = v.y * cos(rx) - v.z * sin(rx);
+            tempZ = v.y * sin(rx) + v.z * cos(rx);
+            v.y = tempY;
+            v.z = tempZ;
+
+            tempX = v.x * cos(rz) - v.y * sin(rz);
+            tempY = v.x * sin(rz) + v.y * cos(rz);
+            v.x = tempX;
+            v.y = tempY;
+
+            v = v + pos;
+
+            this->vertices.push_back(v);
+        } else if (type == "f") {
+            std::string v1_str, v2_str, v3_str;
+            
+            iss >> v1_str >> v2_str >> v3_str;
+
+            auto getIndex = [](const std::string& vertexStr) {
+                size_t pos = vertexStr.find('/');
+                if (pos != std::string::npos) {
+                    return std::stoi(vertexStr.substr(0, pos)) - 1;
+                }
+                return std::stoi(vertexStr) - 1;
+            };
+
+            int i1;
+            int i2;
+            int i3;
+
+            try
+            {
+                i1 = getIndex(v1_str);
+                i2 = getIndex(v2_str);
+                i3 = getIndex(v3_str);
+            }
+            catch(const std::exception& e)
+            {
+                continue;
+            }
+            
+            if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
+                i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
+                std::unique_ptr<AShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i2], vertices[i3]);
+                std::unique_ptr<AMaterial> material = std::make_unique<Default>();
+                std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
+                this->objects.push_back(std::move(obj));
+                
+            } else {
+                Log::Logger::warning("Invalid face");
+            }
+        }
+    }
 }
 
 void scene::Scene::insertObjInObjects(const Setting &s, std::vector<std::unique_ptr<Object>> &objects)
@@ -18,6 +103,30 @@ void scene::Scene::insertObjInObjects(const Setting &s, std::vector<std::unique_
         Log::Logger::warning("No Obj");
         return;    
     }
+    
     Log::Logger::info("Parse Obj");
+    const Setting &objList = s["obj"];
+    if (!objList.isList() && !objList.isArray()) {
+        throw std::runtime_error("'obj' must be a list or an array");
+    }
+
+    int count = objList.getLength();
+    Log::Logger::debug("Obj files to load: " + std::to_string(count));
+
+    for (int i = 0; i < count; i++) {
+        const Setting &currentObjNode = objList[i];
+        std::string path;
+
+        if (currentObjNode.lookupValue("path", path)) {
+            Log::Logger::info("Loading obj: " + path);
+            scene::Obj parsedObj(path, currentObjNode);
+
+            for (auto& obj_ptr : parsedObj.getObjects()) 
+                objects.push_back(std::move(obj_ptr));
+            } 
+        else {
+            throw std::runtime_error("no path set");
+        }
+    }
     Log::Logger::info("End of parsing Obj");
 }

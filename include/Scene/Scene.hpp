@@ -43,7 +43,7 @@ namespace scene
 
     class Obj{
         public:
-            Obj(std::string path);
+            Obj(std::string path, const libconfig::Setting &s);
             std::vector<std::unique_ptr<Object>> &getObjects(void) {return objects;}
         private:
             std::vector<Vec3> vertices;

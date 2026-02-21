@@ -13,7 +13,7 @@ Object::Object(const libconfig::Setting &s)
         throw std::runtime_error("Type need to be implemented in a shape");
     std::string type = s["shape"]["type"];
     this->shape = OFactory.SFactory.GetShape(s["shape"]);
-    if (shape == nullptr)
+    if (this->shape == nullptr)
         throw std::invalid_argument("Need type to implement shape");
     this->material = OFactory.MFactory.GetMaterial(s);
     this->aabb = this->shape->getObjectAABB();
