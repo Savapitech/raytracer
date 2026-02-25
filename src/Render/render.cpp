@@ -11,12 +11,15 @@ Render::Render(scene::Scene &scene) noexcept
     : scene(scene),
       bvh(scene.getObjects()),
       window(sf::VideoMode(WIDTH, HEIGHT), "Raytracer"),
-      RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 100),
+      RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       ImageRender(false),
       distance(0),
       load("./Asset/loading.png", scene.getCamera().width,scene.getCamera().height)
       
 {
+    for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4){
+        RayBuffer[i] = 255;
+    }
     texture.create(1920, 1080);
     Log::Logger::info("Window Open");
 }
@@ -24,6 +27,9 @@ Render::Render(scene::Scene &scene) noexcept
 bool change = false;
 int count_change = 0;
 int binary_sample = 0;
+
+#define SAMPLING 1
+#include <random>
 
 void Render::createRayBuffer(void) noexcept
 {
@@ -35,8 +41,6 @@ void Render::createRayBuffer(void) noexcept
         binary_sample = 1;
     if (count_change == 2)
         binary_sample = 0;
-    //if (count_change == 3)
-    //    binary_sample = 0;
     if (count_change > 2)
         return;
     const auto &cam = scene.getCamera();
@@ -47,27 +51,27 @@ void Render::createRayBuffer(void) noexcept
     int count = 0;
     int percent = 0;
 
-    for (int x = 0; x < cam.width; x++){
-        //if (load.pushLoad(window) == true)
-        //    this->HandleWindow(true);
-        if (window.isOpen() == false)
-            return;
-        if (percent != (count * 100) / nbPixel){
-            percent = (count * 100) / nbPixel;
-            this->load.pushPercent(window, percent);
-        }
-        for (int y = 0; y < cam.height; y++){
-            if ((x | y) & binary_sample)/*1 3 7 */ /*Sampling Hard Code */
-                continue;
-            this->fillRayBuffer(x, y);
-            count++;
+    for (int i = 0; i != SAMPLING; i++){
+        float offsetX = 0.0;//dis(gen);
+        float offsetY = 0.0;//dis(gen);
+        for (int x = 0;x < cam.width; x++){
+            //if (load.pushLoad(window) == true)
+            //    this->HandleWindow(true);
+            if (x & 7 && window.isOpen() == false)
+                return;
+            for (int y = 0; y < cam.height; y++){
+                if ((x | y) & binary_sample)/*1 3 7 */ /*Sampling Hard Code */
+                    continue;
+                this->fillRayBuffer(offsetX + x, offsetY + y, x, y);
+                count++;
+            }
         }
     }
     //std::cout << "End\n";
     sf::Time RenderTime = clock.getElapsedTime();/*SFML*/
     sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();/*SFML*/
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
-    //this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());/*SFML*/
+    this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());/*SFML*/
     //this->texture.loadFromImage(image);/*SFML*/
     this->texture.update(RayBuffer.data());
     this->sprite.setTexture(this->texture);/*SFML*/
@@ -99,7 +103,10 @@ void Render::RunRender(void) noexcept
         if (this->ImageRender == false){
             this->bvh.BuildSpacePartitionning();
             Log::Logger::info("Push new buffer");
-            this->image.saveToFile("Legend.png");/*SFML*/
+            this->createRayBuffer();
+            this->image.saveToFile("IronMan.png");
+
+            /*SFML*/
         }
         scene::Camera cam = this->scene.getCamera();
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
@@ -119,8 +126,6 @@ void Render::RunRender(void) noexcept
             this->scene.updateCamera({cam.pos.x ,cam.pos.y, cam.pos.z + static_cast<float>(0.2) });
         }
         this->createRayBuffer();
-        
-
         this->HandleWindow(true);
     }
     Log::Logger::info("Window Close");

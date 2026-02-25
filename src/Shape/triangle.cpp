@@ -18,7 +18,7 @@ Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
     this->x = x;
     this->y = y;
     this->z = z;
-    this->color = {255, 255, 255};
+    this->color = {255, 0, 255};
 }
 
 Vec2 Triangle::getUv(Vec3 &hitPos) const {

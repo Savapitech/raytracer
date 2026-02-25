@@ -24,7 +24,8 @@ bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L) noexcept
 /*Il faudrait que je parcours une list de light plus tard la variable Light est provisoire*/
 Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 {
-    Vec3 light(0, 20, -5);
+    //Vec3 light = this->scene.getCamera().pos;
+    Vec3 light(5, 200, -50);
     Vec3 colorShape = this->scene.getObjects()[minHit.ObjectIdx]->shape->color;
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
@@ -71,7 +72,7 @@ sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
         Ray reflectedRay(tmpHit.position + tmpHit.normal * 0.001f, normalize(reflect(normalize(ray.dir), tmpHit.normal)));
         Ray scattered;
         if (this->bvh.intersect(reflectedRay, tmpHit) == false)
-            return sf::Color(100,100,100,100);
+            return sf::Color(0,0,0,255);
         reflectedColor = AppliedFong(reflectedRay, tmpHit);
         if (this->scene.getObjects()[tmpHit.ObjectIdx]->material->scatter(reflectedRay, tmpHit, RelfectedIntensity, scattered) == false)
             break;
@@ -80,6 +81,6 @@ sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
             break;
     }
     if (RelfectedIntensity.x == 1 && RelfectedIntensity.y == 1 && RelfectedIntensity.z == 1)
-        return sf::Color(100,100,100,100);
+        return sf::Color(0,0,0,255);
     return sf::Color(reflectedColor.x, reflectedColor.y, reflectedColor.z, 255);
 }

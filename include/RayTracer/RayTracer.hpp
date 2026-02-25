@@ -14,7 +14,7 @@ class Ray
         float maxHit = 1e30f;
 
         Ray() = default;
-        Ray(const scene::Camera &camera, int x, int y);
+        Ray(const scene::Camera &camera, float x, float y);
         Ray(const Vec3& origin, const Vec3& direction);
 };
 
@@ -23,6 +23,7 @@ class Hit {
         float t = 1e30f;
         Vec3 position;
         Vec3 normal;
+        /*Idx into the bvh*/
         int ObjectIdx = -1;
         bool frontFace = false;
 

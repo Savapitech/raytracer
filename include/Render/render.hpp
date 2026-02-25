@@ -16,7 +16,7 @@ class Render
     public:
         void RunRender(void) noexcept;
         void createRayBuffer(void) noexcept;
-        void fillRayBuffer(int x, int y) noexcept;
+        void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
         void writePixel(int x, int y, sf::Color color) noexcept;
         sf::Color shade(Ray &ray, Hit &minHit) noexcept;
         bool ShadowRay(Vec3 &light, Hit &hit, Vec3 &P, Vec3 &L) noexcept;

@@ -2,6 +2,7 @@
 #include "RayTracer.hpp"
 
 #include <cmath>
+#define SAMPLING 1
 
 void Render::writePixel(int x, int y, sf::Color color) noexcept
 {
@@ -10,12 +11,12 @@ void Render::writePixel(int x, int y, sf::Color color) noexcept
     RayBuffer[R(acutalPixel)] = color.r;
     RayBuffer[G(acutalPixel)] = color.g;
     RayBuffer[B(acutalPixel)] = color.b;
-    RayBuffer[A(acutalPixel)] = color.a;
+    RayBuffer[A(acutalPixel)] = 255;
 }
 
-void Render::fillRayBuffer(int x, int y) noexcept
+void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
 {
-    Ray ray(scene.getCamera(), x, y);
+    Ray ray(scene.getCamera(), offsetX, offsetY);
     Hit minHit;
 
     this->bvh.intersect(ray, minHit);
@@ -23,4 +24,6 @@ void Render::fillRayBuffer(int x, int y) noexcept
         sf::Color color = this->shade(ray, minHit);
         writePixel(x, y, color);
     }
+    else
+        writePixel(x, y, {0, 0, 0, 0});
 }

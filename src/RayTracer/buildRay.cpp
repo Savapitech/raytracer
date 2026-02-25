@@ -1,7 +1,7 @@
 #include "Scene.hpp"
 #include "RayTracer.hpp"
 
-Ray::Ray(const scene::Camera &camera, int x, int y)
+Ray::Ray(const scene::Camera &camera, float x, float y)
 {
     float aspect = float(camera.width) / float(camera.height);
     float scale  = tanf((camera.fov * 0.5f) * (M_PI / 180.0f));

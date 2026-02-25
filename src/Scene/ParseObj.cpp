@@ -56,42 +56,45 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
 
             this->vertices.push_back(v);
         } else if (type == "f") {
-            std::string v1_str, v2_str, v3_str;
-            
-            iss >> v1_str >> v2_str >> v3_str;
+            std::vector<int> faceIndices;
+            std::string vertexStr;
 
-            auto getIndex = [](const std::string& vertexStr) {
-                size_t pos = vertexStr.find('/');
+            auto getIndex = [](const std::string& vStr) {
+                size_t pos = vStr.find('/');
                 if (pos != std::string::npos) {
-                    return std::stoi(vertexStr.substr(0, pos)) - 1;
+                    return std::stoi(vStr.substr(0, pos)) - 1;
                 }
-                return std::stoi(vertexStr) - 1;
+                return std::stoi(vStr) - 1;
             };
 
-            int i1;
-            int i2;
-            int i3;
+            while (iss >> vertexStr) {
+                try {
+                    faceIndices.push_back(getIndex(vertexStr));
+                } catch(const std::exception& e) {
+                    Log::Logger::warning("stoi error with vertex");
+                }
+            }
+            if (faceIndices.size() >= 3) {
+                for (size_t i = 1; i < faceIndices.size() - 1; ++i) {
+                    int i1 = faceIndices[0];
+                    int i2 = faceIndices[i];
+                    int i3 = faceIndices[i + 1];
 
-            try
-            {
-                i1 = getIndex(v1_str);
-                i2 = getIndex(v2_str);
-                i3 = getIndex(v3_str);
-            }
-            catch(const std::exception& e)
-            {
-                continue;
-            }
-            
-            if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
-                i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
-                std::unique_ptr<AShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i2], vertices[i3]);
-                std::unique_ptr<AMaterial> material = std::make_unique<Default>();
-                std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
-                this->objects.push_back(std::move(obj));
-                
+                    if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
+                        i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
+                        
+                        std::unique_ptr<AShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i2], vertices[i3]);
+                        std::unique_ptr<AMaterial> material = std::make_unique<Default>();
+                        std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
+                        
+                        this->objects.push_back(std::move(obj));
+                        
+                    } else {
+                        Log::Logger::warning("Invalid face: index out of range");
+                    }
+                }
             } else {
-                Log::Logger::warning("Invalid face");
+                Log::Logger::warning("Face skip");
             }
         }
     }
