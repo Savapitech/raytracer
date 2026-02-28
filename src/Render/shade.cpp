@@ -9,16 +9,20 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexce
     return lightColor * spec;
 }
 
-bool Render::ShadowRay(Vec3 &light, Hit &minHit, Vec3 &P, Vec3 &L) noexcept
+bool Render::ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L) noexcept
 {
-    Ray shadowRay(P + minHit.normal * 0.001f, L);
-    shadowRay.minHit = 0.001f;
-    shadowRay.maxHit = norm(light - P) - 0.001f;
+    Hit shadowHit; 
+    Ray shadowRay(P + L * 0.0001f, L); 
+    float distToLight = norm(light - P);
 
-    if (this->bvh.intersect(shadowRay, minHit) == true)
-        return true;
+    if (this->bvh.intersect(shadowRay, shadowHit) == true) {
+        if (shadowHit.t > 0.0f && shadowHit.t < distToLight) {
+            return true;
+        }
+    }
     return false;
 }
+
 
 
 /*Il faudrait que je parcours une list de light plus tard la variable Light est provisoire*/
@@ -33,7 +37,7 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
    
     Vec3 N = minHit.normal;
 
-    if (ShadowRay(light, minHit, P, L) == true)
+    if (ShadowRay(light, P, L) == true)
         return Vec3(0, 0, 0);
     float diff = std::max(dot(N, L), 0.0f);
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
