@@ -5,20 +5,20 @@
 
 Triangle::Triangle(const libconfig::Setting& s)
 {
-    type = "Triangle";
+    _type = "Triangle";
     x = scene::readVec3(s["x"]);
     y = scene::readVec3(s["y"]);
     z = scene::readVec3(s["z"]);
-    color = scene::readVec3(s["color"]);
+    _color = scene::readVec3(s["color"]);
 }
 
 Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
 {
-    type = "Triangle";
+    _type = "Triangle";
     this->x = x;
     this->y = y;
     this->z = z;
-    this->color = {255, 0, 255};
+    this->_color = {255, 0, 255};
 }
 
 Vec2 Triangle::getUv(Vec3 &hitPos) const {

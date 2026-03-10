@@ -30,7 +30,7 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 {
     //Vec3 light = this->scene.getCamera().pos;
     Vec3 light(5, 200, -50);
-    Vec3 colorShape = this->scene.getObjects()[minHit.ObjectIdx]->shape->color;
+    Vec3 colorShape = this->scene.getObjects()[minHit.ObjectIdx]->shape->getColor();
 
     Vec3 P = ray.origin + ray.dir * minHit.t;
     Vec3 L = normalize(light - P);

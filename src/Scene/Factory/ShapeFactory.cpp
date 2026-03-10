@@ -5,7 +5,7 @@
 
 #include "Scene.hpp"
 
-using ShapeCtor = std::function<std::unique_ptr<AShape>(const libconfig::Setting &s)>;
+using ShapeCtor = std::function<std::unique_ptr<IShape>(const libconfig::Setting &s)>;
 
 std::map<std::string, ShapeCtor> shapeRegistry;
 
@@ -22,7 +22,7 @@ ShapeFactory::ShapeFactory()
     };
 }        
 
-std::unique_ptr<AShape> ShapeFactory::GetShape(const libconfig::Setting &s)
+std::unique_ptr<IShape> ShapeFactory::GetShape(const libconfig::Setting &s)
     {
         if (!s.exists("type"))
             throw std::invalid_argument("Need type to implement shape");

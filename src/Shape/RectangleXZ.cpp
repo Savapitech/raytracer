@@ -2,11 +2,11 @@
 #include "Object.hpp"
 
 RectangleXZ::RectangleXZ(const libconfig::Setting& s){
-    type = "RectangleXZ";
+    _type = "RectangleXZ";
     x = scene::readVec2(s["x"]);
     z = scene::readVec2(s["z"]);
     y = (float)(s["y"]);
-    color = scene::readVec3(s["color"]);
+    _color = scene::readVec3(s["color"]);
 }    
 
 AABB RectangleXZ::getObjectAABB() const
