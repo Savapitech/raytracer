@@ -20,7 +20,7 @@ Object::Object(const libconfig::Setting &s)
     this->centroid = this->shape->getCentroid();
 }
 
-Object::Object(std::unique_ptr<AShape> shape, std::unique_ptr<AMaterial> material)
+Object::Object(std::unique_ptr<IShape> shape, std::unique_ptr<AMaterial> material)
 {
     this->shape = std::move(shape);
     this->material = std::move(material);
