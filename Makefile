@@ -18,9 +18,9 @@ RAYTRACER = src/RayTracer/RayTracer.cpp
 RAYTRACER += src/RayTracer/buildRay.cpp
 
 SCENE = src/Scene/BuildScene.cpp
-SCENE += src/Scene/Factory/ShapeFactory.cpp
-SCENE += src/Scene/Factory/MaterialFactory.cpp
-SCENE += src/Scene/camera/camera.cpp
+SCENE += src/Factory/ShapeFactory.cpp
+SCENE += src/Factory/MaterialFactory.cpp
+SCENE += src/Scene/camera.cpp
 SCENE += src/Scene/ParseObj.cpp
 
 PLUGIN = src/Object/object.cpp

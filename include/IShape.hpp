@@ -32,7 +32,7 @@ class AShape : public IShape
     public:
         void ShowShape(void){Log::Logger::debug("Object Shape:" + _type);}
         const std::string &getType() const override{return _type;}
-        void setType(std::string type){_type = type;}
+        void setType(std::string type) override {_type = type;}
         const Vec3 getPos() const override {return _pos;}
         void setPos(Vec3 pos) override {pos = _pos;}
         const Vec3 getColor() const override {return _color;}
