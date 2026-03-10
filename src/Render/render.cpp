@@ -10,17 +10,18 @@
 Render::Render(scene::Scene &scene) noexcept
     : scene(scene),
       bvh(scene.getObjects()),
-      window(sf::VideoMode(WIDTH, HEIGHT), "Raytracer"),
+      window(sf::VideoMode({WIDTH, HEIGHT}), "Raytracer"),
       RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       ImageRender(false),
       distance(0),
-      load("./Asset/loading.png", scene.getCamera().width,scene.getCamera().height)
+      load("./Asset/loading.png", scene.getCamera().width,scene.getCamera().height),
+      texture({WIDTH, HEIGHT}),
+      sprite(texture)
       
 {
     for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4){
         RayBuffer[i] = 255;
     }
-    texture.create(1920, 1080);
     Log::Logger::info("Window Open");
 }
 
@@ -69,9 +70,9 @@ void Render::createRayBuffer(void) noexcept
     }
     //std::cout << "End\n";
     sf::Time RenderTime = clock.getElapsedTime();/*SFML*/
-    sf::Int32 RenderTimeMs = RenderTime.asMilliseconds();/*SFML*/
+    int32_t RenderTimeMs = RenderTime.asMilliseconds();/*SFML*/
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
-    this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());/*SFML*/
+    //this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());/*SFML*/
     //this->texture.loadFromImage(image);/*SFML*/
     this->texture.update(RayBuffer.data());
     this->sprite.setTexture(this->texture);/*SFML*/
@@ -80,10 +81,9 @@ void Render::createRayBuffer(void) noexcept
 }
 
 void Render::HandleWindow(bool clear) noexcept{
-    sf::Event event;
 
-    while (this->window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+    while (const std::optional event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>())
                 this->window.close();
         }        
     this->window.clear({0, 0, 0, 255});
@@ -109,19 +109,19 @@ void Render::RunRender(void) noexcept
             /*SFML*/
         }
         scene::Camera cam = this->scene.getCamera();
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)){
             this->scene.updateCamera({cam.pos.x + static_cast<float>(-0.2),cam.pos.y, cam.pos.z });
             change = true;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))    {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))    {
             this->scene.updateCamera({cam.pos.x + static_cast<float>(0.2),cam.pos.y, cam.pos.z });
             change = true;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))    {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))    {
             change = true;
             this->scene.updateCamera({cam.pos.x, cam.pos.y, cam.pos.z  + static_cast<float>(-0.2)});
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))    {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))    {
             change = true;
             this->scene.updateCamera({cam.pos.x ,cam.pos.y, cam.pos.z + static_cast<float>(0.2) });
         }

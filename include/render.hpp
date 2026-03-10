@@ -28,13 +28,15 @@ class Render
         scene::Scene& scene;
         BVH bvh;
         sf::RenderWindow window;
-        std::vector<sf::Uint8> RayBuffer;
+        std::vector<uint8_t> RayBuffer;
         bool ImageRender;
         float distance;
+
+        GLoad load;
+             
         sf::Image image;
         sf::Texture texture;
         sf::Sprite sprite;
 
-        GLoad load;     
 };
 

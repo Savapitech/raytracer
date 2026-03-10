@@ -7,11 +7,12 @@
 class GLoad
 {
     public:
+        GLoad(std::string path, int widht, int height);
+        
         bool pushLoad(sf::RenderWindow &window);
         void setFrame(int index);
         void pushPercent(sf::RenderWindow &window, int percent);
 
-        GLoad(std::string path, int widht, int height);
     private:
         int frameWidth;
         int frameHeight;

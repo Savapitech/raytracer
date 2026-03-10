@@ -2,7 +2,8 @@ TARGET = raytracer
 
 CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++20 -O3
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++ -g
+SFML_FLAG = $(shell pkg-config --cflags --libs sfml-graphics sfml-window sfml-system)
+LIBS = $(SFML_FLAG) -lm -lconfig++ -g
 
 INC = -I include
 INC += -I include/CmdParser
@@ -10,43 +11,42 @@ INC += -I include/logger
 
 SRC = src/main.cpp
 
-LOGGER = src/logger/logger.cpp
+##LOGGER
+SRC += src/logger/logger.cpp
 
-CMDPARSER += src/CmdParser/BuildConfig.cpp
+##CMD_PARSER
+SRC += src/CmdParser/BuildConfig.cpp
 
-RAYTRACER = src/RayTracer/RayTracer.cpp
-RAYTRACER += src/RayTracer/buildRay.cpp
+##RAY_TRACER
+SRC += src/RayTracer/RayTracer.cpp
+SRC += src/RayTracer/buildRay.cpp
 
-SCENE = src/Scene/BuildScene.cpp
-SCENE += src/Factory/ShapeFactory.cpp
-SCENE += src/Factory/MaterialFactory.cpp
-SCENE += src/Scene/camera.cpp
-SCENE += src/Scene/ParseObj.cpp
+##SCENE
+SRC += src/Scene/BuildScene.cpp
+SRC += src/Factory/ShapeFactory.cpp
+SRC += src/Factory/MaterialFactory.cpp
+SRC += src/Scene/camera.cpp
+SRC += src/Scene/ParseObj.cpp
 
-PLUGIN = src/Object/object.cpp
-PLUGIN += src/Shape/sphere.cpp
-PLUGIN += src/Shape/RectangleXZ.cpp
-PLUGIN += src/Shape/triangle.cpp
-PLUGIN += src/Material/mirror.cpp
-PLUGIN += src/Material/default.cpp
+##OBJECTS
+SRC += src/Object/object.cpp
+SRC += src/Shape/sphere.cpp
+SRC += src/Shape/RectangleXZ.cpp
+SRC += src/Shape/triangle.cpp
+SRC += src/Material/mirror.cpp
+SRC += src/Material/default.cpp
 
-RENDER = src/Render/render.cpp
-RENDER += src/Render/shade.cpp
-RENDER += src/Render/fillRayBuffer.cpp
+#RENDER
+SRC += src/Render/render.cpp
+SRC += src/Render/shade.cpp
+SRC += src/Render/fillRayBuffer.cpp
 
-BVH += src/SpacePartitionning/bvh.cpp
-BVH += src/SpacePartitionning/AABB.cpp
+#BVH
+SRC += src/SpacePartitionning/bvh.cpp
+SRC += src/SpacePartitionning/AABB.cpp
 
-GRAPHICAL = src/Load/graphicLoad.cpp
-
-SRC += $(LOGGER)
-SRC += $(CMDPARSER)
-SRC += $(SCENE)
-SRC += $(RAYTRACER)
-SRC += $(PLUGIN)
-SRC += $(RENDER)
-SRC += $(BVH)
-SRC += $(GRAPHICAL)
+#GRAPHIC
+SRC += src/Load/graphicLoad.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

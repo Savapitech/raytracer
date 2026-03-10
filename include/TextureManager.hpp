@@ -17,8 +17,8 @@ class TextureManager
                         return i;
                 
                 sf::Image texture;
-                texture.loadFromFile(Path);
-
+                if (texture.loadFromFile(Path) == false)
+                    throw std::runtime_error("Error");
                 TexturePathPool.push_back(Path);
                 TexturePool.push_back(texture);
                 return TexturePool.size() - 1;
@@ -34,15 +34,15 @@ class TextureManager
             if (size.x == 0 || size.y == 0) 
                 return Vec3(0,0,0);
 
-            int x = (int)(uv.x * size.x) % size.x;
-            int y = (int)(uv.y * size.y) % size.y;
+            unsigned int x = (int)(uv.x * size.x) % size.x;
+            unsigned int y = (int)(uv.y * size.y) % size.y;
 
             if (x < 0) 
                 x += size.x;
             if (y < 0) 
                 y += size.y;
         
-            sf::Color color = img.getPixel(x, y);
+            sf::Color color = img.getPixel({x, y});
             return Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
         }
 
