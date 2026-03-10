@@ -1,20 +1,12 @@
 TARGET = raytracer
 
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++20 -O3
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lGL -lm -lconfig++ -g
 
 INC = -I include
-INC += -I include/PluginInterface
-INC += -I include/CmdConfig
 INC += -I include/CmdParser
 INC += -I include/logger
-INC += -I include/RayTracer
-INC += -I include/Scene
-INC += -I include/Math3d
-INC += -I include/Render/
-INC += -I include/bvh
-INC += -I include/Graphical
 
 SRC = src/main.cpp
 
