@@ -16,7 +16,13 @@ Cylinder::Cylinder(const libconfig::Setting &s)
 
 AABB Cylinder::getObjectAABB() const 
 {
-    return AABB({ _pos.x - _radius, _pos.y - (_heigth / 2), _pos.z - _radius}, {_pos.x + _radius, _pos.y + (_heigth / 2), _pos.z + _radius});
+    float max;
+    if (_radius > _heigth / 2.0f)
+        max = _radius;
+    else
+        max = _heigth / 2.0f;
+
+    return AABB({ _pos.x - max, _pos.y - max, _pos.z - max}, {_pos.x + max, _pos.y + max, _pos.z + max});
 }
 
 Vec3 Cylinder::getCentroid() const
@@ -34,12 +40,12 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const
     float r = _radius;
     float h = _heigth;
     Vec3 v = _dir;
-    Vec3 origin = ray.origin;
-    Vec3 ray_dir = ray.origin - this->_pos;
+    Vec3 origin = ray.origin - this->_pos;
+    Vec3 ray_dir = ray.dir;
 
-    float a = (dot(ray_dir, ray_dir)) - ((dot(ray_dir, center))*(dot(ray_dir, center)));
-    float b = 2.0 * ((dot(ray_dir, origin)) - (dot(ray_dir, center)) * (dot(origin, center)));
-    float c = (dot(origin, origin)) - (dot(origin, center) * dot(origin, center)) - (r*r);
+    float a = (dot(ray_dir, ray_dir)) - ((dot(ray_dir, v))*(dot(ray_dir, v)));
+    float b = 2.0 * ((dot(ray_dir, origin)) - (dot(ray_dir, v)) * (dot(origin, v)));
+    float c = (dot(origin, origin)) - (dot(origin, v) * dot(origin, v)) - (r*r);
 
     float delta = b * b - 4.0f * a * c;
     if (delta < 0.0f)
@@ -57,16 +63,21 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const
     bool validT2 = (m2 >= -halfHeight && m2 <= halfHeight);
 
     float t = std::numeric_limits<float>::infinity();
-    if (validT1 && t1 > ray.minHit && t1 < ray.maxHit)
+    float m = 0.0f;
+    if (validT1 && t1 > ray.minHit && t1 < ray.maxHit){
         t = t1;
-    if (validT2 && t2 > ray.minHit && t2 < t)
+        m = m1;
+    }
+    if (validT2 && t2 > ray.minHit && t2 < t){
         t = t2;
+        m = m2;
+    }
 
     if (!std::isfinite(t))
         return false;
     hit.t = t;
     hit.position = ray.origin + ray.dir * t;
-    Vec3 outwardNormal = normalize(hit.position - this->_pos);
+    Vec3 outwardNormal = normalize(hit.position - this->_pos - (v*m));
     hit.frontFace = dot(ray.dir, outwardNormal) < 0;
     hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
     return true;
