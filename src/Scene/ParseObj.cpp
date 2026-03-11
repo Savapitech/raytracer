@@ -76,9 +76,9 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
             }
             if (faceIndices.size() >= 3) {
                 for (size_t i = 1; i < faceIndices.size() - 1; ++i) {
-                    int i1 = faceIndices[0];
-                    int i2 = faceIndices[i];
-                    int i3 = faceIndices[i + 1];
+                    size_t i1 = faceIndices[0];
+                    size_t i2 = faceIndices[i];
+                    size_t i3 = faceIndices[i + 1];
 
                     if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
                         i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
