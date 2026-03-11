@@ -32,6 +32,7 @@ SRC += src/Scene/ParseObj.cpp
 SRC += src/Object/object.cpp
 SRC += src/Shape/sphere.cpp
 SRC += src/Shape/RectangleXZ.cpp
+SRC += src/Shape/cylinder.cpp
 SRC += src/Shape/triangle.cpp
 SRC += src/Material/mirror.cpp
 SRC += src/Material/default.cpp

@@ -20,7 +20,10 @@ ShapeFactory::ShapeFactory()
     shapeRegistry["triangle"] = [](const libconfig::Setting& s) {
         return std::make_unique<Triangle>(s);
     };
-}        
+    shapeRegistry["cylinder"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Cylinder>(s);
+    };
+}
 
 std::unique_ptr<IShape> ShapeFactory::GetShape(const libconfig::Setting &s)
     {
