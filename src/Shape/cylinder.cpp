@@ -50,35 +50,62 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const
     float delta = b * b - 4.0f * a * c;
     if (delta < 0.0f)
         return false;
+        
     float sqrtD = std::sqrt(delta);
     float inv2a = 0.5f / a;
     float t1 = (-b - sqrtD) * inv2a;
     float t2 = (-b + sqrtD) * inv2a;
+    
     Vec3 p1 = ray.origin + ray.dir * t1;
     Vec3 p2 = ray.origin + ray.dir * t2;
     float m1 = dot(p1 - center, v);
     float m2 = dot(p2 - center, v);
-    float halfHeight = h / 2.0;
+    float halfHeight = h / 2.0f;
+    
     bool validT1 = (m1 >= -halfHeight && m1 <= halfHeight);
     bool validT2 = (m2 >= -halfHeight && m2 <= halfHeight);
 
     float t = std::numeric_limits<float>::infinity();
-    float m = 0.0f;
-    if (validT1 && t1 > ray.minHit && t1 < ray.maxHit){
+    Vec3 normal_at_hit;
+
+    if (validT1 && t1 > ray.minHit && t1 < ray.maxHit) {
         t = t1;
-        m = m1;
+        normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m1));
     }
-    if (validT2 && t2 > ray.minHit && t2 < t){
+    else if (validT2 && t2 > ray.minHit && t2 < t) {
         t = t2;
-        m = m2;
+        normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m2));
     }
+
+    Vec3 top_center = center + v * halfHeight;
+    Vec3 bottom_center = center - v * halfHeight;
+
+    auto testCap = [&](const Vec3& cap_center, const Vec3& cap_normal) {
+        float denom = dot(ray_dir, cap_normal);
+        if (std::abs(denom) > 1e-6f) {
+            float t_cap = dot(cap_center - ray.origin, cap_normal) / denom;
+            if (t_cap > ray.minHit && t_cap < t) {
+                Vec3 hit_point = ray.origin + ray_dir * t_cap;
+                Vec3 vector_to_center = hit_point - cap_center;
+
+                if (dot(vector_to_center, vector_to_center) <= (r * r)) {
+                    t = t_cap;
+                    normal_at_hit = cap_normal;
+                }
+            }
+        }
+    };
+
+    testCap(top_center, v);
+    testCap(bottom_center, -v);
 
     if (!std::isfinite(t))
         return false;
+
     hit.t = t;
     hit.position = ray.origin + ray.dir * t;
-    Vec3 outwardNormal = normalize(hit.position - this->_pos - (v*m));
-    hit.frontFace = dot(ray.dir, outwardNormal) < 0;
-    hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
+    hit.frontFace = dot(ray.dir, normal_at_hit) < 0;
+    hit.normal = hit.frontFace ? normal_at_hit : -normal_at_hit;
+    
     return true;
 }
