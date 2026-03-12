@@ -14,7 +14,7 @@
     forAllSystems = function:
       lib.genAttrs [
         "x86_64-linux"
-        "aarch64-linux"
+        "aarch64-darwin"
       ] (system: function {
         pkgs = nixpkgs.legacyPackages.${system};
         gl = nixgl.packages.${system}; 
@@ -25,11 +25,10 @@
         hardeningDisable = ["fortify"];
 
         packages = with pkgs; [
-          sfml_2
           compiledb
           clang
           libconfig
-          gl.nixGLIntel 
+          pkg-config
         ];
 
         env.NIX_CFLAGS_COMPILE =
