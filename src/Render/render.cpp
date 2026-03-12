@@ -15,7 +15,7 @@ Render::Render(scene::Scene &scene) noexcept
       ImageRender(false),
       distance(0),
       load("./Asset/loading.png", scene.getCamera().width,scene.getCamera().height),
-      texture({WIDTH, HEIGHT}),
+      texture((sf::Vector2u){WIDTH, HEIGHT}),
       sprite(texture)
       
 {
