@@ -1,13 +1,24 @@
 TARGET = raytracer
 
+KERNEL = $(shell uname)
+
 CXX = clang++
 CXXFLAGS = -Wall -Wextra -std=c++20 -O3
-SFML_FLAG = $(shell pkg-config --cflags --libs sfml-graphics sfml-window sfml-system)
-LIBS = $(SFML_FLAG) -lm -lconfig++ -g
 
+ifeq ($(KERNEL),Darwin)
+SFML_FLAG = -L ./SFML-3.0.2/lib -l sfml-graphics -l sfml-window -l sfml-system
+else
+SFML_FLAG = $(shell pkg-config --cflags --libs sfml-graphics sfml-window sfml-system)
+endif
+
+LIBS = $(SFML_FLAG) -lm -lconfig++ -g
 INC = -I include
 INC += -I include/CmdParser
 INC += -I include/logger
+
+ifeq ($(KERNEL),Darwin)
+INC += -I ./SFML-3.0.2/include
+endif
 
 SRC = src/main.cpp
 
@@ -52,6 +63,10 @@ SRC += src/Load/graphicLoad.cpp
 OBJ = $(SRC:.cpp=.o)
 
 all: $(TARGET)
+ifeq ($(KERNEL),Darwin)
+all:
+	@ install_name_tool -add_rpath ./SFML-3.0.2/lib ./raytracer
+endif
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
