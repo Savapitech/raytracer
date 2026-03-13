@@ -34,6 +34,7 @@ class Render
     public:
         void RunRender(void) noexcept;
         void createRayBuffer(void) noexcept;
+        void skipPixels() noexcept;
         void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
         void writePixel(int x, int y, sf::Color color) noexcept;
         sf::Color shade(Ray &ray, Hit &minHit) noexcept;
@@ -54,5 +55,7 @@ class Render
 
         Graphical gr;
 
+        int count_change = 0;
+        int binary_sample = 0;
 };
 
