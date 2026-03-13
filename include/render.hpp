@@ -50,8 +50,8 @@ class Render
         float distance;
              
         sf::Image image;
-        sf::Texture texture;
-        sf::Sprite sprite;
+        sf::Texture TframeBuffer;
+        sf::Sprite SframeBuffer;
 
         Graphical gr;
 

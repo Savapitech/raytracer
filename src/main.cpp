@@ -12,15 +12,22 @@
 
 int main(int ac, char **av)
 {
-    std::cout << "start..." << std::endl;
     Log::Logger::SetLogLvl(Log::Logger::DEBUG);
-    
-    std::cout << sizeof(Object) << std::endl;
+    Log::Logger::info("start...");
+
+    /*====Prep the Parser for the main command from argv====*/
     ParserCmd::Parser parser(ac, av);
+
+
     try {
+        /*===Parse the command from argv===*/
         parser.initParser();
         parser.buildConfig();
+
+        /*===Init the main class who init the scene and the render===*/
         RayTracer::RayTracer raytracer(parser.getConfig());
+
+        /*===Run the ray tracing render===*/
         raytracer.run();
     }
     catch(const std::exception& e) {

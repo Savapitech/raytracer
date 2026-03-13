@@ -117,7 +117,7 @@ int BVH::AppliedSah(bvh_stack_t &stack)
     return pivot;
 }
 
-/*Create every single node of the bvh with a simulate stack alloc on the heaps*/
+/*===Create every single node of the bvh with a simulate stack alloc on the heaps===*/
 void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
 {
     int pivot = 0;
@@ -126,24 +126,25 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
     bvh_stack_t stack = myStacks.back();
     Axis axis;
     
-    /* Init */
     myStacks.pop_back();
     newNode.start = stack.start;
     newNode.count = stack.end - stack.start;
 
-    /*Construction Node*/
+    /*===Build leaf node===*/
     if (newNode.count == OBJECT_LEAF){
         newNode.isLeaf = true;
         Objects[IndexTab[stack.start]]->aabb.normalize();
         newNode.nodeShape =  Objects[IndexTab[stack.start]]->aabb;
         newNode.count = OBJECT_LEAF;
     }
+    /*===Build classic node===*/
     if (newNode.isLeaf != true){
         axis = setAxis(newNode.nodeShape, stack);
         CentroidSort(stack, axis);
         buildleftrightAABB(stack);
         pivot = this->AppliedSah(stack);
     }
+    /*===set the left or right node of the parent to build the three===*/
     if (stack.parentIndex != -1){
         if (stack.isLeftChild == true)
             this->SpThree[stack.parentIndex].left = nodeIndex;
@@ -153,24 +154,27 @@ void BVH::FillNode(std::vector<bvh_stack_t> &myStacks)
     SpThree.push_back(newNode);
     if (newNode.isLeaf == true)
         return;
-    /*Création récursif*/
+    /*===Build Heaps stack===*/
     myStacks.push_back((bvh_stack_t){.start = stack.start, .end = pivot, .parentIndex=nodeIndex, .isLeftChild=true});
     myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=false});
 }
 
-/*
-**Init the bvh construction
-*/
+/*===Init the bvh construction===*/
 void BVH::BuildSpacePartitionning(void)
 {
-    this->SpThree.reserve(THREE_ALLOC(Objects.size())); /* Binary Space three */
-    this->IndexTab.reserve(Objects.size()); /*Index list for sorting obj*/
+    /*===Binary Space three===*/
+    this->SpThree.reserve(THREE_ALLOC(Objects.size()));
+    /*===Index list for sorting obj===*/
+    this->IndexTab.reserve(Objects.size());
+    
+    /*===Alloc heap stack to build a binary tree and init is first node===*/
     this->myStacks.reserve(THREE_ALLOC(Objects.size()));
+    this->myStacks.push_back((bvh_stack_t){.start = 0, .end = (int)Objects.size(), .parentIndex = -1, .isLeftChild = false});
+    /*===Alloc two array of node for SAH algo===*/
     this->LeftSide.reserve(Objects.size());
     this->RightSide.reserve(Objects.size());
-    Log::Logger::debug("Three alloc:" + std::to_string(THREE_ALLOC(Objects.size())));
 
-    myStacks.push_back((bvh_stack_t){.start = 0, .end = (int)Objects.size(), .parentIndex = -1, .isLeftChild = false});
+    Log::Logger::debug("Three alloc:" + std::to_string(THREE_ALLOC(Objects.size())));
 
     for (size_t i = 0; i < Objects.size(); i++)
         IndexTab.push_back(int(i));
@@ -178,6 +182,8 @@ void BVH::BuildSpacePartitionning(void)
     while (myStacks.empty() == false){
         FillNode(myStacks);
     }
+
+    /*===Clean Memory===*/
     this->myStacks.clear();
     this->myStacks.shrink_to_fit();
     
@@ -186,7 +192,8 @@ void BVH::BuildSpacePartitionning(void)
     
     this->RightSide.clear();
     this->RightSide.shrink_to_fit();
-    /*Display node*/
+
+    /*===Debug: Display three node===*/
     if (Log::Logger::GetLogLvl() == Log::Logger::LogLvl::DEBUG)
         for (size_t i = 0; i != SpThree.size(); i++)
             std::cout << CLR_BOLD_DEBUG << "Three BVH:" << CLR_DEBUG
@@ -196,6 +203,7 @@ void BVH::BuildSpacePartitionning(void)
             "Right" << SpThree[i].right << " " <<  CLR_RESET <<
             std::endl;
 }
+
 
 bool BVH::intersect(Ray& ray, Hit& hit) noexcept
 {

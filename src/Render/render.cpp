@@ -13,8 +13,8 @@ Render::Render(scene::Scene &scene) noexcept
       RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       ImageRender(false),
       distance(0),
-      texture((sf::Vector2u){WIDTH, HEIGHT}),
-      sprite(texture)
+      TframeBuffer((sf::Vector2u){WIDTH, HEIGHT}),
+      SframeBuffer(TframeBuffer)
       
 {
     for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4){
@@ -23,11 +23,9 @@ Render::Render(scene::Scene &scene) noexcept
     Log::Logger::info("Window Open");
 }
 
-#define SAMPLING 1
-#include <random>
-
 void Render::skipPixels(void) noexcept
 {
+    /*===Set a binary sample for skipping pixel in case of movement===*/
     if (count_change == 0){
         binary_sample = 3;
         count_change++;
@@ -76,8 +74,8 @@ void Render::createRayBuffer(void) noexcept
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
     
     /*==============Update The Frame Buffer==============*/
-    this->texture.update(RayBuffer.data());
-    this->sprite.setTexture(this->texture);
+    this->TframeBuffer.update(RayBuffer.data());
+    this->SframeBuffer.setTexture(this->TframeBuffer);
     count_change++;
 }
 
@@ -88,18 +86,27 @@ void Render::RunRender(void) noexcept
 {
     Log::Logger::info("Start Render");
 
+    /*===Build the binary space three===*/
     this->bvh.BuildSpacePartitionning();
     
-    this->gr.addSprite(this->sprite);
-
+    /*===add frame buffer sprite to the pool of sprite to draw===*/
+    this->gr.addSprite(this->SframeBuffer);
+    
+    /*===Start the main loop===*/
     while (this->gr.isOpen()) {
+
+        /*===Check the if we need to rebuild the frame buffer in case of movement===*/
         if (this->ImageRender == false){
             this->createRayBuffer();
             this->gr.display();
             Log::Logger::info("Push new buffer");
             this->image.saveToFile("IronMan.png");
         }
+
+        /*===Check window event for closing the window===*/
         this->gr.handleEvent();
+
+        /*===Change the camera data in case of inputs===*/
         if (this->gr.handleMovement(this->scene) == true){
             this->ImageRender = false;
             count_change = 0;
