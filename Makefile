@@ -3,7 +3,7 @@ TARGET = raytracer
 KERNEL = $(shell uname)
 
 CXX = clang++
-CXXFLAGS = -Wall -Wextra -std=c++20 -O3
+CXXFLAGS = -g -Wall -Wextra -std=c++20 -O3
 
 ifeq ($(KERNEL),Darwin)
 SFML_FLAG = -L ./SFML-3.0.2/lib -l sfml-graphics -l sfml-window -l sfml-system
@@ -59,6 +59,7 @@ SRC += src/SpacePartitionning/AABB.cpp
 
 #GRAPHIC
 SRC += src/Load/graphicLoad.cpp
+SRC += src/Render/graphical.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

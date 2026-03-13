@@ -10,11 +10,9 @@
 Render::Render(scene::Scene &scene) noexcept
     : scene(scene),
       bvh(scene.getObjects()),
-      window(sf::VideoMode({WIDTH, HEIGHT}), "Raytracer"),
       RayBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       ImageRender(false),
       distance(0),
-      load("./Asset/loading.png", scene.getCamera().width,scene.getCamera().height),
       texture((sf::Vector2u){WIDTH, HEIGHT}),
       sprite(texture)
       
@@ -25,7 +23,6 @@ Render::Render(scene::Scene &scene) noexcept
     Log::Logger::info("Window Open");
 }
 
-bool change = false;
 int count_change = 0;
 int binary_sample = 0;
 
@@ -34,32 +31,33 @@ int binary_sample = 0;
 
 void Render::createRayBuffer(void) noexcept
 {
-    if (change == true)
-        count_change = 0;
-    if (count_change == 0)
+    if (count_change == 0){
         binary_sample = 3;
-    if (count_change == 1)
+        count_change++;
+    } else if (count_change == 1){
         binary_sample = 1;
-    if (count_change == 2)
+        count_change++;
+    } else if (count_change == 2){
         binary_sample = 0;
-    if (count_change > 2)
+        count_change++;
+    } else if (count_change == 4){
+        this->ImageRender = true;
         return;
+    }
     const auto &cam = scene.getCamera();
-    this->ImageRender = true;
+   
     sf::Clock clock;/*SFML*/
 
     int nbPixel = cam.width * cam.height;
     int count = 0;
     int percent = 0;
 
+    std::fill(RayBuffer.begin(), RayBuffer.end(), 0);
+
     for (int i = 0; i != SAMPLING; i++){
-        float offsetX = 0.0;//dis(gen);
-        float offsetY = 0.0;//dis(gen);
+        float offsetX = 0.0;
+        float offsetY = 0.0;
         for (int x = 0;x < cam.width; x++){
-            //if (load.pushLoad(window) == true)
-            //    this->HandleWindow(true);
-            if (x & 7 && window.isOpen() == false)
-                return;
             for (int y = 0; y < cam.height; y++){
                 if ((x | y) & binary_sample)/*1 3 7 */ /*Sampling Hard Code */
                     continue;
@@ -74,22 +72,10 @@ void Render::createRayBuffer(void) noexcept
     std::cout << CLR_BOLD_DEBUG << "Render Time:" << RenderTimeMs << CLR_RESET << std::endl;
     //this->image.create(scene.getCamera().width, scene.getCamera().height, RayBuffer.data());/*SFML*/
     //this->texture.loadFromImage(image);/*SFML*/
+    
     this->texture.update(RayBuffer.data());
     this->sprite.setTexture(this->texture);/*SFML*/
     count_change++;
-    change = false;
-}
-
-void Render::HandleWindow(bool clear) noexcept{
-
-    while (const std::optional event = window.pollEvent()) {
-            if (event->is<sf::Event::Closed>())
-                this->window.close();
-        }        
-    this->window.clear({0, 0, 0, 255});
-    this->window.draw(sprite);
-    this->window.display();
-    std::fill(RayBuffer.begin(), RayBuffer.end(), 100);
 }
 
 /*
@@ -98,35 +84,26 @@ void Render::HandleWindow(bool clear) noexcept{
 void Render::RunRender(void) noexcept
 {
     Log::Logger::info("Start Render");
+
+    this->bvh.BuildSpacePartitionning();
     
-    while (this->window.isOpen()) {
+    this->gr.addSprite(this->sprite);
+
+    while (this->gr.isOpen()) {
         if (this->ImageRender == false){
-            this->bvh.BuildSpacePartitionning();
-            Log::Logger::info("Push new buffer");
             this->createRayBuffer();
+            this->gr.display();
+            Log::Logger::info("Push new buffer");
             this->image.saveToFile("IronMan.png");
 
             /*SFML*/
         }
-        scene::Camera cam = this->scene.getCamera();
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)){
-            this->scene.updateCamera({cam.pos.x + static_cast<float>(-0.2),cam.pos.y, cam.pos.z });
-            change = true;
+        this->gr.handleEvent();
+        if (this->gr.handleMovement(this->scene) == true){
+            this->ImageRender = false;
+            count_change = 0;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))    {
-            this->scene.updateCamera({cam.pos.x + static_cast<float>(0.2),cam.pos.y, cam.pos.z });
-            change = true;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))    {
-            change = true;
-            this->scene.updateCamera({cam.pos.x, cam.pos.y, cam.pos.z  + static_cast<float>(-0.2)});
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))    {
-            change = true;
-            this->scene.updateCamera({cam.pos.x ,cam.pos.y, cam.pos.z + static_cast<float>(0.2) });
-        }
-        this->createRayBuffer();
-        this->HandleWindow(true);
+      
     }
     Log::Logger::info("Window Close");
 }

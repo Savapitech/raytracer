@@ -27,8 +27,6 @@ bool Render::ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexce
     return false;
 }
 
-
-
 /*Il faudrait que je parcours une list de light plus tard la variable Light est provisoire*/
 Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 {
