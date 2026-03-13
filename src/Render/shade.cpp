@@ -1,4 +1,6 @@
 #include "RayTracer.hpp"
+#include <cmath>
+
 
 Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexcept
 {
@@ -9,16 +11,18 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexce
     return lightColor * spec;
 }
 
-bool Render::ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L) noexcept
+bool Render::ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept
 {
-    Hit shadowHit; 
-    Ray shadowRay(P + L * 0.0001f, L); 
+    Hit shadowHit;
+    float espilon = 1e-4 * ((float(1.0f) > P.length()) ? 1.0f : P.length()) ;
+    Ray shadowRay(P + N * espilon, L); 
     float distToLight = norm(light - P);
 
     if (this->bvh.intersect(shadowRay, shadowHit) == true) {
-        if (shadowHit.t > 0.0f && shadowHit.t < distToLight) {
+        if (shadowHit.ObjectIdx == index)
+            return false;
+        if (shadowHit.t > 0.0f && shadowHit.t < distToLight)
             return true;
-        }
     }
     return false;
 }
@@ -37,7 +41,7 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
    
     Vec3 N = minHit.normal;
 
-    if (ShadowRay(light, P, L) == true)
+    if (ShadowRay(light, P, L, N, minHit.ObjectIdx) == true)
         return Vec3(0, 0, 0);
     float diff = std::max(dot(N, L), 0.0f);
     Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);

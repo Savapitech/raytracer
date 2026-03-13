@@ -69,6 +69,6 @@ namespace scene
         void insertObjInObjects(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         Camera cameraInfo;
-        std::vector<std::unique_ptr<Object>> objects;
+        std::vector<std::unique_ptr<Object>> objects; // send
     };
 } 

@@ -39,7 +39,7 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const
     Vec3 center = _pos;
     float r = _radius;
     float h = _heigth;
-    Vec3 v = _dir;
+    Vec3 v = normalize(_dir);
     Vec3 origin = ray.origin - this->_pos;
     Vec3 ray_dir = ray.dir;
 
@@ -48,7 +48,8 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const
     float c = (dot(origin, origin)) - (dot(origin, v) * dot(origin, v)) - (r*r);
 
     float delta = b * b - 4.0f * a * c;
-    if (delta < 0.0f)
+    
+    if (delta < 0.0f || fabs(a) < 1e-6f)
         return false;
         
     float sqrtD = std::sqrt(delta);
@@ -72,7 +73,7 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const
         t = t1;
         normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m1));
     }
-    else if (validT2 && t2 > ray.minHit && t2 < t) {
+    if (validT2 && t2 > ray.minHit && t2 < t) {
         t = t2;
         normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m2));
     }
