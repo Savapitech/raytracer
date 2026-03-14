@@ -16,14 +16,10 @@ void Render::writePixel(int x, int y, sf::Color color) noexcept
 
 void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
 {
-    
-
-    float dirx = (2.0f * (x + offsetX + 0.5f) * invWidth - 1.0f) * aspect * scale;
-    float diry = (1.0f - 2.0f * (y + offsetY + 0.5f) * invHeight) * scale;
-
+    float dirx = (2.0f * (offsetX + 0.5f) * invWidth - 1.0f) * aspect * scale;
+    float diry = (1.0f - 2.0f * (offsetY + 0.5f) * invHeight) * scale;
 
     Vec3 pixelDir = normalize(scene.getCamera().forward + scene.getCamera().right * dirx + scene.getCamera().up * diry);
-
 
     Ray ray(scene.getCamera().pos, pixelDir);
     Hit minHit;

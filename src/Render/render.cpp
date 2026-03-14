@@ -125,7 +125,7 @@ void Render::RunRender(void) noexcept
             this->createRayBuffer();
             this->gr.display();
             Log::Logger::info("Push new buffer");
-            this->image.saveToFile("IronMan.png");
+           
         }
 
         /*===Check window event for closing the window===*/
