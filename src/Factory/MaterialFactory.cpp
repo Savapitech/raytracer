@@ -14,6 +14,9 @@ MaterialFactory::MaterialFactory()
     materialRegistry["mirror"] = [](const libconfig::Setting& s) {
         return std::make_unique<Mirror>(s);
     };
+    materialRegistry["chrome"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Chrome>(s);
+    };
     materialRegistry["default"] = [](const libconfig::Setting& s) {
         return std::make_unique<Default>(s);
     };

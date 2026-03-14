@@ -59,8 +59,6 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept
     return finalColor;
 }
 
-#define MAX_BOUNCE 10
-
 sf::Color Render::shade(Ray &ray, Hit &hit, int depth) noexcept
 {
 

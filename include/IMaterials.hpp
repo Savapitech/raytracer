@@ -32,13 +32,29 @@ class AMaterial : public IMaterial
         Vec3 Ks;
 };
 
-class Mirror final : public AMaterial  
+class Mirror : public AMaterial  
 {
     public:
         Mirror(const libconfig::Setting& s);
+        Mirror() = default;
         bool scatter(const Ray& inRay, const Hit& hit, Vec3& attenuation, Ray& scattered) const override;
 
         float reflectlvl;
+};
+
+class Chrome : public Mirror
+{
+    public:
+        Chrome(const libconfig::Setting& s)
+        {
+            this->type = "Chrome";
+            this->reflectlvl = (float)s["reflect"];
+            this->color = {255, 255, 255};
+            this->isFong = false;
+            this->reflectivity = 0.7f;
+            this->shininess = 150.0f;
+            this->Ks = Vec3(0.9f, 0.9f, 0.9f);
+        }
 };
 
 class Default final : public AMaterial  

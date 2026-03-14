@@ -14,12 +14,15 @@ Mirror::Mirror(const libconfig::Setting& s){
 
 bool Mirror::scatter(const Ray& in, const Hit& hit, Vec3& attenuation, Ray& scattered) const 
 {
+    if (this->reflectivity <= 0.0f)
+        return false;
+
     Vec3 unitDir = normalize(in.dir);
-    Vec3 reflected = reflect(unitDir, hit.normal);
-    
-        reflected = normalize(reflected);
-    Vec3 offsetOrigin = hit.position + hit.normal * 0.0001f;
+    Vec3 reflected = normalize(reflect(unitDir, hit.normal));
+    Vec3 offsetOrigin = hit.position + hit.normal * 0.001f;
+
     scattered = Ray(offsetOrigin, reflected);
-    attenuation = Vec3(1.f, 1.0f, 1.0f);
+    attenuation = this->Ks * this->reflectivity;
+
     return dot(reflected, hit.normal) > 0.0f;
 }
