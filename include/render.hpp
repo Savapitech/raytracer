@@ -36,6 +36,7 @@ class Render
         void createRayBuffer(void) noexcept;
         void skipPixels() noexcept;
         void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
+        void fillTile(int startX, int startY);
         void writePixel(int x, int y, sf::Color color) noexcept;
         sf::Color shade(Ray &ray, Hit &minHit) noexcept;
         bool ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept;
@@ -57,5 +58,10 @@ class Render
 
         int count_change = 0;
         int binary_sample = 0;
+        
+        float aspect;
+        float scale;
+        float invWidth;
+        float invHeight;
 };
 

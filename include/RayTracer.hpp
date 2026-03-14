@@ -10,6 +10,7 @@ class Ray
     public:
         Vec3 origin;
         Vec3 dir;
+        float invDir[3];
         float minHit = 0.001f;
         float maxHit = 1e30f;
 

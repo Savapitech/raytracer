@@ -11,6 +11,9 @@ Ray::Ray(const scene::Camera &camera, float x, float y)
 
     this->dir = normalize(camera.forward + camera.right * dirx + camera.up * diry);
     this->origin = camera.pos;
+    invDir[0] = 1.0f / dir[0];
+    invDir[1] = 1.0f / dir[1];
+    invDir[2] = 1.0f / dir[2];
 }
 
 Ray::Ray(const Vec3& origin, const Vec3& direction)
@@ -19,4 +22,7 @@ Ray::Ray(const Vec3& origin, const Vec3& direction)
     this->dir = normalize(direction);
     this->minHit = 0.001f;
     this->maxHit = 1e30f;
+    invDir[0] = 1.0f / dir[0];
+    invDir[1] = 1.0f / dir[1];
+    invDir[2] = 1.0f / dir[2];
 }

@@ -13,15 +13,14 @@ bool AABB::intersect(const Ray& r) const
     float tMax = r.maxHit;
 
     for (int i = 0; i < 3; i++) {
-        float invD = 1.0f / r.dir[i];
-        float t0 = (min[i] - r.origin[i]) * invD;
-        float t1 = (max[i] - r.origin[i]) * invD;
+        float t0 = (min[i] - r.origin[i]) * r.invDir[i];
+        float t1 = (max[i] - r.origin[i]) * r.invDir[i];
+   
+        float tNear = std::min(t0, t1);
+        float tFar  = std::max(t0, t1);
 
-        if (invD < 0.0f)
-            std::swap(t0, t1);
-
-        tMin = std::max(tMin, t0);
-        tMax = std::min(tMax, t1);
+        tMin = std::max(tMin, tNear);
+        tMax = std::min(tMax, tFar);
 
         if (tMax <= tMin)
             return false;

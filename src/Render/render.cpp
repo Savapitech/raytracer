@@ -20,6 +20,10 @@ Render::Render(scene::Scene &scene) noexcept
     for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4){
         RayBuffer[i] = 255;
     }
+    this->aspect = float(scene.getCamera().width) / float(scene.getCamera().height);
+    this->scale  = tanf((scene.getCamera().fov * 0.5f) * (M_PI / 180.0f));
+    this->invWidth  = 1.0f / scene.getCamera().width;
+    this->invHeight = 1.0f / scene.getCamera().height;
     Log::Logger::info("Window Open");
 }
 
@@ -37,7 +41,26 @@ void Render::skipPixels(void) noexcept
         count_change++;
     } else if (count_change == 4){
         this->ImageRender = true;
+        exit(0);
         return;
+    }
+}
+
+void Render::fillTile(int startX, int startY)
+{
+    const auto &cam = scene.getCamera();
+
+    int tileSize = 16;
+
+    int endX = std::min(startX + tileSize, cam.width);
+    int endY = std::min(startY + tileSize, cam.height);
+
+    for (int y = startY; y < endY; y++) {
+        for (int x = startX; x < endX; x++) {
+            if ((x | y) & binary_sample)
+                continue;
+            fillRayBuffer((float)x, (float)y, x, y);
+        }
     }
 }
 
@@ -58,13 +81,16 @@ void Render::createRayBuffer(void) noexcept
     /*===========Clean Frame Buffer===========*/
     std::fill(RayBuffer.begin(), RayBuffer.end(), 0);
 
-    /*===Fill the pixel into the frame buffer===*/
-    for (int x = 0;x < cam.width; x++){
-        for (int y = 0; y < cam.height; y++){
-            if ((x | y) & binary_sample)
-                continue;
-            this->fillRayBuffer(0.0f + x, 0.0f + y, x, y);
-            count++;
+    /*===========Prep to send tile of Window===========*/
+    int width = cam.width;
+    int height = cam.height;
+
+    int tileSize = 16;
+
+    /*===========File tole of Window for better access to L1===========*/
+    for (int ty = 0; ty < height; ty += tileSize) {
+        for (int tx = 0; tx < width; tx += tileSize) {
+            fillTile(tx, ty);
         }
     }
 
