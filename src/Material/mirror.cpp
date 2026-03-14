@@ -6,6 +6,9 @@ Mirror::Mirror(const libconfig::Setting& s){
     this->reflectlvl = (float)s["reflect"];
     this->color = {255, 255, 255};
     this->isFong = false;
+    this->reflectivity = 1.0f;
+    this->shininess = 200.0f;
+    this->Ks = Vec3(1.0f, 1.0f, 1.0f);
 }            
 
 

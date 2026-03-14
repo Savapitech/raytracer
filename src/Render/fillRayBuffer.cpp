@@ -23,7 +23,7 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
 
     this->bvh.intersect(ray, minHit);
     if (minHit.ObjectIdx != -1) {
-        sf::Color color = this->shade(ray, minHit);
+        sf::Color color = this->shade(ray, minHit, 4);
         writePixel(x, y, color);
     }
     else

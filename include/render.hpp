@@ -38,9 +38,9 @@ class Render
         void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
         void fillTile(int startX, int startY);
         void writePixel(int x, int y, sf::Color color) noexcept;
-        sf::Color shade(Ray &ray, Hit &minHit) noexcept;
-        bool ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept;
-        Vec3 AppliedFong(Ray &ray, Hit &minHit) noexcept;
+        sf::Color shade(Ray &ray, Hit &minHit, int depth) noexcept;
+        bool ShadowRay(const Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept;
+        Vec3 AppliedFong(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept;
         Render(scene::Scene &scene) noexcept;
 
     private:

@@ -11,7 +11,7 @@ Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexce
     return lightColor * spec;
 }
 
-bool Render::ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept
+bool Render::ShadowRay(const Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept
 {
     Hit shadowHit;
     float espilon = 1e-4 * ((float(1.0f) > P.length()) ? 1.0f : P.length()) ;
@@ -28,24 +28,30 @@ bool Render::ShadowRay(Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexce
 }
 
 /*Il faudrait que je parcours une list de light plus tard la variable Light est provisoire*/
-Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
+Vec3 Render::AppliedFong(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept
 {
-    //Vec3 light = this->scene.getCamera().pos;
-    Vec3 light(5, 200, -50);
-    Vec3 colorShape = this->scene.getObjects()[minHit.ObjectIdx]->shape->getColor();
+    const auto& material = this->scene.getObjects()[minHit.ObjectIdx]->material;
 
-    Vec3 P = ray.origin + ray.dir * minHit.t;
-    Vec3 L = normalize(light - P);
-   
+    Vec3 finalColor = albedo * 0.1f;
+
+    Vec3 P = minHit.position;
     Vec3 N = minHit.normal;
+    Vec3 V = normalize(-ray.dir);
 
-    if (ShadowRay(light, P, L, N, minHit.ObjectIdx) == true)
-        return Vec3(0, 0, 0);
-    float diff = std::max(dot(N, L), 0.0f);
-    Vec3 spec = speculaire(normalize(-ray.dir), N, L, 50.f);
-    
-    Vec3 finalColor = spec + (colorShape * diff);
+    std::vector<Vec3> lights = { Vec3(5, 200, -50) }; 
 
+    for (const auto& lightPos : lights) 
+    {
+        Vec3 L = normalize(lightPos - P);
+        if (ShadowRay(lightPos, P, L, N, minHit.ObjectIdx) == true)
+            continue; 
+
+        float diff = std::max(dot(N, L), 0.0f);
+        Vec3 diffuseColor = albedo * diff;
+        Vec3 spec = speculaire(V, N, L, material->shininess);        
+        Vec3 specularColor = spec * material->Ks; 
+        finalColor += diffuseColor + specularColor;
+    }
     finalColor.x = std::clamp(finalColor.x, 0.0f, 255.0f);
     finalColor.y = std::clamp(finalColor.y, 0.0f, 255.0f);
     finalColor.z = std::clamp(finalColor.z, 0.0f, 255.0f);
@@ -55,38 +61,38 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit) noexcept
 
 #define MAX_BOUNCE 10
 
-sf::Color Render::shade(Ray &ray, Hit &hit) noexcept
+sf::Color Render::shade(Ray &ray, Hit &hit, int depth) noexcept
 {
-    Vec3 color(0);
-    Vec3 RelfectedIntensity(1, 1, 1);
-    Hit tmpHit = hit;
-    Vec3 reflectedColor;
-    Vec3 textureColor = {1, 1, 1};
 
-    if (this->scene.getObjects()[tmpHit.ObjectIdx]->material->textureIndex > -1) {
-        Vec2 uv = this->scene.getObjects()[tmpHit.ObjectIdx]->shape->getUv(hit.position);
-        textureColor = this->scene.getObjects()[tmpHit.ObjectIdx]->material->textureManager.getTexturePix(this->scene.getObjects()[tmpHit.ObjectIdx]->material->textureIndex, uv);
+    if (depth <= 0)
+        return sf::Color(0, 0, 0, 255);
+
+    const auto& object = this->scene.getObjects()[hit.ObjectIdx];
+    const auto& material = object->material;
+
+    Vec3 albedo = object->shape->getColor();
+    
+    if (material->textureIndex > -1) {
+        Vec2 uv = object->shape->getUv(hit.position);
+        albedo = material->textureManager.getTexturePix(material->textureIndex, uv);
     }
 
-    if (this->scene.getObjects()[hit.ObjectIdx]->material->isFong == true) {
-        Vec3 fong = AppliedFong(ray, hit);
-        fong = fong * textureColor;
-        return sf::Color(fong.x, fong.y, fong.z, 255);
-    }
+    Vec3 finalColor = AppliedFong(ray, hit, albedo); 
 
-    for (int i = 0; i != MAX_BOUNCE; i++) {
-        Ray reflectedRay(tmpHit.position + tmpHit.normal * 0.001f, normalize(reflect(normalize(ray.dir), tmpHit.normal)));
-        Ray scattered;
-        if (this->bvh.intersect(reflectedRay, tmpHit) == false)
-            return sf::Color(0,0,0,255);
-        reflectedColor = AppliedFong(reflectedRay, tmpHit);
-        if (this->scene.getObjects()[tmpHit.ObjectIdx]->material->scatter(reflectedRay, tmpHit, RelfectedIntensity, scattered) == false)
-            break;
-        reflectedColor *= RelfectedIntensity;
-        if (RelfectedIntensity.length() < 0.01f)
-            break;
+    if (material->reflectivity > 0.0f) {
+        Vec3 reflectDir = normalize(reflect(normalize(ray.dir), hit.normal));
+        Ray reflectedRay(hit.position + hit.normal * 0.001f, reflectDir);
+        Hit reflectHit;
+        Vec3 bounceColor(0, 0, 0);
+
+        if (this->bvh.intersect(reflectedRay, reflectHit) == true) {
+            sf::Color childColorSf = this->shade(reflectedRay, reflectHit, depth - 1);
+            bounceColor = Vec3(childColorSf.r, childColorSf.g, childColorSf.b);
+        }
+        else {
+            /*Get BackGround Color*/
+        }
+        finalColor = lerp(finalColor, bounceColor, material->reflectivity);
     }
-    if (RelfectedIntensity.x == 1 && RelfectedIntensity.y == 1 && RelfectedIntensity.z == 1)
-        return sf::Color(0,0,0,255);
-    return sf::Color(reflectedColor.x, reflectedColor.y, reflectedColor.z, 255);
+    return sf::Color(finalColor.x, finalColor.y, finalColor.z, 255);
 }

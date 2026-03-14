@@ -88,6 +88,10 @@ inline void display(const Vec3 &v)
     std::cout << "X=" << v.x << ",Y=" << v.y << ",Z=" << v.z << std::endl;
 }
 
+inline Vec3 lerp(const Vec3& a, const Vec3& b, float t) {
+    return a * (1.0f - t) + b * t;
+}
+
 inline float norm(const Vec3 &v)
 {
     return std::sqrt(dot(v, v));

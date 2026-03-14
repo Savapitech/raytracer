@@ -47,6 +47,7 @@ void Render::skipPixels(void) noexcept
 
 void Render::fillTile(int startX, int startY)
 {
+    /*===Creation of tile to access the L1 cache===*/
     const auto &cam = scene.getCamera();
 
     int tileSize = 16;

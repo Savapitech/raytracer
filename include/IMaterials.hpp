@@ -26,6 +26,10 @@ class AMaterial : public IMaterial
         bool isFong = true;
         Vec3 color;
         int textureIndex;
+
+        float reflectivity;
+        float shininess;
+        Vec3 Ks;
 };
 
 class Mirror final : public AMaterial  
