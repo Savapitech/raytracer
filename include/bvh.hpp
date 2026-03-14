@@ -21,16 +21,31 @@ typedef struct bvh_stack_s {
     bool isLeftChild = false;
 } bvh_stack_t;
 
-typedef struct node_s {
-    int left = -1;
-    int right = -1;
-
-    int start = -1;
-    int count = -1;
+struct node_t {
     AABB nodeShape;
 
-    bool isLeaf = false;
-} node_t;
+    union {
+        int left;
+        int start;
+    };
+
+    union {
+        int right;
+        struct {
+            unsigned int count : 31;  
+            unsigned int isLeaf : 1; 
+        };
+    };
+
+    node_t() 
+    {
+    left = -1;
+    count = -1;
+    isLeaf = 0; 
+    }
+};
+
+
 
 
 using VObjects = const std::vector<std::unique_ptr<Object>>&;

@@ -1,9 +1,6 @@
 #include "render.hpp"
 #include "RayTracer.hpp"
 
-#include <cmath>
-#define SAMPLING 1
-
 void Render::writePixel(int x, int y, sf::Color color) noexcept
 {
     int acutalPixel = (y * scene.getCamera().width + x) * 4;

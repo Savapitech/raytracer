@@ -18,7 +18,6 @@ int main(int ac, char **av)
     /*====Prep the Parser for the main command from argv====*/
     ParserCmd::Parser parser(ac, av);
 
-
     try {
         /*===Parse the command from argv===*/
         parser.initParser();
