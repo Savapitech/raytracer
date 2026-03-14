@@ -41,7 +41,6 @@ void Render::skipPixels(void) noexcept
         count_change++;
     } else if (count_change == 4){
         this->ImageRender = true;
-        exit(0);
         return;
     }
 }
