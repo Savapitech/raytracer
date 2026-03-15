@@ -19,10 +19,17 @@ Default::Default(){
 }            
 
 
-bool Default::scatter(
-    [[maybe_unused]] const Ray& inRay,[[maybe_unused]] const Hit& hit,
-    Vec3& attenuation,[[maybe_unused]] Ray& scattered) const
-{ 
-    attenuation = Vec3(0.0f, 0.0f, 0.0f);
-    return false;
+bool Default::scatter(const Ray& in, const Hit& hit, Vec3& attenuation, Ray& scattered) const 
+{
+    if (this->reflectivity <= 0.0f)
+        return false;
+
+    Vec3 unitDir = normalize(in.dir);
+    Vec3 reflected = normalize(reflect(unitDir, hit.normal));
+    Vec3 offsetOrigin = hit.position + hit.normal * 0.001f;
+
+    scattered = Ray(offsetOrigin, reflected);
+    attenuation = this->Ks * this->reflectivity;
+
+    return dot(reflected, hit.normal) > 0.0f;
 }

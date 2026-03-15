@@ -75,8 +75,9 @@ void Render::createRayBuffer(void) noexcept
     int percent = 0;
 
     skipPixels();
-    if (this->ImageRender == true)
+    if (this->ImageRender == true){
         return;
+    }
 
     /*===========Clean Frame Buffer===========*/
     std::fill(RayBuffer.begin(), RayBuffer.end(), 0);

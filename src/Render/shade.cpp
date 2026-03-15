@@ -38,7 +38,9 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept
     Vec3 N = minHit.normal;
     Vec3 V = normalize(-ray.dir);
 
-    std::vector<Vec3> lights = { Vec3(5, 200, -50) }; 
+    
+
+    std::vector<Vec3> lights = {this->scene.getCamera().pos}; 
 
     for (const auto& lightPos : lights) 
     {
