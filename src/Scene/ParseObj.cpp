@@ -83,13 +83,9 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
                     if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
                         i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
                         
-                        std::unique_ptr<IShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i2], vertices[i3]);
-                        std::unique_ptr<AMaterial> material = std::make_unique<Default>();
-                        //material->color = {255, 0, 255};
-                        material->isFong = true;
-                        material->reflectivity = 0.0f;
-                        material->shininess = 32.0f;
-                        material->Ks = {0.5f, 0.5f, 0.5f};
+                        std::unique_ptr<IShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i3], vertices[i2]);
+                        std::unique_ptr<AMaterial> material = std::make_unique<Chrome>();
+                        shape->setColor({255, 0, 255});
                         std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
                         
                         this->objects.push_back(std::move(obj));

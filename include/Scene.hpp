@@ -62,10 +62,15 @@ namespace scene
             cameraInfo.pos.y = pos.y; 
             cameraInfo.pos.z = pos.z;
         }
+        void updateCameraDir(Vec3 dir){
+            cameraInfo.dir = dir;
+            cameraInfo.setupCam();
+        }
         
     private:
         Factory factory;
 
+        double deapth;
         void insertObjInObjects(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         Camera cameraInfo;

@@ -2,6 +2,7 @@
 #include "Object.hpp"
 #include <cmath>
 #include <limits>
+#include <algorithm>
 
 Triangle::Triangle(const libconfig::Setting& s)
 {
@@ -18,7 +19,7 @@ Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
     this->x = x;
     this->y = y;
     this->z = z;
-    //this->_color = {255, 0, 255};
+    this->_color = {255, 0, 255};
 }
 
 Vec2 Triangle::getUv(Vec3 &hitPos) const {

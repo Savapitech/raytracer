@@ -222,10 +222,10 @@ bool BVH::intersect(Ray& ray, Hit& hit) noexcept
 
         if (SpThree[index].isLeaf == true) {
             if (Objects[IndexTab[SpThree[index].start]]->shape->intersect(ray, tmpHit) == true) {
-                if (tmpHit.t > 0 && tmpHit.t < hit.t) {
-                    hit = tmpHit;
+                if (tmpHit.t > 0.0001f && tmpHit.t < ray.maxHit) {
+                   hit = tmpHit;
                     hit.ObjectIdx = IndexTab[SpThree[index].start];
-                    ray.maxHit = tmpHit.t;
+                    ray.maxHit = tmpHit.t; 
                     Hit_valide = true;
                 }
             }

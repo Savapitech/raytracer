@@ -12,3 +12,9 @@ raytracer
 *.exccalidraw
 
 todolist
+
+
+hotspot*
+
+*.png
+perf.*

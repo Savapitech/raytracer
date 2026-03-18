@@ -55,6 +55,17 @@ class Chrome : public Mirror
             this->shininess = 150.0f;
             this->Ks = Vec3(0.9f, 0.9f, 0.9f);
         }
+        
+        Chrome()
+        {
+            this->type = "Chrome";
+            this->reflectlvl = 0.5;
+            this->color = {255, 255, 255};
+            this->isFong = false;
+            this->reflectivity = 0.7f;
+            this->shininess = 150.0f;
+            this->Ks = Vec3(0.9f, 0.9f, 0.9f);
+        }
 };
 
 class Default final : public AMaterial

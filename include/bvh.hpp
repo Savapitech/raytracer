@@ -21,6 +21,7 @@ typedef struct bvh_stack_s {
     bool isLeftChild = false;
 } bvh_stack_t;
 
+
 struct node_t 
 {
     AABB nodeShape;
@@ -45,6 +46,18 @@ struct node_t
         isLeaf = 0; 
     }
 };
+
+
+//typedef struct node_s {
+//    int left = -1;
+//    int right = -1;
+//
+//    int start = -1;
+//    int count = -1;
+//    AABB nodeShape;
+//
+//    bool isLeaf = false;
+//} node_t;
 
 
 

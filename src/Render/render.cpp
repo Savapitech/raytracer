@@ -79,9 +79,7 @@ void Render::createRayBuffer(void) noexcept
         return;
     }
 
-    /*===========Clean Frame Buffer===========*/
-    std::fill(RayBuffer.begin(), RayBuffer.end(), 0);
-
+    
     /*===========Prep to send tile of Window===========*/
     int width = cam.width;
     int height = cam.height;
@@ -127,7 +125,6 @@ void Render::RunRender(void) noexcept
             this->createRayBuffer();
             this->gr.display();
             Log::Logger::info("Push new buffer");
-           
         }
 
         /*===Check window event for closing the window===*/
@@ -136,6 +133,7 @@ void Render::RunRender(void) noexcept
         /*===Change the camera data in case of inputs===*/
         if (this->gr.handleMovement(this->scene) == true){
             this->ImageRender = false;
+            std::fill(this->RayBuffer.begin(), this->RayBuffer.end(), 0);
             count_change = 0;
         }
     }

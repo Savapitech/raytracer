@@ -11,7 +11,7 @@ RectangleXZ::RectangleXZ(const libconfig::Setting& s){
 
 AABB RectangleXZ::getObjectAABB() const
 {
-    return AABB(Vec3(x.x , y - EPS, z.x), Vec3(x.y, y + EPS, z.y));
+    return AABB(Vec3(x.x , y - 0.01f, z.x), Vec3(x.y, y + 0.01f, z.y));
 } 
 
 Vec3 RectangleXZ::getCentroid() const {
@@ -24,24 +24,36 @@ Vec2 RectangleXZ::getUv(Vec3 &hitPos) const {
 
 bool RectangleXZ::intersect(Ray& ray, Hit& hit) const
 {
+    if (std::abs(ray.dir.y) < 1e-6f)
+        return false;
+
     float t = (y - ray.origin.y) / ray.dir.y;
-    float x = 0;
-    float z = 0;
 
     if (t < ray.minHit || t > ray.maxHit)
         return false;
 
-    x = ray.origin.x + t * ray.dir.x;
-    z = ray.origin.z + t * ray.dir.z;
+    float hitX = ray.origin.x + t * ray.dir.x;
+    float hitZ = ray.origin.z + t * ray.dir.z;
 
-    if (x < this->x.x || x > this->x.y || z < this->z.x || z > this->z.y)
+    float minX = std::min(this->x.x, this->x.y);
+    float maxX = std::max(this->x.x, this->x.y);
+    float minZ = std::min(this->z.x, this->z.y);
+    float maxZ = std::max(this->z.x, this->z.y);
+
+    if (hitX < minX || hitX > maxX || hitZ < minZ || hitZ > maxZ)
         return false;
 
     hit.t = t;
     hit.position = ray.origin + ray.dir * t;
+    Vec3 outward_normal(0, 1, 0); 
 
-    Vec3 normal(0, 1, 0);
-    hit.normal = normal;
-    hit.frontFace = true; 
+    if (dot(ray.dir, outward_normal) < 0.0f) {
+        hit.frontFace = true;
+        hit.normal = outward_normal;
+    } else {
+        hit.frontFace = false;
+        hit.normal = outward_normal * -1.0f;
+    }
+    
     return true;
 }

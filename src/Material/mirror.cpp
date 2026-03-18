@@ -1,7 +1,8 @@
 #include "RayTracer.hpp"
 
 
-Mirror::Mirror(const libconfig::Setting& s){
+Mirror::Mirror(const libconfig::Setting& s)
+{
     this->type = "Mirror";
     this->reflectlvl = (float)s["reflect"];
     this->color = {255, 255, 255};
@@ -9,8 +10,7 @@ Mirror::Mirror(const libconfig::Setting& s){
     this->reflectivity = 1.0f;
     this->shininess = 200.0f;
     this->Ks = Vec3(1.0f, 1.0f, 1.0f);
-}            
-
+}
 
 bool Mirror::scatter(const Ray& in, const Hit& hit, Vec3& attenuation, Ray& scattered) const 
 {

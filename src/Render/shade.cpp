@@ -1,5 +1,6 @@
 #include "RayTracer.hpp"
 #include <cmath>
+#include <algorithm>
 
 
 Vec3 speculaire(const Vec3& V, const Vec3& N, const Vec3& L, float alpha) noexcept
@@ -32,15 +33,20 @@ Vec3 Render::AppliedFong(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept
 {
     const auto& material = this->scene.getObjects()[minHit.ObjectIdx]->material;
 
-    Vec3 finalColor = albedo * 0.1f;
+    Vec3 finalColor = Vec3(255, 0, 255) * 0.1f;
 
     Vec3 P = minHit.position;
     Vec3 N = minHit.normal;
-    Vec3 V = normalize(-ray.dir);
 
+    if (dot(N, ray.dir) > 0.0f) {
+        N = N * -1.0f;
+    }
+
+    Vec3 V = normalize(-ray.dir);
     
 
-    std::vector<Vec3> lights = {this->scene.getCamera().pos}; 
+    std::vector<Vec3> lights = { Vec3(5, 200, -50) };
+    lights.push_back(ray.origin);
 
     for (const auto& lightPos : lights) 
     {
@@ -65,7 +71,7 @@ sf::Color Render::shade(Ray &ray, Hit &hit, int depth) noexcept
 {
 
     if (depth <= 0)
-        return sf::Color(0, 0, 0, 255);
+        return sf::Color(255, 255, 255, 255);
 
     const auto& object = this->scene.getObjects()[hit.ObjectIdx];
     const auto& material = object->material;
@@ -83,14 +89,14 @@ sf::Color Render::shade(Ray &ray, Hit &hit, int depth) noexcept
         Vec3 reflectDir = normalize(reflect(normalize(ray.dir), hit.normal));
         Ray reflectedRay(hit.position + hit.normal * 0.001f, reflectDir);
         Hit reflectHit;
-        Vec3 bounceColor(0, 0, 0);
+        Vec3 bounceColor(255, 255, 255);
 
         if (this->bvh.intersect(reflectedRay, reflectHit) == true) {
             sf::Color childColorSf = this->shade(reflectedRay, reflectHit, depth - 1);
             bounceColor = Vec3(childColorSf.r, childColorSf.g, childColorSf.b);
         }
         else {
-            /*Get BackGround Color*/
+            bounceColor = Vec3(255.0f, 255.0f, 255.0f);
         }
         finalColor = lerp(finalColor, bounceColor, material->reflectivity);
     }

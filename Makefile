@@ -1,4 +1,4 @@
-BIN_NAME = raytracer
+TARGET = raytracer
 
 KERNEL = $(shell uname)
 
@@ -11,8 +11,7 @@ else
 SFML_FLAG = $(shell pkg-config --cflags --libs sfml-graphics sfml-window sfml-system)
 endif
 
-LDLIBS = $(SFML_FLAG) -lm -lconfig++ -g
-
+LIBS = $(SFML_FLAG) -lm -lconfig++ -g
 INC = -I include
 INC += -I include/CmdParser
 INC += -I include/logger
@@ -20,8 +19,6 @@ INC += -I include/logger
 ifeq ($(KERNEL),Darwin)
 INC += -I ./SFML-3.0.2/include
 endif
-
-BUILD_DIR := .build
 
 SRC = src/main.cpp
 
@@ -64,45 +61,27 @@ SRC += src/SpacePartitionning/AABB.cpp
 SRC += src/Load/graphicLoad.cpp
 SRC += src/Render/graphical.cpp
 
-.PHONY: _start all
-_start: all
+OBJ = $(SRC:.cpp=.o)
 
-# call mk-profile release, SRC, additional CXXFLAGS
-define mk-profile
-
-NAME_$(strip $1) := $4
-OBJ_$(strip $1) := $$($(strip $2):%.cpp=$$(BUILD_DIR)/$(strip $1)/%.o)
-
-LIB_OBJ_$(strip $1) := $$(LIB_SRC:%.cpp=$$(BUILD_DIR)/$(strip $1)/%.o)
-
-$$(BUILD_DIR)/$(strip $1)/%.o: %.cpp
-	@ mkdir -p $$(dir $$@)
-	@ $$(COMPILE.c) $$(INC) $$< -o $$@
-	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
-
-$$(NAME_$(strip $1)): CXXFLAGS += -L $$(BUILD_DIR)/$(strip $1) $3
-$$(NAME_$(strip $1)): $$(OBJ_$(strip $1))
-	@ $$(LINK.c) $$(OBJ_$(strip $1)) $$(INC) $$(LDFLAGS) $$(LDLIBS) -o $$@
-	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
-	@ $$(LOG_TIME) "$$(C_GREEN) OK  Compilation finished $$(C_RESET)"
-
-endef
-
-$(eval $(call mk-profile, release, SRC, , $(BIN_NAME)))
-
-all: $(NAME_release)
+all: $(TARGET)
 ifeq ($(KERNEL),Darwin)
 all:
 	@ install_name_tool -add_rpath ./SFML-3.0.2/lib ./raytracer
 endif
 
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INC) -c $< -o $@
+
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) $(LIBS)
+
 clean:
-	@ $(RM) -rf .build
-	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) .build $(C_RESET)"
+	@ $(RM) $(OBJ)
+	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(OBJ) $(C_RESET)"
 
 fclean: clean
-	@ $(RM) $(NAME_release) -rf .build
-	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) .build $(NAME_release) $(C_RESET)"
+	@ $(RM) $(TARGET)
+	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(TARGET) $(C_RESET)"
 
 
 .NOTPARALLEL: re
