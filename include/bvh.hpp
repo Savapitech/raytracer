@@ -80,7 +80,7 @@ class BVH {
         AABB Union(AABB a, AABB b);
         Axis setAxis(AABB &a, bvh_stack_t &myStack);
         Axis getAxis(Vec3 &AAtoBB);
-        int  AppliedSah(bvh_stack_t &stack);
+        void AppliedSah(bvh_stack_t &stack, int &outPivot, float &outBestCost, float parentArea);
 
         VObjects Objects;
         std::vector<node_t> SpThree;
