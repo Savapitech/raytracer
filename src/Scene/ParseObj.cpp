@@ -3,7 +3,10 @@
 #include <sstream>
 #include <string>
 
+
 #include "Scene.hpp"
+#include "Triangle.hpp"
+#include "Chrome.hpp"
 
 using namespace libconfig;
 
@@ -56,7 +59,7 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
 
             this->vertices.push_back(v);
         } else if (type == "f") {
-            std::vector<int> faceIndices;
+            std::vector<int> faceIndex;
             std::string vertexStr;
 
             auto getIndex = [](const std::string& vStr) {
@@ -69,16 +72,16 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
 
             while (iss >> vertexStr) {
                 try {
-                    faceIndices.push_back(getIndex(vertexStr));
+                    faceIndex.push_back(getIndex(vertexStr));
                 } catch(const std::exception& e) {
                     Log::Logger::warning("stoi error with vertex");
                 }
             }
-            if (faceIndices.size() >= 3) {
-                for (size_t i = 1; i < faceIndices.size() - 1; ++i) {
-                    size_t i1 = faceIndices[0];
-                    size_t i2 = faceIndices[i];
-                    size_t i3 = faceIndices[i + 1];
+            if (faceIndex.size() >= 3) {
+                for (size_t i = 1; i < faceIndex.size() - 1; ++i) {
+                    size_t i1 = faceIndex[0];
+                    size_t i2 = faceIndex[i];
+                    size_t i3 = faceIndex[i + 1];
 
                     if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
                         i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {

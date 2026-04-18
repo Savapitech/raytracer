@@ -5,6 +5,9 @@
 Exemple
 SFML-3.0.2
 
+latex
+html
+
 *.o
 
 raytracer

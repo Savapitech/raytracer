@@ -19,7 +19,7 @@ namespace scene {
         return Vec2{(float)s[0], (float)s[1]};
     }
 
-    std::unique_ptr<Object> Factory::GetObject(const Setting &s)
+    std::unique_ptr<Object> Factory::getObject(const Setting &s)
     {
         if (!s.exists("shape"))
             throw std::invalid_argument("Object need a shape");
@@ -40,11 +40,11 @@ namespace scene {
         Log::Logger::debug("Objects size: " + std::to_string(count));
         
         for (int i = 0; i < count; i++){
-            objects.push_back(factory.GetObject(list[i]));
+            objects.push_back(factory.getObject(list[i]));
             Log::Logger::debug("Objects add: " + std::to_string(count));
-            Log::Logger::debug("Objects type: Shape:" + objects.back()->shape->getType());
-            if (objects.back()->material != nullptr)
-                Log::Logger::debug("Objects type: Material:" + objects.back()->material->type);
+            Log::Logger::debug("Objects type: Shape:" + objects.back()->getShape()->getType());
+            if (objects.back()->getMaterial() != nullptr)
+                Log::Logger::debug("Objects type: Material:" + objects.back()->getMaterial()->type);
         }
         this->insertObjInObjects(s, objects);
     }

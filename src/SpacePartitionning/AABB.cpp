@@ -1,4 +1,5 @@
-#include "RayTracer.hpp"
+#include "AABB.hpp"
+#include "Ray.hpp"
 
 void AABB::normalize()
 {

@@ -4,10 +4,9 @@
 ** File description:
 ** raytracer
 */
-#include <iostream>
 #include "logger.hpp"
 #include "ParserCmd.hpp"
-#include "RayTracer.hpp"
+#include "Ray.hpp"
 #include "Object.hpp"
 
 int main(int ac, char **av)

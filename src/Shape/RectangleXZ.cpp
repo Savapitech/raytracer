@@ -1,4 +1,5 @@
-#include "RayTracer.hpp"
+#include "Ray.hpp"
+#include "RectangleXZ.hpp"
 #include "Object.hpp"
 
 RectangleXZ::RectangleXZ(const libconfig::Setting& s){

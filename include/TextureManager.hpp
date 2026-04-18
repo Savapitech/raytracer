@@ -34,16 +34,16 @@ class TextureManager
             if (size.x == 0 || size.y == 0) 
                 return Vec3(0,0,0);
 
-            unsigned int x = (int)(uv.x * size.x) % size.x;
-            unsigned int y = (int)(uv.y * size.y) % size.y;
-
+            int x = (int)(uv.x * size.x) % (int)size.x;
+            int y = (int)(uv.y * size.y) % (int)size.y;
+                    
             if (x < 0) 
-                x += size.x;
+                x += (int)size.x;
             if (y < 0) 
-                y += size.y;
-        
-            sf::Color color = img.getPixel({x, y});
-            return Vec3(color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+                y += (int)size.y;
+                    
+            sf::Color color = img.getPixel({(unsigned int)x, (unsigned int)y});
+            return Vec3(color.r, color.g, color.b);
         }
 
     private:

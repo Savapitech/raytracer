@@ -12,54 +12,17 @@ SFML_FLAG = $(shell pkg-config --cflags --libs sfml-graphics sfml-window sfml-sy
 endif
 
 LIBS = $(SFML_FLAG) -lm -lconfig++ -g
-INC = -I include
-INC += -I include/CmdParser
-INC += -I include/logger
+INC = -iquote include
+
+SRC_DIRS = $(shell find src -type d)
+INC += $(addprefix -iquote, $(SRC_DIRS))
 
 ifeq ($(KERNEL),Darwin)
 INC += -I ./SFML-3.0.2/include
 endif
 
 SRC = src/main.cpp
-
-##LOGGER
-SRC += src/logger/logger.cpp
-
-##CMD_PARSER
-SRC += src/CmdParser/BuildConfig.cpp
-
-##RAY_TRACER
-SRC += src/RayTracer/RayTracer.cpp
-SRC += src/RayTracer/buildRay.cpp
-
-##SCENE
-SRC += src/Scene/BuildScene.cpp
-SRC += src/Factory/ShapeFactory.cpp
-SRC += src/Factory/MaterialFactory.cpp
-SRC += src/Scene/camera.cpp
-SRC += src/Scene/ParseObj.cpp
-
-##OBJECTS
-SRC += src/Object/object.cpp
-SRC += src/Shape/sphere.cpp
-SRC += src/Shape/RectangleXZ.cpp
-SRC += src/Shape/cylinder.cpp
-SRC += src/Shape/triangle.cpp
-SRC += src/Material/mirror.cpp
-SRC += src/Material/default.cpp
-
-#RENDER
-SRC += src/Render/render.cpp
-SRC += src/Render/shade.cpp
-SRC += src/Render/fillRayBuffer.cpp
-
-#BVH
-SRC += src/SpacePartitionning/bvh.cpp
-SRC += src/SpacePartitionning/AABB.cpp
-
-#GRAPHIC
-SRC += src/Load/graphicLoad.cpp
-SRC += src/Render/graphical.cpp
+SRC += $(shell find src/ -name "*.cpp" ! -name "main.cpp")
 
 OBJ = $(SRC:.cpp=.o)
 
@@ -83,6 +46,8 @@ fclean: clean
 	@ $(RM) $(TARGET)
 	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(TARGET) $(C_RESET)"
 
+fast: CXXFLAGS += -ffast-math -march=native
+fast: all
 
 .NOTPARALLEL: re
 re:	fclean all

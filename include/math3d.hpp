@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cmath>
-#include <iostream>
 
 #define EPS 0.0001f
 
@@ -85,7 +84,7 @@ inline float dot(const Vec3 &a, const Vec3 &b)
 
 inline void display(const Vec3 &v)
 {
-    std::cout << "X=" << v.x << ",Y=" << v.y << ",Z=" << v.z << std::endl;
+    //std::cout << "X=" << v.x << ",Y=" << v.y << ",Z=" << v.z << std::endl;
 }
 
 inline Vec3 lerp(const Vec3& a, const Vec3& b, float t) {
@@ -145,28 +144,4 @@ public:
     float y;
 
     Vec2(float x_ = 0.f, float y_ = 0.f) : x(x_), y(y_) {}
-};
-
-class AABB
-{
-    public:
-        Vec3 min;
-        Vec3 max;
-        AABB(Vec3 a, Vec3 b)
-        {
-            min = a;
-            max = b;
-        };
-        AABB() = default;
-
-        float surfaceArea() const
-        {
-            Vec3 d = max - min;
-
-            if (d.x < 0 || d.y < 0 || d.z < 0)
-                return 0.0f;
-            return 2.0f * (d.x * d.y + d.y * d.z + d.z * d.x);
-        }
-        bool intersect(const Ray &r) const;
-        void normalize();
 };
