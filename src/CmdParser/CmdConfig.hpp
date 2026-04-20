@@ -11,6 +11,6 @@ namespace CmdConfig {
 
         std::string scene;
 
-        bool pathtracing;
+        bool pathtracing = false;
     };
 }
