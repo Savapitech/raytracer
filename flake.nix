@@ -29,6 +29,7 @@
           clang
           libconfig
           pkg-config
+          sfml
         ];
 
         env.NIX_CFLAGS_COMPILE =
