@@ -17,29 +17,29 @@ public:
 
     Vec3(float x_ = 0.f, float y_ = 0.f, float z_ = 0.f) : x(x_), y(y_), z(z_) {}
 
-    Vec3 operator-() const { return Vec3(-x, -y, -z); }
-    Vec3 operator-(const Vec3 &other) const { return Vec3(x - other.x, y - other.y, z - other.z); }
+    inline Vec3 operator-() const { return Vec3(-x, -y, -z); }
+    inline Vec3 operator-(const Vec3 &other) const { return Vec3(x - other.x, y - other.y, z - other.z); }
 
-    Vec3 operator+(const Vec3 &other) const { return Vec3(x + other.x, y + other.y, z + other.z); }
-    Vec3 &operator+=(const Vec3 &o)
+    inline Vec3 operator+(const Vec3 &other) const { return Vec3(x + other.x, y + other.y, z + other.z); }
+    inline Vec3 &operator+=(const Vec3 &o)
     {
         x += o.x;
         y += o.y;
         z += o.z;
         return *this;
     }
-    Vec3 operator+(float s) const { return Vec3(x + s, y + s, z + s);}
+    inline Vec3 operator+(float s) const { return Vec3(x + s, y + s, z + s);}
 
-    Vec3 operator*(float s) const { return Vec3(x * s, y * s, z * s); }
-    Vec3 operator*(const Vec3 &o) const { return Vec3(x * o.x, y * o.y, z * o.z); }
-    Vec3 &operator*=(const Vec3 &o)
+    inline Vec3 operator*(float s) const { return Vec3(x * s, y * s, z * s); }
+    inline Vec3 operator*(const Vec3 &o) const { return Vec3(x * o.x, y * o.y, z * o.z); }
+    inline Vec3 &operator*=(const Vec3 &o)
     {
         x *= o.x;
         y *= o.y;
         z *= o.z;
         return *this;
     }
-    Vec3 &operator*=(float s)
+    inline Vec3 &operator*=(float s)
     {
         x *= s;
         y *= s;
@@ -47,8 +47,8 @@ public:
         return *this;
     }
 
-    Vec3 operator/(float s) const { return Vec3(x / s, y / s, z / s); }
-    Vec3 operator/(const Vec3 &other) const { 
+    inline Vec3 operator/(float s) const { return Vec3(x / s, y / s, z / s); }
+    inline Vec3 operator/(const Vec3 &other) const { 
         return Vec3(x / other.x, y / other.y, z / other.z); 
     }
 
@@ -62,7 +62,7 @@ public:
             return z;
     }
 
-    const float &operator[](int i) const
+    inline const float &operator[](int i) const
     {
         if (i == 0)
             return x;
