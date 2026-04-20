@@ -29,21 +29,25 @@ Render::Render(scene::Scene &scene) noexcept
 void Render::skipPixels(void) noexcept
 {
     /*===Set a binary sample for skipping pixel in case of movement===*/
-    if (_countChange == 0){
-        _binarySample = 3;
-        _countChange++;
-    } else if (_countChange == 1){
-        _binarySample = 1;
-        _countChange++;
-    } else if (_countChange == 2){
-        _binarySample = 0;
-        _countChange++;
-    } else if (_countChange == 4){
-        this->_imageIsRender = true;
-        return;
+    switch (_countChange) {
+        case 0:
+            _binarySample = 3;
+            _countChange++;
+            break;
+        case 1:
+            _binarySample = 1;
+            _countChange++;
+            break;
+        case 2:
+            _binarySample = 0;
+            _countChange++;
+            break;
+        default:
+            this->_imageIsRender = true;
+            return;
     }
 }
-
+ 
 void Render::fillTile(int startX, int startY)
 {
     /*===Creation of tile to access the L1 cache===*/
@@ -68,30 +72,39 @@ void Render::createRayBuffer(void) noexcept
     const auto &cam = scene.getCamera();
    
     sf::Clock timeFrameBufferBuild;
-
+ 
     int nbPixel = cam.width * cam.height;
     int count = 0;
     int percent = 0;
-
+ 
     skipPixels();
     if (this->_imageIsRender == true){
         return;
     }
-
+ 
     
     /*===========Prep to send tile of Window===========*/
     int width = cam.width;
     int height = cam.height;
-
+ 
     int tileSize = 16;
-
+ 
     /*===========File tole of Window for better access to L1===========*/
+    int totalTiles = ((width + tileSize - 1) / tileSize) * ((height + tileSize - 1) / tileSize);
+ 
     for (int ty = 0; ty < height; ty += tileSize) {
         for (int tx = 0; tx < width; tx += tileSize) {
             fillTile(tx, ty);
+            count++;
+            int newPercent = (count * 100) / totalTiles;
+            if (newPercent != percent) {
+                percent = newPercent;
+                std::cout << "\rRender: " << percent << "%" << std::flush;
+            }
         }
     }
-
+    std::cout << "\rRender: 100%" << std::endl;
+ 
     /*==============Render Time==============*/
     sf::Time RenderTime = timeFrameBufferBuild.getElapsedTime();
     int32_t RenderTimeMs = RenderTime.asMilliseconds();

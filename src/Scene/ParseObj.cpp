@@ -7,6 +7,7 @@
 #include "Scene.hpp"
 #include "Triangle.hpp"
 #include "Chrome.hpp"
+#include "Default.hpp"
 
 using namespace libconfig;
 
@@ -87,7 +88,7 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
                         i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
                         
                         std::unique_ptr<IShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i3], vertices[i2]);
-                        std::unique_ptr<AMaterial> material = std::make_unique<Chrome>();
+                        std::unique_ptr<AMaterial> material = std::make_unique<Default>();
                         shape->setColor({255, 0, 255});
                         std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
                         

@@ -22,6 +22,7 @@ Object::Object(std::unique_ptr<IShape> shape, std::unique_ptr<AMaterial> materia
 {
     this->_shape = std::move(shape);
     this->_material = std::move(material);
+    this->_shape->getColor();
     this->_aabb = this->_shape->getObjectAABB();
     this->_centroid = this->_shape->getCentroid();
 }

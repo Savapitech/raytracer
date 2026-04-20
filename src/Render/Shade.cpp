@@ -2,6 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include <cstdint>
+#include <array>
 
 thread_local uint32_t rngState = 33554432;
 
@@ -53,7 +54,7 @@ Vec3 computeRefraction(const Vec3& incidentDir, const Vec3& normal, float refrac
 
 const float PI = 3.14159265359f;
 
-float computeNormalDistributionGGX(Vec3 normal, Vec3 halfVector, float roughness) noexcept
+float computeNormalDistributionGGX(const Vec3 &normal,const Vec3 &halfVector, float roughness) noexcept
 {
     float alpha = roughness * roughness;
     float alphaSq = alpha * alpha;
@@ -78,7 +79,7 @@ float computeGeometrySchlickGGX(float normalDotView, float roughness) noexcept
     return numerator / denominator;
 }
 
-float computeGeometrySmith(Vec3 normal, Vec3 viewDir, Vec3 lightDir, float roughness) noexcept
+float computeGeometrySmith(const Vec3 &normal, const Vec3 &viewDir, const Vec3 &lightDir, float roughness) noexcept
 {
     float normalDotView = std::max(dot(normal, viewDir), 0.0f);
     float normalDotLight = std::max(dot(normal, lightDir), 0.0f);
@@ -88,7 +89,7 @@ float computeGeometrySmith(Vec3 normal, Vec3 viewDir, Vec3 lightDir, float rough
     return geometryLight * geometryView;
 }
 
-Vec3 computeFresnelSchlick(float cosTheta, Vec3 baseReflectivity) noexcept
+Vec3 computeFresnelSchlick(float cosTheta, const Vec3 &baseReflectivity) noexcept
 {
     float clampedCos = std::clamp(1.0f - cosTheta, 0.0f, 1.0f);
     float c2 = clampedCos * clampedCos;
@@ -103,15 +104,22 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 
     Vec3 hitPoint = minHit.position;
     Vec3 normal = minHit.normal;
-    if (dot(normal, ray.dir) > 0.0f) normal = normal * -1.0f;
+    if (dot(normal, ray.dir) > 0.0f) 
+        normal = normal * -1.0f;
     
     Vec3 viewDir = normalize(-ray.dir);
 
     Vec3 baseReflectivity = Vec3(0.04f, 0.04f, 0.04f);
     baseReflectivity = lerp(baseReflectivity, albedoNorm, material->metallic);
 
-    std::vector<Vec3> lightPositions = { Vec3(5, 200, -50) };
-    lightPositions.push_back(ray.origin);
+    //std::array<Vec3, 1> lightPositions = { Vec3(5, 200, -50)};
+    std::array<Vec3, 2> lightPositions = { Vec3(5, 200, -50), ray.origin};
+    /*std::array<Vec3, 4> lightPositions = {
+    Vec3(0, 80, 10), 
+    Vec3(30, 40, -20),
+    Vec3(-30, 20, 30),
+    ray.origin,*/
+
 
     for (const auto& lightPos : lightPositions) 
     {
@@ -192,7 +200,6 @@ sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
         if (material->roughness < 0.3f) {
             Vec3 viewDir = normalize(-ray.dir);
             Vec3 normal = hit.normal;
-            if (dot(normal, viewDir) < 0.0f) normal = normal * -1.0f;
 
             Vec3 reflectDir = normalize(reflect(normalize(ray.dir), normal));
             Ray reflectedRay(hit.position + normal * 0.001f, reflectDir);
