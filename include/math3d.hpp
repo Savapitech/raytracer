@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <stdint.h>
 
 #define EPS 0.0001f
 
@@ -149,3 +150,18 @@ public:
 
     Vec2(float x_ = 0.f, float y_ = 0.f) : x(x_), y(y_) {}
 };
+
+
+inline thread_local uint32_t rngState = 33554432;
+
+inline const float SALT = 1.0f / 4294967296.0f;
+
+inline float fastRandomFloat(float min, float max) noexcept {
+    rngState ^= rngState << 13;
+    rngState ^= rngState >> 17;
+    rngState ^= rngState << 5;
+
+    float randomNormalized = (float)rngState * SALT;
+    
+    return min + (max - min) * randomNormalized;
+}

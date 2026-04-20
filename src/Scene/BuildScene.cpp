@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include <memory>
 #include <libconfig.h++>
 using namespace libconfig;
 
@@ -62,5 +63,9 @@ namespace scene {
             
             this->cameraInfo = readcam(scene);
             readObject(scene, this->objects);
+            this->_lights.push_back(std::make_unique<AreaLight>(this->cameraInfo.pos,   Vec3{1.0f, 1.0f, 1.0f}, 8));
+            this->_lights.push_back(std::make_unique<AreaLight>(Vec3{0, 80, 10},        Vec3{1.0f, 1.0f, 1.0f}, 8));
+            this->_lights.push_back(std::make_unique<AreaLight>(Vec3{30, 40, -20},      Vec3{1.0f, 1.0f, 1.0f}, 8));
+            this->_lights.push_back(std::make_unique<AreaLight>(Vec3{-30, 20, 30},      Vec3{1.0f, 1.0f, 1.0f}, 8));
         }
 }

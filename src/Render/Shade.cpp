@@ -4,20 +4,6 @@
 #include <cstdint>
 #include <array>
 
-thread_local uint32_t rngState = 33554432;
-
-const float SALT = 1.0f / 4294967296.0f;
-
-inline float fastRandomFloat(float min, float max) noexcept {
-    rngState ^= rngState << 13;
-    rngState ^= rngState >> 17;
-    rngState ^= rngState << 5;
-
-    float randomNormalized = (float)rngState * SALT;
-    
-    return min + (max - min) * randomNormalized;
-}
-
 Vec3 computeSpecular(const Vec3& viewDir, const Vec3& normal, const Vec3& lightDir, float shininess) noexcept
 {
     Vec3 lightColor(255, 255, 255);
@@ -27,7 +13,7 @@ Vec3 computeSpecular(const Vec3& viewDir, const Vec3& normal, const Vec3& lightD
     return lightColor * specularIntensity;
 }
 
-bool Render::launchShadowRay(const Vec3& lightPos, Vec3& hitPoint, Vec3& lightDir, Vec3& normal, int objectIndex) noexcept
+bool Render::launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept
 {
     Hit shadowHit;
     float epsilon = 1e-4 * ((1.0f > hitPoint.length()) ? 1.0f : hitPoint.length());
@@ -101,6 +87,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 {
     const auto& material = this->scene.getObjects()[minHit.ObjectIdx]->getMaterial();
     Vec3 totalRadiance = Vec3(0.0f, 0.0f, 0.0f);
+    Vec3 ambientRadiance = Vec3(0.0f, 0.0f, 0.0f);
 
     Vec3 hitPoint = minHit.position;
     Vec3 normal = minHit.normal;
@@ -108,74 +95,53 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
         normal = normal * -1.0f;
     
     Vec3 viewDir = normalize(-ray.dir);
+    Vec3 baseReflectivity = lerp(Vec3(0.04f, 0.04f, 0.04f), albedoNorm, material->metallic);
 
-    Vec3 baseReflectivity = Vec3(0.04f, 0.04f, 0.04f);
-    baseReflectivity = lerp(baseReflectivity, albedoNorm, material->metallic);
-
-    //std::array<Vec3, 1> lightPositions = { Vec3(5, 200, -50)};
-    std::array<Vec3, 2> lightPositions = { Vec3(5, 200, -50), ray.origin};
-    /*std::array<Vec3, 4> lightPositions = {
-    Vec3(0, 80, 10), 
-    Vec3(30, 40, -20),
-    Vec3(-30, 20, 30),
-    ray.origin,*/
-
-
-    for (const auto& lightPos : lightPositions) 
+    for (const auto& light : this->scene.getLights()) 
     {
-        int gridSize = 4;
-        float lightSize = 8.0f;
-        float cellSize = lightSize / gridSize;
-        
+        if (!light->castsShadows()) {
+            ambientRadiance += light->getRadiance(hitPoint) * albedoNorm;
+            continue;
+        }
+        int numSamples = 16;
         float unblockedSamples = 0.0f;
 
-        Vec3 centerLightDir = normalize(lightPos - hitPoint);
-        Vec3 halfVector = normalize(viewDir + centerLightDir); 
+        Vec3 centerLightDir = normalize(light->getCenter() - hitPoint); 
 
-        Vec3 lightCorner = lightPos - Vec3(lightSize / 2.0f, 0.0f, lightSize / 2.0f);
+        for (int i = 0; i < numSamples; i++) {
+            Vec3 jitteredLightPos = light->getSamplePosition();
+            Vec3 jitteredLightDir = normalize(jitteredLightPos - hitPoint);
 
-        for (int x = 0; x < gridSize; x++) {
-            for (int z = 0; z < gridSize; z++) {
-
-                float cellOffsetX = x * cellSize;
-                float cellOffsetZ = z * cellSize;
-
-                float jitterX = fastRandomFloat(0.0f, cellSize);
-                float jitterZ = fastRandomFloat(0.0f, cellSize);
-
-                Vec3 jitteredLightPos = lightCorner + Vec3(cellOffsetX + jitterX, 0.0f, cellOffsetZ + jitterZ);
-                Vec3 jitteredLightDir = normalize(jitteredLightPos - hitPoint);
-                
-                if (!launchShadowRay(jitteredLightPos, hitPoint, jitteredLightDir, normal, minHit.ObjectIdx)) {
-                    unblockedSamples += 1.0f;
-                }
+            if (!launchShadowRay(jitteredLightPos, hitPoint + normal * 0.001f, jitteredLightDir, normal, minHit.ObjectIdx)) {
+                unblockedSamples += 1.0f;
             }
         }
 
-        float shadowFactor = unblockedSamples / (float)(gridSize * gridSize);
+        float shadowFactor = unblockedSamples / (float)numSamples;
 
         if (shadowFactor == 0.0f)
-            continue; 
-        
-        Vec3 incomingRadiance = Vec3(PI * 1.5f, PI * 1.5f, PI * 1.5f); 
+            continue;
+        Vec3 incomingRadiance = light->getRadiance(hitPoint); 
+
+        Vec3 halfVector = normalize(viewDir + centerLightDir); 
         float normalDistrib = computeNormalDistributionGGX(normal, halfVector, material->roughness);   
         float geometryTerm  = computeGeometrySmith(normal, viewDir, centerLightDir, material->roughness);      
         Vec3 fresnelTerm    = computeFresnelSchlick(std::max(dot(halfVector, viewDir), 0.0f), baseReflectivity);
 
         Vec3 specularNumerator = fresnelTerm * normalDistrib * geometryTerm;
-        float specularDenominator = 4.0f * std::max(dot(normal, viewDir), 0.0f) * std::max(dot(normal, centerLightDir), 0.0f) + 0.0001f; 
+        
+        float NdotV = std::max(dot(normal, viewDir), 0.001f);
+        float NdotL = std::max(dot(normal, centerLightDir), 0.001f);
+        float specularDenominator = 4.0f * NdotV * NdotL; 
+        
         Vec3 specularBRDF = specularNumerator / specularDenominator;
 
-        Vec3 specularContrib = fresnelTerm;
-        Vec3 diffuseContrib = Vec3(1.0f, 1.0f, 1.0f) - specularContrib;
-        diffuseContrib = diffuseContrib * (1.0f - material->metallic); 
-
-        float normalDotLight = std::max(dot(normal, centerLightDir), 0.0f);
-        totalRadiance += (diffuseContrib * (albedoNorm / PI) + specularBRDF) * incomingRadiance * normalDotLight * shadowFactor;
+        Vec3 diffuseContrib = (Vec3(1.0f, 1.0f, 1.0f) - fresnelTerm) * (1.0f - material->metallic); 
+        
+        totalRadiance += (diffuseContrib * (albedoNorm / PI) + specularBRDF) * incomingRadiance * NdotL * shadowFactor;
     }
 
-    Vec3 ambientLight = Vec3(0.03f, 0.03f, 0.03f) * albedoNorm;
-    return ambientLight + totalRadiance;
+    return ambientRadiance + totalRadiance;
 }
 
 sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept

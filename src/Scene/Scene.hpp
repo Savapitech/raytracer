@@ -4,6 +4,7 @@
 #include <vector>
 #include <libconfig.h++>
 
+#include "ILight.hpp"
 #include "Object.hpp"
 #include "BVH.hpp"
 
@@ -53,6 +54,8 @@ namespace scene
         Scene(const std::string &scene_path);
 
         const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return objects;}
+        const std::vector<std::unique_ptr<ILight>> &getLights(void) {return _lights;}
+        
         const Camera &getCamera(void) const{return cameraInfo;}
         void updateCamera(Vec3 pos){
             cameraInfo.pos.x = pos.x;
@@ -72,5 +75,6 @@ namespace scene
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         Camera cameraInfo;
         std::vector<std::unique_ptr<Object>> objects; // send
+        std::vector<std::unique_ptr<ILight>> _lights;
     };
 } 

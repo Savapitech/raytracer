@@ -39,7 +39,7 @@ class Render
         void fillTile(int startX, int startY);
         void writePixel(int x, int y, sf::Color color) noexcept;
         sf::Color shade(Ray &ray, Hit &minHit, int depth) noexcept;
-        bool launchShadowRay(const Vec3 &light, Vec3 &P, Vec3 &L, Vec3 &N, int index) noexcept;
+        bool launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept;
         Vec3 applyPBR(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept;
         Render(scene::Scene &scene) noexcept;
 
