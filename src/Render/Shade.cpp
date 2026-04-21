@@ -90,60 +90,93 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 
     Vec3 hitPoint = minHit.position;
     Vec3 normal = minHit.normal;
-    if (dot(normal, ray.dir) > 0.0f) 
+    if (dot(normal, ray.dir) > 0.0f)
         normal = normal * -1.0f;
 
     Vec3 viewDir = normalize(-ray.dir);
     Vec3 baseReflectivity = lerp(Vec3(0.04f, 0.04f, 0.04f), albedoNorm, material->metallic);
 
-    for (const auto& light : this->scene.getLights()) 
+    if constexpr (IsPathTracer)
     {
-        if (!light->castsShadows()) {
-            ambientRadiance += light->getRadiance(hitPoint) * albedoNorm;
-            continue;
+        for (const auto& light : this->scene.getLights())
+        {
+            if (!light->castsShadows())
+                continue;
+            Vec3 lightSamplePos = light->getSamplePosition();
+            Vec3 centerLightDir = normalize(light->getCenter() - hitPoint);
+            Vec3 lightDir = normalize(lightSamplePos - hitPoint);
+
+            if (launchShadowRay(lightSamplePos, hitPoint + normal * 0.001f, lightDir, normal, minHit.ObjectIdx))
+                continue;
+
+            Vec3 incomingRadiance = light->getRadiance(hitPoint);
+
+            float NdotL = std::max(dot(normal, centerLightDir), 0.0f);
+
+            if (NdotL <= 0.0f)
+                continue;
+
+            Vec3 halfVector = normalize(viewDir + centerLightDir);
+            float normalDistrib = computeNormalDistributionGGX(normal, halfVector, material->roughness);
+            float geometryTerm = computeGeometrySmith(normal, viewDir, centerLightDir, material->roughness);
+            Vec3 fresnelTerm = computeFresnelSchlick(std::max(dot(halfVector, viewDir), 0.0f), baseReflectivity);
+
+            Vec3 specularBRDF = (fresnelTerm * normalDistrib * geometryTerm)
+                              / std::max(4.0f * std::max(dot(normal, viewDir), 0.001f) * NdotL, 0.05f);
+
+            Vec3 diffuseContrib = (Vec3(1.0f, 1.0f, 1.0f) - fresnelTerm) * (1.0f - material->metallic);
+
+            totalRadiance += (diffuseContrib * (albedoNorm / PI) + specularBRDF)
+                           * incomingRadiance * NdotL;
         }
-        int numSamples = 16;
-        float unblockedSamples = 0.0f;
-
-        Vec3 centerLightDir = normalize(light->getCenter() - hitPoint); 
-
-        for (int i = 0; i < numSamples; i++) {
-            Vec3 jitteredLightPos = light->getSamplePosition();
-            Vec3 jitteredLightDir = normalize(jitteredLightPos - hitPoint);
-
-            if (!launchShadowRay(jitteredLightPos, hitPoint + normal * 0.001f, jitteredLightDir, normal, minHit.ObjectIdx)) {
-                unblockedSamples += 1.0f;
-            }
-        }
-
-        float shadowFactor = unblockedSamples / (float)numSamples;
-
-        if (shadowFactor == 0.0f)
-            continue;
-
-        Vec3 incomingRadiance = light->getRadiance(hitPoint); 
-
-        Vec3 halfVector = normalize(viewDir + centerLightDir); 
-        float normalDistrib = computeNormalDistributionGGX(normal, halfVector, material->roughness);   
-        float geometryTerm  = computeGeometrySmith(normal, viewDir, centerLightDir, material->roughness);      
-        Vec3 fresnelTerm    = computeFresnelSchlick(std::max(dot(halfVector, viewDir), 0.0f), baseReflectivity);
-
-        Vec3 specularNumerator = fresnelTerm * normalDistrib * geometryTerm;
-        
-        float NdotV = std::max(dot(normal, viewDir), 0.001f);
-        float NdotL = std::max(dot(normal, centerLightDir), 0.001f);
-        float specularDenominator = std::max(4.0f * NdotV * NdotL, 0.05f);
-        
-        Vec3 specularBRDF = specularNumerator / specularDenominator;
-
-        Vec3 diffuseContrib = (Vec3(1.0f, 1.0f, 1.0f) - fresnelTerm) * (1.0f - material->metallic); 
-        
-        totalRadiance += (diffuseContrib * (albedoNorm / PI) + specularBRDF) * incomingRadiance * NdotL * shadowFactor;
-    }
-    if constexpr (IsPathTracer == true)
         return totalRadiance;
+    }
     else
+    {
+        for (const auto& light : this->scene.getLights())
+        {
+            if (!light->castsShadows()) {
+                ambientRadiance += light->getRadiance(hitPoint) * albedoNorm;
+                continue;
+            }
+
+            int numSamples = 16;
+            float unblockedSamples = 0.0f;
+
+            Vec3 centerLightDir = normalize(light->getCenter() - hitPoint);
+
+            for (int i = 0; i < numSamples; i++) {
+                Vec3 jitteredLightPos = light->getSamplePosition();
+                Vec3 jitteredLightDir = normalize(jitteredLightPos - hitPoint);
+
+                if (!launchShadowRay(jitteredLightPos, hitPoint + normal * 0.001f,
+                                     jitteredLightDir, normal, minHit.ObjectIdx))
+                    unblockedSamples += 1.0f;
+            }
+
+            float shadowFactor = unblockedSamples / (float)numSamples;
+
+            if (shadowFactor == 0.0f)
+                continue;
+
+            Vec3  incomingRadiance = light->getRadiance(hitPoint);
+            Vec3  halfVector = normalize(viewDir + centerLightDir);
+            float normalDistrib = computeNormalDistributionGGX(normal, halfVector, material->roughness);
+            float geometryTerm = computeGeometrySmith(normal, viewDir, centerLightDir, material->roughness);
+            Vec3  fresnelTerm = computeFresnelSchlick(std::max(dot(halfVector, viewDir), 0.0f), baseReflectivity);
+
+            float NdotV = std::max(dot(normal, viewDir), 0.001f);
+            float NdotL = std::max(dot(normal, centerLightDir), 0.001f);
+
+            Vec3 specularBRDF = (fresnelTerm * normalDistrib * geometryTerm)
+                              / std::max(4.0f * NdotV * NdotL, 0.05f);
+
+            Vec3 diffuseContrib = (Vec3(1.0f, 1.0f, 1.0f) - fresnelTerm) * (1.0f - material->metallic);
+
+            totalRadiance += (diffuseContrib * (albedoNorm / PI) + specularBRDF) * incomingRadiance * NdotL * shadowFactor;
+        }
         return ambientRadiance + totalRadiance;
+    }
 }
 
 template <bool IsPathTracer>
@@ -277,7 +310,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 Vec3 glassCol = this->shade<true>(bounceRay, bounceHit, depth - 1);
                 finalColorNorm = albedoNorm * glassCol;
             } else {
-                finalColorNorm = albedoNorm; //multiplication par coordoné U V du monde et y aura un bon résultat
+                finalColorNorm = Vec3(0.0f, 0.0f, 0.0f);; //multiplication par coordoné U V du monde et y aura un bon résultat
             }
         } 
         else {
@@ -313,9 +346,8 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             if (this->bvh.intersect(bounceRay, bounceHit)) {
                 Vec3 bounceCol = this->shade<true>(bounceRay, bounceHit, depth - 1);
                 indirectLighting = reflectionFilter * bounceCol;
-            } else {
-                indirectLighting = reflectionFilter; // multiplication par coordoné U V du monde et y aura un bon résultat
-            }
+            } else
+                indirectLighting = reflectionFilter * Vec3(0.1f, 0.1f, 0.1f);; //* Vec3(0.5f, 0.7f, 1.0f); // multiplication par coordoné U V du monde et y aura un bon résultat
             finalColorNorm = directLighting + indirectLighting;
         }
     }
