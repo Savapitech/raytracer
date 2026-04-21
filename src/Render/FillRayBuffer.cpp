@@ -13,10 +13,10 @@ void Render::writePixel(int x, int y, sf::Color color) noexcept
 
 void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
 {
-    int samplesPerPixel = 16;
+    int samplesPerPixel = this->_config.sample;
     Vec3 accumulatedLight(0.0f, 0.0f, 0.0f);
 
-    for (int s = 0; s < samplesPerPixel; ++s) {
+    for (int s = 0; s < samplesPerPixel; s++) {
         float jitterX = fastRandomFloat(-0.5f, 0.5f);
         float jitterY = fastRandomFloat(-0.5f, 0.5f);
 
@@ -35,7 +35,7 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
             else
                 sampleColor = this->shade<false>(ray, minHit, 8);
         } else {
-            sampleColor = Vec3(0.5f, 0.7f, 1.0f);
+            sampleColor = Vec3(0.1f, 0.1f, 0.1f);
         }
         accumulatedLight += sampleColor;
     }

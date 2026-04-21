@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 //#include "Load.hpp"
+#include "CmdConfig.hpp"
 #include "Scene.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -46,13 +47,14 @@ class Render
         Vec3 applyPBR(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept;
 
         bool launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept;
-        Render(scene::Scene &scene, bool isPathTracing) noexcept;
+        Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept;
 
     private:
         scene::Scene& scene;
         BVH bvh;
         std::vector<uint8_t> _frameBuffer;
         bool _imageIsRender;
+        const CmdConfig::config_t &_config;
         const bool _isPathTracing;
              
         sf::Image   _image;

@@ -7,12 +7,13 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 
-Render::Render(scene::Scene &scene, bool isPathTracing) noexcept
+Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     : scene(scene),
       bvh(scene.getObjects()),
       _frameBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       _imageIsRender(false),
-      _isPathTracing(isPathTracing),
+      _config(config),
+      _isPathTracing(config.pathtracing),
       _TframeBuffer((sf::Vector2u){WIDTH, HEIGHT}),
       _SframeBuffer(_TframeBuffer)
       
