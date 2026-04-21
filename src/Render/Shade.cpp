@@ -38,8 +38,6 @@ Vec3 computeRefraction(const Vec3& incidentDir, const Vec3& normal, float refrac
     return refractedPerp + refractedParallel;
 }
 
-const float PI = 3.14159265359f;
-
 float computeNormalDistributionGGX(const Vec3 &normal,const Vec3 &halfVector, float roughness) noexcept
 {
     float alpha = roughness * roughness;
@@ -83,6 +81,7 @@ Vec3 computeFresnelSchlick(float cosTheta, const Vec3 &baseReflectivity) noexcep
     return baseReflectivity + (Vec3(1.0f, 1.0f, 1.0f) - baseReflectivity) * (c4 * clampedCos);
 }
 
+template <bool IsPathTracer>
 Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 {
     const auto& material = this->scene.getObjects()[minHit.ObjectIdx]->getMaterial();
@@ -93,7 +92,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
     Vec3 normal = minHit.normal;
     if (dot(normal, ray.dir) > 0.0f) 
         normal = normal * -1.0f;
-    
+
     Vec3 viewDir = normalize(-ray.dir);
     Vec3 baseReflectivity = lerp(Vec3(0.04f, 0.04f, 0.04f), albedoNorm, material->metallic);
 
@@ -121,6 +120,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 
         if (shadowFactor == 0.0f)
             continue;
+
         Vec3 incomingRadiance = light->getRadiance(hitPoint); 
 
         Vec3 halfVector = normalize(viewDir + centerLightDir); 
@@ -132,7 +132,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
         
         float NdotV = std::max(dot(normal, viewDir), 0.001f);
         float NdotL = std::max(dot(normal, centerLightDir), 0.001f);
-        float specularDenominator = 4.0f * NdotV * NdotL; 
+        float specularDenominator = std::max(4.0f * NdotV * NdotL, 0.05f);
         
         Vec3 specularBRDF = specularNumerator / specularDenominator;
 
@@ -140,14 +140,18 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
         
         totalRadiance += (diffuseContrib * (albedoNorm / PI) + specularBRDF) * incomingRadiance * NdotL * shadowFactor;
     }
-
-    return ambientRadiance + totalRadiance;
+    if constexpr (IsPathTracer == true)
+        return totalRadiance;
+    else
+        return ambientRadiance + totalRadiance;
 }
 
-sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
+template <bool IsPathTracer>
+Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
 {
+    
     if (depth <= 0)
-        return sf::Color(0, 0, 0, 255);
+        return Vec3(0, 0, 0);
 
     const auto& object = this->scene.getObjects()[hit.ObjectIdx];
     const auto& material = object->getMaterial();
@@ -161,8 +165,12 @@ sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
     Vec3 albedoNorm = albedo / 255.0f;
     Vec3 finalColorNorm(0.0f, 0.0f, 0.0f);
 
+    if constexpr (IsPathTracer == false)
+    {
+        Log::Logger::info("Start Ray Tracing");
+        
     if (material->transmission == 0.0f) {
-        finalColorNorm = applyPBR(ray, hit, albedoNorm); 
+        finalColorNorm = applyPBR<false>(ray, hit, albedoNorm); 
         if (material->roughness < 0.3f) {
             Vec3 viewDir = normalize(-ray.dir);
             Vec3 normal = hit.normal;
@@ -173,8 +181,7 @@ sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Vec3 bounceColor(0.1f, 0.1f, 0.1f);
 
             if (this->bvh.intersect(reflectedRay, reflectHit)) {
-                sf::Color reflectColorSf = this->shade(reflectedRay, reflectHit, depth - 1);
-                bounceColor = Vec3(reflectColorSf.r, reflectColorSf.g, reflectColorSf.b) / 255.0f;
+                bounceColor = this->shade<false>(reflectedRay, reflectHit, depth - 1);
             }
 
             Vec3 baseReflectivity = Vec3(0.04f, 0.04f, 0.04f);
@@ -190,7 +197,8 @@ sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
     else {
         int glassDepth = std::min(depth, 5); 
 
-        if (glassDepth <= 0) return sf::Color(0, 0, 0, 255);
+        if (glassDepth <= 0) 
+            return Vec3(0, 0, 0);
 
         float refractionRatio = hit.frontFace ? (1.0f / material->ior) : material->ior;
         Vec3 unitIncidentDir = normalize(ray.dir);
@@ -211,8 +219,7 @@ sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
         Hit reflectHit;
         Vec3 reflectColor(0.1f, 0.1f, 0.1f);
         if (this->bvh.intersect(reflectedRay, reflectHit)) {
-            sf::Color reflectColorSf = this->shade(reflectedRay, reflectHit, glassDepth - 1);
-            reflectColor = Vec3(reflectColorSf.r, reflectColorSf.g, reflectColorSf.b) / 255.0f;
+            reflectColor = this->shade<false>(reflectedRay, reflectHit, glassDepth - 1);
         }
 
         Vec3 finalGlassColor;
@@ -224,20 +231,100 @@ sf::Color Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Hit refractHit;
             Vec3 refractColor(0.1f, 0.1f, 0.1f); 
             if (this->bvh.intersect(refractedRay, refractHit)) {
-                sf::Color refractColorSf = this->shade(refractedRay, refractHit, glassDepth - 1);
-                refractColor = Vec3(refractColorSf.r, refractColorSf.g, refractColorSf.b) / 255.0f;
+                refractColor = this->shade<false>(refractedRay, refractHit, glassDepth - 1);
             }
             
             finalGlassColor = reflectColor * schlickFresnel + refractColor * (1.0f - schlickFresnel);
         }
         
         finalColorNorm = finalGlassColor * albedoNorm; 
+        }
     }
+    else 
+    {
+        if (material->transmission > 0.0f) {
+            float refractionRatio = hit.frontFace ? (1.0f / material->ior) : material->ior;
+            Vec3 unitIncidentDir = normalize(ray.dir);
 
-    finalColorNorm = finalColorNorm * 255.0f;
-    finalColorNorm.x = std::clamp(finalColorNorm.x, 0.0f, 255.0f);
-    finalColorNorm.y = std::clamp(finalColorNorm.y, 0.0f, 255.0f);
-    finalColorNorm.z = std::clamp(finalColorNorm.z, 0.0f, 255.0f);
+            float cosTheta = std::min(dot(-unitIncidentDir, hit.normal), 1.0f);
+            float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
 
-    return sf::Color(finalColorNorm.x, finalColorNorm.y, finalColorNorm.z, 255);
+            bool cannotRefract = refractionRatio * sinTheta > 1.0f; 
+            
+            float reflectance = 1.0f;
+            if (!cannotRefract) {
+                float r0 = (1.0f - refractionRatio) / (1.0f + refractionRatio);
+                r0 = r0 * r0;
+                reflectance = r0 + (1.0f - r0) * std::pow((1.0f - cosTheta), 5.0f);
+            }
+
+            Vec3 bounceDir;
+            Vec3 bounceOrigin;
+
+            if (cannotRefract || fastRandomFloat(0.0f, 1.0f) < reflectance) {
+                Vec3 reflected = reflect(unitIncidentDir, hit.normal);
+                bounceDir = normalize(reflected + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position + hit.normal * 0.001f; 
+            } else {
+                Vec3 refracted = computeRefraction(unitIncidentDir, hit.normal, refractionRatio);
+                bounceDir = normalize(refracted + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position - hit.normal * 0.001f;
+            }
+
+            Ray bounceRay(bounceOrigin, bounceDir);
+            Hit bounceHit;
+            if (this->bvh.intersect(bounceRay, bounceHit)) {
+                Vec3 glassCol = this->shade<true>(bounceRay, bounceHit, depth - 1);
+                finalColorNorm = albedoNorm * glassCol;
+            } else {
+                finalColorNorm = albedoNorm; //multiplication par coordoné U V du monde et y aura un bon résultat
+            }
+        } 
+        else {
+            Vec3 directLighting = applyPBR<true>(ray, hit, albedoNorm);
+            Vec3 indirectLighting(0.0f, 0.0f, 0.0f);
+            
+            Vec3 unitIncidentDir = normalize(ray.dir);
+            Vec3 viewDir = -unitIncidentDir;
+            Vec3 baseReflectivity = lerp(Vec3(0.04f, 0.04f, 0.04f), albedoNorm, material->metallic);
+            float cosTheta = std::max(dot(hit.normal, viewDir), 0.0f);
+            Vec3 fresnelTerm = computeFresnelSchlick(cosTheta, baseReflectivity);
+            float specProbability = std::clamp((fresnelTerm.x + fresnelTerm.y + fresnelTerm.z) / 3.0f, 0.0f, 1.0f);
+            
+            Vec3 bounceDir;
+            Vec3 bounceOrigin = hit.position + hit.normal * 0.001f;
+            Vec3 reflectionFilter(1.0f, 1.0f, 1.0f);
+
+            if (fastRandomFloat(0.0f, 1.0f) < specProbability) {
+                Vec3 reflected = reflect(unitIncidentDir, hit.normal);
+                bounceDir = normalize(reflected + randomUnitVector() * material->roughness);
+                if (dot(bounceDir, hit.normal) < 0.0f) {
+                    bounceDir = bounceDir - hit.normal * dot(bounceDir, hit.normal) * 2.0f;
+                }
+                reflectionFilter = lerp(Vec3(1.0f, 1.0f, 1.0f), albedoNorm, material->metallic);
+            } 
+            else {
+                bounceDir = normalize(hit.normal + randomUnitVector());
+                reflectionFilter = albedoNorm;
+            }
+
+            Ray bounceRay(bounceOrigin, bounceDir);
+            Hit bounceHit;
+            if (this->bvh.intersect(bounceRay, bounceHit)) {
+                Vec3 bounceCol = this->shade<true>(bounceRay, bounceHit, depth - 1);
+                indirectLighting = reflectionFilter * bounceCol;
+            } else {
+                indirectLighting = reflectionFilter; // multiplication par coordoné U V du monde et y aura un bon résultat
+            }
+            finalColorNorm = directLighting + indirectLighting;
+        }
+    }
+    return finalColorNorm;
 }
+
+
+template Vec3 Render::shade<true>(Ray&, Hit&, int) noexcept;
+template Vec3 Render::shade<false>(Ray&, Hit&, int) noexcept;
+
+template Vec3 Render::applyPBR<true>(Ray&, Hit&, const Vec3&) noexcept;
+template Vec3 Render::applyPBR<false>(Ray&, Hit&, const Vec3&) noexcept;

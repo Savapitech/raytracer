@@ -165,3 +165,14 @@ inline float fastRandomFloat(float min, float max) noexcept {
     
     return min + (max - min) * randomNormalized;
 }
+
+#define PI 3.14159265359f
+
+inline Vec3 randomUnitVector() noexcept {
+    float z = fastRandomFloat(-1.0f, 1.0f);
+    float a = fastRandomFloat(0.0f, 2.0f * PI);
+    float r = std::sqrt(std::max(0.0f, 1.0f - z * z));
+    float x = r * std::cos(a);
+    float y = r * std::sin(a);
+    return Vec3(x, y, z);
+}

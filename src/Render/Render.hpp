@@ -38,16 +38,22 @@ class Render
         void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
         void fillTile(int startX, int startY);
         void writePixel(int x, int y, sf::Color color) noexcept;
-        sf::Color shade(Ray &ray, Hit &minHit, int depth) noexcept;
-        bool launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept;
+
+        template <bool IsPathTracer>
+        Vec3 shade(Ray &ray, Hit &minHit, int depth) noexcept;
+        
+        template <bool IsPathTracer>
         Vec3 applyPBR(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept;
-        Render(scene::Scene &scene) noexcept;
+
+        bool launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept;
+        Render(scene::Scene &scene, bool isPathTracing) noexcept;
 
     private:
         scene::Scene& scene;
         BVH bvh;
         std::vector<uint8_t> _frameBuffer;
         bool _imageIsRender;
+        const bool _isPathTracing;
              
         sf::Image   _image;
         sf::Texture _TframeBuffer;
