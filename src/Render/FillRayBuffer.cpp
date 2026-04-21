@@ -13,7 +13,7 @@ void Render::writePixel(int x, int y, sf::Color color) noexcept
 
 void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
 {
-    int samplesPerPixel = 64;
+    int samplesPerPixel = 16;
     Vec3 accumulatedLight(0.0f, 0.0f, 0.0f);
 
     for (int s = 0; s < samplesPerPixel; ++s) {
@@ -26,25 +26,29 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
         Vec3 pixelDir = normalize(scene.getCamera().forward + scene.getCamera().right * dirX + scene.getCamera().up * dirY);
         Ray ray(scene.getCamera().pos, pixelDir);
         Hit minHit;
-
         this->bvh.intersect(ray, minHit);
-        
-        if (minHit.ObjectIdx != -1) {
-            if (this->_isPathTracing) {
-                accumulatedLight += this->shade<true>(ray, minHit, 5);
-            } else {
-                accumulatedLight += this->shade<false>(ray, minHit, 5);
-            }
-        } else {
-            //accumulatedLight += Vec3(0.5f, 0.7f, 1.0f); Coord UV for the background 
-        }
-    }
-    Vec3 averageLight = accumulatedLight / (float)samplesPerPixel;
 
+        Vec3 sampleColor(0.0f, 0.0f, 0.0f);
+        if (minHit.ObjectIdx != -1) {
+            if (this->_isPathTracing)
+                sampleColor = this->shade<true>(ray, minHit, 8);
+            else
+                sampleColor = this->shade<false>(ray, minHit, 8);
+        } else {
+            sampleColor = Vec3(0.5f, 0.7f, 1.0f);
+        }
+        accumulatedLight += sampleColor;
+    }
+
+    Vec3 averageLight = accumulatedLight / (float)samplesPerPixel;
     averageLight.x = averageLight.x / (averageLight.x + 1.0f);
     averageLight.y = averageLight.y / (averageLight.y + 1.0f);
     averageLight.z = averageLight.z / (averageLight.z + 1.0f);
 
+    averageLight.x = std::pow(averageLight.x, 1.0f / 2.2f);
+    averageLight.y = std::pow(averageLight.y, 1.0f / 2.2f);
+    averageLight.z = std::pow(averageLight.z, 1.0f / 2.2f);
+    
     averageLight = averageLight * 255.0f;
 
     sf::Color finalColor(
@@ -53,6 +57,5 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
         std::clamp((int)averageLight.z, 0, 255),
         255
     );
-
     writePixel(x, y, finalColor);
 }
