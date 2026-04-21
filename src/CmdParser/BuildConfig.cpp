@@ -44,6 +44,7 @@ namespace ParserCmd
         bindField(_config.LogLvl, "log");
         bindField(_config.scene, "scene");
         bindField(_config.pathtracing, "pathTracing");
+        bindField(_config.sample, "sample");
         Log::Logger::info("end init parser");
     }
 

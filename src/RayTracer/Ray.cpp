@@ -6,7 +6,7 @@ namespace RayTracer
     RayTracer::RayTracer(const CmdConfig::config_t &config) :
         config(config),
         scene(config.scene),
-        render(scene, config.pathtracing)
+        render(scene, config)
     {
         Log::Logger::info("Start Ray Tracer:");
     }
