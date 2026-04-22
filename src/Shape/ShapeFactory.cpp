@@ -9,6 +9,7 @@
 #include "RectangleXZ.hpp"
 #include "Cylinder.hpp"
 #include "Triangle.hpp"
+#include "Cube.hpp"
 
 using ShapeCtor = std::function<std::unique_ptr<IShape>(const libconfig::Setting &s)>;
 
@@ -27,6 +28,9 @@ ShapeFactory::ShapeFactory()
     };
     shapeRegistry["cylinder"] = [](const libconfig::Setting& s) {
         return std::make_unique<Cylinder>(s);
+    };
+    shapeRegistry["cube"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Cube>(s);
     };
 }
 
