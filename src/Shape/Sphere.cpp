@@ -11,16 +11,18 @@ Sphere::Sphere(const libconfig::Setting& s){
     _color = scene::readVec3(s["color"]);
 }    
 
-AABB Sphere::getObjectAABB() const
+AABB Sphere::getObjectAABB() const noexcept
 {
     return {{ _pos.x - radius, _pos.y - radius, _pos.z - radius }, { _pos.x + radius, _pos.y + radius, _pos.z + radius }};
 } 
 
-Vec3 Sphere::getCentroid() const {
+Vec3 Sphere::getCentroid() const noexcept 
+{
     return this->_pos;
 }
 
-Vec2 Sphere::getUv(Vec3 &hitPos) const {
+Vec2 Sphere::getUv(Vec3 &hitPos) const noexcept 
+{
     Vec2 uv;
     Vec3 localP = (hitPos - this->_pos) / this->radius;
 
@@ -29,7 +31,7 @@ Vec2 Sphere::getUv(Vec3 &hitPos) const {
     return uv;
 }
 
-bool Sphere::intersect(Ray &ray, Hit &hit) const
+bool Sphere::intersect(Ray &ray, Hit &hit) const noexcept
 {
     Vec3 u  = ray.dir;
     Vec3 oc = ray.origin - this->_pos;

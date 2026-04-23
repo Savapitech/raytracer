@@ -52,7 +52,7 @@ public:
         return position + Vec3(jitterX, 0.0f, jitterZ);
     }
 
-    Vec3 getRadiance(const Vec3& hitPoint) const override {
+    Vec3 getRadiance(__attribute_maybe_unused__ const Vec3& hitPoint) const override {
         return color; 
     }
 
@@ -70,6 +70,6 @@ public:
     Vec3 getCenter() const override { return Vec3(0,0,0); }
     
     Vec3 getSamplePosition() const override { return Vec3(0,0,0); }
-    Vec3 getRadiance(const Vec3& hitPoint) const override { return color; }
+    Vec3 getRadiance(const Vec3&) const override { return color; }
     bool castsShadows() const override { return false; }
 };

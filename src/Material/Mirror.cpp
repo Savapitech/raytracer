@@ -1,7 +1,7 @@
 #include "Mirror.hpp"
 #include "Ray.hpp"
 
-Mirror::Mirror(const libconfig::Setting& s)
+Mirror::Mirror(const libconfig::Setting&)
 {
     this->type = "Mirror";
     this->color = {255, 255, 255};

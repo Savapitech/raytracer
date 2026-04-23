@@ -1,6 +1,6 @@
 #include "Chrome.hpp"
 
-Chrome::Chrome(const libconfig::Setting& s)
+Chrome::Chrome(const libconfig::Setting&)
 {
     this->type = "Chrome";
     this->color = {255, 255, 255};

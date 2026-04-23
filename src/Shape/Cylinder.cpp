@@ -15,7 +15,7 @@ Cylinder::Cylinder(const libconfig::Setting &s)
         _dir = {1,0,0};
 }
 
-AABB Cylinder::getObjectAABB() const 
+AABB Cylinder::getObjectAABB() const noexcept
 {
     float max;
     if (_radius > _heigth / 2.0f)
@@ -26,16 +26,17 @@ AABB Cylinder::getObjectAABB() const
     return AABB({ _pos.x - max, _pos.y - max, _pos.z - max}, {_pos.x + max, _pos.y + max, _pos.z + max});
 }
 
-Vec3 Cylinder::getCentroid() const
+Vec3 Cylinder::getCentroid() const noexcept
 {
     return _pos;
 }
 
-Vec2 Cylinder::getUv(Vec3 &hitPos) const {
+Vec2 Cylinder::getUv(Vec3 &) const noexcept
+{
     return {0, 0};
 }
 
-bool Cylinder::intersect(Ray &ray, Hit &hit) const
+bool Cylinder::intersect(Ray &ray, Hit &hit) const noexcept
 {
     Vec3 center = _pos;
     float r = _radius;

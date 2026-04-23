@@ -3,6 +3,8 @@
 #include <cmath>
 #include <stdint.h>
 
+#include <iostream>
+
 #define EPS 0.0001f
 
 class Ray;
@@ -90,7 +92,7 @@ inline float dot(const Vec3 &a, const Vec3 &b)
 
 inline void display(const Vec3 &v)
 {
-    //std::cout << "X=" << v.x << ",Y=" << v.y << ",Z=" << v.z << std::endl;
+    std::cout << "X=" << v.x << ",Y=" << v.y << ",Z=" << v.z << std::endl;
 }
 
 inline Vec3 lerp(const Vec3& a, const Vec3& b, float t) {

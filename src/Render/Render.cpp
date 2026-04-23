@@ -14,7 +14,7 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
       _imageIsRender(false),
       _config(config),
       _isPathTracing(config.pathtracing),
-      _TframeBuffer((sf::Vector2u){WIDTH, HEIGHT}),
+      _TframeBuffer(sf::Vector2u(WIDTH, HEIGHT)),
       _SframeBuffer(_TframeBuffer)
 
 {

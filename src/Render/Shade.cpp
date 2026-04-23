@@ -13,7 +13,7 @@ Vec3 computeSpecular(const Vec3& viewDir, const Vec3& normal, const Vec3& lightD
     return lightColor * specularIntensity;
 }
 
-bool Render::launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept
+bool Render::launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal) noexcept
 {
     Hit shadowHit;
     float epsilon = 1e-4 * ((1.0f > hitPoint.length()) ? 1.0f : hitPoint.length());
@@ -106,7 +106,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
             Vec3 centerLightDir = normalize(light->getCenter() - hitPoint);
             Vec3 lightDir = normalize(lightSamplePos - hitPoint);
 
-            if (launchShadowRay(lightSamplePos, hitPoint + normal * 0.001f, lightDir, normal, minHit.ObjectIdx))
+            if (launchShadowRay(lightSamplePos, hitPoint + normal * 0.001f, lightDir, normal))
                 continue;
 
             Vec3 incomingRadiance = light->getRadiance(hitPoint);
@@ -150,7 +150,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
                 Vec3 jitteredLightDir = normalize(jitteredLightPos - hitPoint);
 
                 if (!launchShadowRay(jitteredLightPos, hitPoint + normal * 0.001f,
-                                     jitteredLightDir, normal, minHit.ObjectIdx))
+                                     jitteredLightDir, normal))
                     unblockedSamples += 1.0f;
             }
 

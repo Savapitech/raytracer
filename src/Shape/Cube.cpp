@@ -13,21 +13,23 @@ Cube::Cube(const libconfig::Setting& s){
     _BB = _pos + size;
 }    
 
-AABB Cube::getObjectAABB() const
+AABB Cube::getObjectAABB() const noexcept 
 {
     return {_AA, _BB};
 } 
 
-Vec3 Cube::getCentroid() const {
+Vec3 Cube::getCentroid() const noexcept
+{
     return this->_pos;
 }
 
-Vec2 Cube::getUv(Vec3 &hitPos) const {
+Vec2 Cube::getUv(Vec3 &) const noexcept
+{
     return {0, 0};
 }
 
 
-bool Cube::intersect(Ray &ray, Hit &hit) const
+bool Cube::intersect(Ray &ray, Hit &hit) const noexcept
 {
     float tMin = ray.minHit;
     float tMax = ray.maxHit;
