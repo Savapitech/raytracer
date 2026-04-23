@@ -26,7 +26,7 @@ bool AFractals::intersect(Ray &ray, Hit &hit) const
     return false;
 }
 
-Vec2 AFractals::getUv(Vec3 &hitPos) const
+Vec2 AFractals::getUv(Vec3 &) const
 {
     return {0, 0};
 }

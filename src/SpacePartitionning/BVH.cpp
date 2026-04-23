@@ -168,8 +168,8 @@ void BVH::fillNode(std::vector<bvh_stack_t> &_myStacks)
         return;
         
     /*===Build Heaps stack===*/
-    _myStacks.push_back((bvh_stack_t){.start = stack.start, .end = pivot, .parentIndex=nodeIndex, .isLeftChild=true});
-    _myStacks.push_back((bvh_stack_t){.start = pivot, .end = stack.end, .parentIndex=nodeIndex, .isLeftChild=false});
+    _myStacks.push_back(bvh_stack_t(stack.start, pivot, nodeIndex, true));
+    _myStacks.push_back(bvh_stack_t(pivot, stack.end, nodeIndex, false));
 }
 
 /*===Init the bvh construction===*/
@@ -182,7 +182,7 @@ void BVH::buildSpacePartitionning(void)
     
     /*===Alloc heap stack to build a binary tree and init is first node===*/
     this->_myStacks.reserve(THREE_ALLOC(_objects.size()));
-    this->_myStacks.push_back((bvh_stack_t){.start = 0, .end = (int)_objects.size(), .parentIndex = -1, .isLeftChild = false});
+    this->_myStacks.push_back(bvh_stack_t(0, (int)_objects.size(), -1, false));
     /*===Alloc two array of node for SAH algo===*/
     this->_leftSide.reserve(_objects.size());
     this->_rightSide.reserve(_objects.size());

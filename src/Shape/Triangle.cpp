@@ -23,12 +23,12 @@ Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
     this->_color = {255, 0, 255};
 }
 
-Vec2 Triangle::getUv(Vec3 &hitPos) const {
+Vec2 Triangle::getUv(Vec3 &) const noexcept {
     return {0, 0};
 }
 
 
-AABB Triangle::getObjectAABB() const
+AABB Triangle::getObjectAABB() const noexcept
 {
     Vec3 minP(
         std::min({x.x, y.x, z.x}),
@@ -43,12 +43,12 @@ AABB Triangle::getObjectAABB() const
     return { minP, maxP };
 }
 
-Vec3 Triangle::getCentroid() const
+Vec3 Triangle::getCentroid() const noexcept
 {
     return (x + y + z) / 3.0f;
 }
 
-bool Triangle::intersect(Ray &ray, Hit &hit) const
+bool Triangle::intersect(Ray &ray, Hit &hit) const noexcept
 {
     Vec3 edge1 = y - x;
     Vec3 edge2 = z - x;

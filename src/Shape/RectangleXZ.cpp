@@ -10,20 +10,22 @@ RectangleXZ::RectangleXZ(const libconfig::Setting& s){
     _color = scene::readVec3(s["color"]);
 }    
 
-AABB RectangleXZ::getObjectAABB() const
+AABB RectangleXZ::getObjectAABB() const noexcept
 {
     return AABB(Vec3(x.x , y - 0.01f, z.x), Vec3(x.y, y + 0.01f, z.y));
 } 
 
-Vec3 RectangleXZ::getCentroid() const {
+Vec3 RectangleXZ::getCentroid() const noexcept
+{
     return Vec3((this->x.x + this->x.y) / 2, this->y, (this->z.x + this->z.y) / 2);
 }
 
-Vec2 RectangleXZ::getUv(Vec3 &hitPos) const {
+Vec2 RectangleXZ::getUv(Vec3 &) const noexcept
+{
     return  {0, 0};
 }
 
-bool RectangleXZ::intersect(Ray& ray, Hit& hit) const
+bool RectangleXZ::intersect(Ray& ray, Hit& hit) const noexcept
 {
     if (std::abs(ray.dir.y) < 1e-6f)
         return false;

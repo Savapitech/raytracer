@@ -38,7 +38,6 @@ namespace RayTracer {
             void run();
     
         private:
-            const CmdConfig::config_t &config;
             scene::Scene scene;
             Render render;
     };

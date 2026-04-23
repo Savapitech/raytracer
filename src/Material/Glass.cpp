@@ -1,6 +1,6 @@
 #include "Glass.hpp"
 
-Glass::Glass(const libconfig::Setting& s)
+Glass::Glass(const libconfig::Setting&)
 {
     this->type = "Glass";
     this->color = {255, 255, 255};
@@ -20,7 +20,7 @@ Glass::Glass()
     this->transmission = 1.0f;
 }
 
-bool Glass::scatter(const Ray& inRay, const Hit& hit, Vec3& attenuation, Ray& scattered) const 
+bool Glass::scatter(const Ray& , const Hit& , Vec3& , Ray& ) const 
 {
     return false;
 }

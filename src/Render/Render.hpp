@@ -48,7 +48,7 @@ class Render
         template <bool IsPathTracer>
         Vec3 applyPBR(Ray &ray, Hit &minHit, const Vec3& albedo) noexcept;
 
-        bool launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal, int objectIndex) noexcept;
+        bool launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const Vec3& lightDir, const Vec3& normal) noexcept;
         Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept;
 
     private:
