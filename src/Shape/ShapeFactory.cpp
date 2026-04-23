@@ -11,6 +11,8 @@
 #include "Triangle.hpp"
 #include "Cube.hpp"
 
+#include "SphereMarching.hpp"
+
 using ShapeCtor = std::function<std::unique_ptr<IShape>(const libconfig::Setting &s)>;
 
 std::map<std::string, ShapeCtor> shapeRegistry;
@@ -31,6 +33,9 @@ ShapeFactory::ShapeFactory()
     };
     shapeRegistry["cube"] = [](const libconfig::Setting& s) {
         return std::make_unique<Cube>(s);
+    };
+    shapeRegistry["sphereMarching"] = [](const libconfig::Setting& s) {
+        return std::make_unique<SphereMarching>(s);
     };
 }
 
