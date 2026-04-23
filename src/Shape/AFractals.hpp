@@ -1,0 +1,21 @@
+#pragma once
+#include "IShape.hpp"
+#include "Ray.hpp"
+
+
+class AFractals : public AShape {
+    public:
+        AFractals() = default;
+        virtual ~AFractals() = default;
+        virtual float evaluateSDF(const Vec3 &p) const = 0;
+        bool intersect(Ray &ray, Hit &hit) const override;
+        Vec2 getUv(Vec3 &hitPos) const override;
+        Vec3 calculateNormale(const Vec3 &p) const;
+
+    protected:
+        Vec3 _pos;
+        Vec3 _color;
+        int _maxIt = 200;
+        float _collisionEpsilon = 0.001f;
+        float _escapeDist = 10.0f;
+};
