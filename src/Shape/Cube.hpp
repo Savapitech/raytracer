@@ -10,7 +10,6 @@ class Cube final : public AShape
         Vec2 getUv(Vec3 &hitPos) const noexcept override;
         Cube(const libconfig::Setting& s);
     private:
-        float radius;
         Vec3 _AA;
         Vec3 _BB;
 };
