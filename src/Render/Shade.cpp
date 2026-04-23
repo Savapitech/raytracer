@@ -351,6 +351,9 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             finalColorNorm = directLighting + indirectLighting;
         }
     }
+    if (finalColorNorm.x > 1) finalColorNorm.x = 1;
+    if (finalColorNorm.y > 1) finalColorNorm.y = 1;
+    if (finalColorNorm.z > 1) finalColorNorm.z = 1;
     return finalColorNorm;
 }
 
