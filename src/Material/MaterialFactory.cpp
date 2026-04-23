@@ -66,7 +66,7 @@ std::unique_ptr<AMaterial> MaterialFactory::getMaterial(const libconfig::Setting
         else
             aMaterial = fcntMaterial(s[MATERIAL]);
         aMaterial->textureIndex = textureIndex;
-        Log::Logger::info("IndexTexture: " + std::to_string(textureIndex));
+        Log::Logger::debug("IndexTexture: " + std::to_string(textureIndex));
         if (textureIndex == -1)
             return aMaterial;
         AMaterial::textureManager = this->textureManager;

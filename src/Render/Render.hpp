@@ -2,6 +2,9 @@
 
 #include <memory>
 #include <vector>
+#include <thread>
+#include <atomic>
+#include <chrono>
 //#include "Load.hpp"
 #include "CmdConfig.hpp"
 #include "Scene.hpp"
@@ -35,7 +38,6 @@ class Render
     public:
         void runRender(void) noexcept;
         void createRayBuffer(void) noexcept;
-        void skipPixels() noexcept;
         void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
         void fillTile(int startX, int startY);
         void writePixel(int x, int y, sf::Color color) noexcept;
@@ -63,8 +65,8 @@ class Render
 
         Graphical _gr;
 
-        int _countChange = 0;
-        int _binarySample = 0;
+        #define TILE_SIZE 16
+        #define DISPLAY_INTERVAL_MS 33
         
         float _aspect;
         float _scale;
