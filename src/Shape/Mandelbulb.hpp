@@ -12,5 +12,7 @@ class Mandelbulb : public AFractals {
     private:
         float _power;
         int _iterations;
+        bool _juliaMode;
+        Vec3 _juliaConstant;
 
 };
