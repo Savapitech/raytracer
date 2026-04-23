@@ -13,8 +13,6 @@ class AFractals : public AShape {
         Vec3 calculateNormale(const Vec3 &p) const;
 
     protected:
-        Vec3 _pos;
-        Vec3 _color;
         int _maxIt = 200;
         float _collisionEpsilon = 0.001f;
         float _escapeDist = 10.0f;
