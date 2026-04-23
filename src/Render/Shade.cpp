@@ -200,7 +200,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
 
     if constexpr (IsPathTracer == false)
     {
-        Log::Logger::info("Start Ray Tracing");
+        Log::Logger::debug("Start Ray Tracing");
         
     if (material->transmission == 0.0f) {
         finalColorNorm = applyPBR<false>(ray, hit, albedoNorm); 
