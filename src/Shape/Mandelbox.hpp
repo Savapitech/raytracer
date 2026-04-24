@@ -1,18 +1,18 @@
 #pragma once
 #include "AFractals.hpp"
 #include <cmath>
+#include <algorithm>
 
-class Mandelbulb : public AFractals {
+class Mandelbox : public AFractals {
     public:
-        Mandelbulb(const libconfig::Setting &s);
+        Mandelbox(const libconfig::Setting &s);
         float evaluateSDF(const Vec3 &p) const override;
         AABB getObjectAABB() const override;
         Vec3 getCentroid() const override;
         
     private:
-        float _power;
+        float _scale;
         int _iterations;
         bool _juliaMode;
         Vec3 _juliaConstant;
-
 };

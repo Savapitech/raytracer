@@ -81,9 +81,11 @@ class BVH {
         void appliedSah(bvh_stack_t &stack, int &outPivot, float &outBestCost, float parentArea);
 
         VObjects _objects;
+        bool gotInfiniteObject = false;
 
         std::vector<node_t> _spacialThree;
         std::vector<int> _indexTab;
+        std::vector<int> _indexInfiniteObject;
 
         std::vector<bvh_stack_t> _myStacks;
         std::vector<AABB> _leftSide;

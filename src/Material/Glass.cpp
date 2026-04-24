@@ -19,8 +19,3 @@ Glass::Glass()
     this->ior = 1.5f;
     this->transmission = 1.0f;
 }
-
-bool Glass::scatter(const Ray& , const Hit& , Vec3& , Ray& ) const 
-{
-    return false;
-}

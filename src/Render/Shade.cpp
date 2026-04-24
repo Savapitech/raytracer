@@ -189,10 +189,19 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
     const auto& object = this->scene.getObjects()[hit.ObjectIdx];
     const auto& material = object->getMaterial();
 
-    Vec3 albedo = object->getShape()->getColor();
-    if (material->textureIndex > -1) {
-        Vec2 uv = object->getShape()->getUv(hit.position);
-        albedo = material->textureManager.getTexturePix(material->textureIndex, uv);
+    Vec2 uv = object->getShape()->getUv(hit.position);
+    Vec3 albedo;
+    switch (object->getMaterial()->textureType)
+    {
+        case TextureType::CHESSBOARD:
+            albedo = ProceduralTexture::getChessboard(uv, material->color, material->colorChess, matData.frequency);
+            break;
+        case TextureType::LOAD_IMAGE :
+            albedo = material->textureManager.getTexturePix(material->textureIndex, uv);
+            break;
+        default:
+            albedo = object->getShape()->getColor();
+            break;
     }
 
     Vec3 albedoNorm = albedo / 255.0f;
