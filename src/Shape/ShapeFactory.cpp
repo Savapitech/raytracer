@@ -11,6 +11,8 @@
 #include "Triangle.hpp"
 #include "Cube.hpp"
 
+#include "Plane.hpp"
+
 #include "SphereMarching.hpp"
 #include "Mandelbulb.hpp"
 
@@ -40,6 +42,9 @@ ShapeFactory::ShapeFactory()
     };
     shapeRegistry["Mandelbulb"] = [](const libconfig::Setting& s) {
         return std::make_unique<Mandelbulb>(s);
+    };
+    shapeRegistry["plane"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Plane>(s);
     };
 }
 
