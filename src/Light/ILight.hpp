@@ -52,7 +52,7 @@ public:
         return position + Vec3(jitterX, 0.0f, jitterZ);
     }
 
-    Vec3 getRadiance(__attribute_maybe_unused__ const Vec3& hitPoint) const override {
+    Vec3 getRadiance(const Vec3&) const override {
         return color; 
     }
 
