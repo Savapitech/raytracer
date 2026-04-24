@@ -7,6 +7,8 @@ Mandelbulb::Mandelbulb(const libconfig::Setting &s)
     _pos = scene::readVec3(s["pos"]);
     _color = scene::readVec3(s["color"]);
     _iterations = (int)s["iterations"];
+    _juliaMode = s.exists("juliaMode") ? (bool)s["juliaMode"] : false;
+    _juliaConstant = s.exists("juliaConstant") ? scene::readVec3(s["juliaConstant"]) : Vec3(0, 0, 0);
 }
 
 AABB Mandelbulb::getObjectAABB() const
@@ -30,15 +32,22 @@ float Mandelbulb::evaluateSDF(const Vec3 &p) const
         r = norm(z);
         if (r > 2.0f)
             break;
-        float theta = std::acos(z.z / r);
-        float phi = std::atan2(z.y, z.x);
-        dr = std::pow(r, _power - 1.0) * _power * dr + 1.0;
+        float theta = std::acos(z.y / r);
+        float phi = std::atan2(z.z, z.x);
+        if (_juliaMode) {
+            dr = std::pow(r, _power - 1.0f) * _power * dr;
+        } else {
+            dr = std::pow(r, _power - 1.0f) * _power * dr + 1.0f;
+        }
         float zr = std::pow(r, _power);
         theta = theta * _power;
         phi = phi * _power;
-        Vec3 vec(std::sin(theta) * std::cos(phi), std::sin(phi) * std::sin(theta), std::cos(theta));
+        Vec3 vec(std::sin(theta) * std::cos(phi), std::cos(theta), std::sin(theta) * std::sin(phi));
         z = vec * zr;
-        z += p;
+        if (_juliaMode) {
+            z += _juliaConstant;
+        } else
+            z += p;
     }
-    return 0.5 * std::log(r) * r / dr;
+    return 0.5 * std::log(r) * r / std::max(dr, 0.00001f);
 }
