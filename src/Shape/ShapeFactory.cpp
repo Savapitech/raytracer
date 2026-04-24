@@ -46,7 +46,7 @@ ShapeFactory::ShapeFactory()
     };
     shapeRegistry["plane"] = [](const libconfig::Setting& s) {
         return std::make_unique<Plane>(s);
-    }
+    };
     shapeRegistry["Mandelbox"] = [](const libconfig::Setting& s) {
         return std::make_unique<Mandelbox>(s);
     };

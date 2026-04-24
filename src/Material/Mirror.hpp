@@ -6,7 +6,7 @@ class Mirror : public AMaterial
 {
     public:
         Mirror(const libconfig::Setting& s);
-        Mirror() = default;
+        Mirror();
 
         float reflectlvl;
 };

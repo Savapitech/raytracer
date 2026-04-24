@@ -8,4 +8,16 @@ Mirror::Mirror(const libconfig::Setting&)
     this->metallic = 1.0f;
     this->roughness = 0.05f;
     this->ior = 1.0f;
+    this->textureType = TextureType::NONE;
+}
+
+
+Mirror::Mirror()
+{
+    this->type = "Mirror";
+    this->color = {255, 255, 255};
+    this->metallic = 1.0f;
+    this->roughness = 0.05f;
+    this->ior = 1.0f;
+    this->textureType = TextureType::NONE;
 }

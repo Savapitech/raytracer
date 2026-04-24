@@ -19,7 +19,6 @@ class IMaterial
 class AMaterial : public IMaterial
 {
     public:
-        AMaterial(const libconfig::Setting& s);
         void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
         static TextureManager textureManager;
 
@@ -34,6 +33,16 @@ class AMaterial : public IMaterial
         float transmission = 0.0f;
 
         TextureType textureType;
+
+        
+};
+
+class Perso  : public AMaterial
+{
+    public:
+        Perso(const libconfig::Setting& s);
+        void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
+        static TextureManager textureManager;
 };
 
 class MaterialFactory{

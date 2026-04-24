@@ -20,9 +20,23 @@ Vec3 Plane::getCentroid() const noexcept
     return this->_pos;
 }
 
-Vec2 Plane::getUv(Vec3 &) const noexcept
+Vec2 Plane::getUv(Vec3 &hitPos) const noexcept
 {
-    
+    Vec3 up(0.0f, 1.0f, 0.0f);
+
+    if (std::abs(_normale.y) > 0.999f) {
+        up = Vec3(1.0f, 0.0f, 0.0f);
+    }
+
+    Vec3 u_axis = normalize(cross(up, _normale));
+    Vec3 v_axis = cross(_normale, u_axis);
+
+    Vec3 p = hitPos - this->_pos;
+
+    float u = dot(p, u_axis);
+    float v = dot(p, v_axis);
+
+    return {u, v};
 }
 
 bool Plane::intersect(Ray& ray, Hit& hit) const noexcept

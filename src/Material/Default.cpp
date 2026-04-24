@@ -8,6 +8,7 @@ Default::Default([[maybe_unused]] const libconfig::Setting& s){
     this->metallic = 0.0f;
     this->roughness = 0.5f;
     this->ior = 1.5f;
+    this->textureType = TextureType::NONE;
 }
 
 Default::Default(){
@@ -17,5 +18,6 @@ Default::Default(){
     this->metallic = 0.0f;
     this->roughness = 0.5f;
     this->ior = 1.5f;
+    this->textureType = TextureType::NONE;
 }
 

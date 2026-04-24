@@ -65,6 +65,7 @@ namespace ProceduralTexture {
 }
 
 enum class TextureType {
+    NONE,
     CHESSBOARD,
     LOAD_IMAGE,
 };

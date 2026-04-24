@@ -8,6 +8,7 @@ Glass::Glass(const libconfig::Setting&)
     this->roughness = 0.0f;
     this->ior = 1.5f;
     this->transmission = 1.0f;
+    this->textureType = TextureType::NONE;
 }
 
 Glass::Glass() 
@@ -18,4 +19,5 @@ Glass::Glass()
     this->roughness = 0.0f;
     this->ior = 1.5f;
     this->transmission = 1.0f;
+    this->textureType = TextureType::NONE;
 }
