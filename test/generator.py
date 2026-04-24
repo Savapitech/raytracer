@@ -9,7 +9,7 @@ with open('./scene_1000000_spheres.cfg', 'w') as f:
     f.write("    objects = (\n")
 
     idx = 0
-    while (idx < 10000000):
+    while (idx < 100000):
         # petite randomisation
         rx = random.uniform(900, -900)
         ry = random.uniform(900, -900)

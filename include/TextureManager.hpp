@@ -50,3 +50,22 @@ class TextureManager
         std::vector<std::string> TexturePathPool;
         std::vector<sf::Image> TexturePool;
 };
+
+namespace ProceduralTexture {
+
+    inline Vec3 getChessboard(Vec2 uv, Vec3 color1, Vec3 color2, float freq) {
+        float s = std::floor(uv.x * freq);
+        float t = std::floor(uv.y * freq);
+
+        if (std::fmod(s + t, 2.0f) == 0.0f) {
+            return color1;
+        }
+        return color2;
+    }
+}
+
+enum class TextureType {
+    NONE,
+    CHESSBOARD,
+    LOAD_IMAGE,
+};
