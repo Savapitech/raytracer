@@ -41,7 +41,7 @@ bool Cone::intersect(Ray &ray, Hit &hit) const noexcept
     float r = _radius;
     float h = _height;
     float alpha = (_radius / _height);
-    float k = std::tan(alpha);
+    float k = 1.0f * alpha * alpha;
 
     float a = (dot(rayDir, rayDir) - ((1.0f + (k * k)) * (dot(rayDir, v) * dot(rayDir, v))));
     float b = 2.0 * (dot(rayDir, origin) - ((1.0f + (k * k)) * (dot(rayDir, v) * dot(origin, v))));
@@ -58,25 +58,30 @@ bool Cone::intersect(Ray &ray, Hit &hit) const noexcept
     Vec3 p2 = ray.origin + ray.dir * t2;
     float m1 = dot(p1 - center, v);
     float m2 = dot(p2 - center, v);
-    float halfHeight = h / 2.0f;
     
-    bool validT1 = (m1 >= -halfHeight && m1 <= halfHeight);
-    bool validT2 = (m2 >= -halfHeight && m2 <= halfHeight);
+    bool validT1 = (m1 >= 0.0f && m1 <= h);
+    bool validT2 = (m2 >= 0.0f && m2 <= h);
 
     float t = std::numeric_limits<float>::infinity();
     Vec3 normal_at_hit;
+    float mHit = 0.0f;
 
     if (validT1 && t1 > ray.minHit && t1 < ray.maxHit) {
         t = t1;
-        normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m1));
+        mHit = m1;
     }
     if (validT2 && t2 > ray.minHit && t2 < t) {
         t = t2;
-        normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m2));
+        mHit = m2;
     }
 
-    Vec3 top_center = center + v * halfHeight;
-    Vec3 bottom_center = center - v * halfHeight;
+    if (t != std::numeric_limits<float>::infinity()) {
+        Vec3 hit_point = ray.origin + ray.dir * t;
+        Vec3 cp = hit_point - center;
+        normal_at_hit = normalize(cp - v * (k * mHit));
+    }
+
+    Vec3 baseCenter = center + v * h;
 
     auto testCap = [&](const Vec3& cap_center, const Vec3& cap_normal) {
         float denom = dot(rayDir, cap_normal);
@@ -94,8 +99,7 @@ bool Cone::intersect(Ray &ray, Hit &hit) const noexcept
         }
     };
 
-    testCap(top_center, v);
-    testCap(bottom_center, -v);
+    testCap(baseCenter, v);
 
     if (!std::isfinite(t))
         return false;
