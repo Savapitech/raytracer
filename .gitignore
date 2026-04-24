@@ -24,3 +24,5 @@ hotspot*
 perf.*
 *.cfg
 .envrc
+.vscode
+.idea
