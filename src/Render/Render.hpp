@@ -1,14 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <vector>
-#include <thread>
-#include <atomic>
-#include <chrono>
-//#include "Load.hpp"
+
 #include "CmdConfig.hpp"
 #include "Scene.hpp"
-#include <SFML/Graphics.hpp>
+#include "IGraphical.hpp"
 
 #define R(x) (x)
 #define G(x) (x + 1)
@@ -17,21 +13,6 @@
 
 #define WIDTH 1920
 #define HEIGHT 1080
-
-class Graphical 
-{
-    public:
-        Graphical(void);
-        void display(void);
-        bool isOpen(void);
-        void addSprite(sf::Sprite &);
-
-        void handleEvent(void);
-        bool handleMovement(scene::Scene &);
-    private:
-        sf::RenderWindow window;
-        std::vector<std::reference_wrapper<sf::Sprite>> spriteTab;
-};
 
 class Render
 {
@@ -63,7 +44,7 @@ class Render
         sf::Texture _TframeBuffer;
         sf::Sprite  _SframeBuffer;
 
-        Graphical _gr;
+        IGraphical *_gr;
 
         #define TILE_SIZE 16
         #define DISPLAY_INTERVAL_MS 33

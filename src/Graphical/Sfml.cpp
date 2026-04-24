@@ -1,12 +1,13 @@
+#include "Sfml.hpp"
 #include "Render.hpp"
 
-Graphical::Graphical(void)  :
+Sfml::Sfml(void)  :
     window(sf::VideoMode({WIDTH, HEIGHT}), "Raytracer")
     {
 
     }
 
-void Graphical::display()
+void Sfml::display()
 {
     this->window.clear();
     for (sf::Sprite &sprite : this->spriteTab)
@@ -14,17 +15,17 @@ void Graphical::display()
     this->window.display();
 }
 
-bool Graphical::isOpen(void)
+bool Sfml::isOpen(void)
 {
     return window.isOpen();
 }
 
-void Graphical::addSprite(sf::Sprite &sprite)
+void Sfml::addSprite(sf::Sprite &sprite)
 {
     this->spriteTab.push_back(sprite);
 }
 
-void Graphical::handleEvent()
+void Sfml::handleEvent()
 {
     while (const std::optional event = this->window.pollEvent()) {
         if (event->is<sf::Event::Closed>())
@@ -32,7 +33,7 @@ void Graphical::handleEvent()
     }            
 }
 
-bool Graphical::handleMovement(scene::Scene &scene)
+bool Sfml::handleMovement(scene::Scene &scene)
 {
     scene::Camera cam = scene.getCamera();
     bool move = false;

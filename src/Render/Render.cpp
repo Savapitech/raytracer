@@ -1,8 +1,11 @@
-#include "Render.hpp"
-#include "Ray.hpp"
-
-#include <cmath>
 #include <SFML/Graphics.hpp>
+#include <atomic>
+#include <chrono>
+#include <cmath>
+#include <thread>
+
+#include "Render.hpp"
+#include "Sfml.hpp"
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -18,13 +21,13 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
       _SframeBuffer(_TframeBuffer)
 
 {
-    for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4){
+    for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4)
         _frameBuffer[i] = 255;
-    }
     this->_aspect = float(scene.getCamera().width) / float(scene.getCamera().height);
     this->_scale  = tanf((scene.getCamera().fov * 0.5f) * (M_PI / 180.0f));
     this->_invWidth  = 1.0f / scene.getCamera().width;
     this->_invHeight = 1.0f / scene.getCamera().height;
+    this->_gr = new Sfml();
     Log::Logger::info("Window Open");
 }
 
@@ -88,8 +91,8 @@ void Render::createRayBuffer(void) noexcept
         if (elapsed >= DISPLAY_INTERVAL_MS) {
             this->_TframeBuffer.update(_frameBuffer.data());
             this->_SframeBuffer.setTexture(this->_TframeBuffer);
-            this->_gr.display();
-            this->_gr.handleEvent();
+            this->_gr->display();
+            this->_gr->handleEvent();
             lastDisplay = now;
         }
     }
@@ -104,7 +107,7 @@ void Render::createRayBuffer(void) noexcept
     /*==============Final frame buffer push==============*/
     this->_TframeBuffer.update(_frameBuffer.data());
     this->_SframeBuffer.setTexture(this->_TframeBuffer);
-    this->_gr.display();
+    this->_gr->display();
 
     this->_imageIsRender = true;
 }
@@ -120,10 +123,10 @@ void Render::runRender(void) noexcept
     this->bvh.buildSpacePartitionning();
 
     /*===add frame buffer sprite to the pool of sprite to draw===*/
-    this->_gr.addSprite(this->_SframeBuffer);
+    this->_gr->addSprite(this->_SframeBuffer);
 
     /*===Start the main loop===*/
-    while (this->_gr.isOpen()) {
+    while (this->_gr->isOpen()) {
 
         /*===Check the if we need to rebuild the frame buffer in case of movement===*/
         if (this->_imageIsRender == false){
@@ -132,10 +135,10 @@ void Render::runRender(void) noexcept
         }
 
         /*===Check window event for closing the window===*/
-        this->_gr.handleEvent();
+        this->_gr->handleEvent();
 
         /*===Change the camera data in case of inputs===*/
-        if (this->_gr.handleMovement(this->scene) == true){
+        if (this->_gr->handleMovement(this->scene) == true){
             this->_imageIsRender = false;
             std::fill(this->_frameBuffer.begin(), this->_frameBuffer.end(), 0);
         }
