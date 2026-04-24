@@ -11,6 +11,7 @@
 #include "CylinderInf.hpp"
 #include "Triangle.hpp"
 #include "Cone.hpp"
+#include "ConeInf.hpp"
 #include "Cube.hpp"
 
 #include "SphereMarching.hpp"
@@ -43,6 +44,9 @@ ShapeFactory::ShapeFactory()
     };
     shapeRegistry["Cone"] = [](const libconfig::Setting& s) {
         return std::make_unique<Cone>(s);
+    };
+    shapeRegistry["ConeInf"] = [](const libconfig::Setting& s) {
+        return std::make_unique<ConeInf>(s);
     };
     shapeRegistry["sphereMarching"] = [](const libconfig::Setting& s) {
         return std::make_unique<SphereMarching>(s);
