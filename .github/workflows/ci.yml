@@ -17,7 +17,7 @@ env:
 
 jobs:
   sync_repository:
-    if: ${{ !github.event.pull_request }}
+    if: ${{ (!github.event.pull_request) && (vars.GH_TARGET_REPO) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
         run: |
             git config --global user.email "savinien.petitjean@epitech.eu"
             git config --global user.name "savalet"
-            git remote add target "${{ secrets.GH_TARGET_REPO }}"
+            git remote add target "${{ vars.GH_TARGET_REPO }}"
 
       - name: Create the verbatim branch
         run: |
