@@ -1,6 +1,7 @@
 all:
 	@ cmake --preset release
 	@ cmake --build --preset release
+	@ cp build/compile_commands.json ./ 2>/dev/null
 
 BUILD_DIR := build
 
