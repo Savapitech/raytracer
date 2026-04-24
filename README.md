@@ -88,19 +88,11 @@ main.cpp
 ## Build & Run
 
 ### Dependencies
-- **C++17** or later
+- **C++20** or later
 - [SFML 3](https://www.sfml-dev.org/) — window, rendering, input
 - [libconfig++](https://hyperrealm.github.io/libconfig/) — scene file parsing
 
 ### Build
-
-```bash
-mkdir build && cd build
-cmake ..
-make -j$(nproc)
-```
-
-Or with your existing build system:
 
 ```bash
 make
@@ -168,7 +160,7 @@ scene:
 
 ---
 
-## 🧠 Technical Notes
+## Technical Notes
 
 ### BVH — Surface Area Heuristic (SAH)
 The BVH is built using a full SAH sweep across the longest axis of each node. Left/right AABB prefix arrays are precomputed to evaluate all split candidates in O(n) per node. Leaf threshold is tuned to balance traversal vs intersection cost.
