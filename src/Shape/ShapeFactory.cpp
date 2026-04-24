@@ -13,6 +13,7 @@
 
 #include "SphereMarching.hpp"
 #include "Mandelbulb.hpp"
+#include "Mandelbox.hpp"
 
 using ShapeCtor = std::function<std::unique_ptr<IShape>(const libconfig::Setting &s)>;
 
@@ -40,6 +41,9 @@ ShapeFactory::ShapeFactory()
     };
     shapeRegistry["Mandelbulb"] = [](const libconfig::Setting& s) {
         return std::make_unique<Mandelbulb>(s);
+    };
+    shapeRegistry["Mandelbox"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Mandelbox>(s);
     };
 }
 
