@@ -1,6 +1,7 @@
 .direnv
 .envrc
 .build
+build
 
 Exemple
 SFML-3.0.2
