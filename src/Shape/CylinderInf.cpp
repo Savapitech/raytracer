@@ -7,7 +7,7 @@ CylinderInf::CylinderInf(const libconfig::Setting &s)
 {
     _type = "CylinderInf";
     _pos = scene::readVec3(s["pos"]);
-    _heigth = (float)s["heigth"];
+    _heigth = (float)s["height"];
     _radius = (float)s["radius"];
     _color = scene::readVec3(s["color"]);
     if (s.exists("dir"))
@@ -36,7 +36,6 @@ bool CylinderInf::intersect(Ray &ray, Hit &hit) const noexcept
 {
     Vec3 center = _pos;
     float r = _radius;
-    float h = _heigth;
     Vec3 v = normalize(_dir);
     Vec3 origin = ray.origin - this->_pos;
     Vec3 ray_dir = ray.dir;
