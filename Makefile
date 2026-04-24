@@ -30,11 +30,11 @@ OBJ_$(strip $1) := $$($(strip $2):%.cpp=$$(BUILD_DIR)/$(strip $1)/%.o)
 
 $$(BUILD_DIR)/$(strip $1)/%.o: %.cpp
 	@ mkdir -p $$(dir $$@)
-	$$(COMPILE.cpp) $$(CXXFLAGS) $$< -o $$@
+	@ $$(COMPILE.cpp) $$(CXXFLAGS) $$< -o $$@
 	@ $$(LOG_TIME) "$$(C_GREEN) CC $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
 
 $$(NAME_$(strip $1)): $$(OBJ_$(strip $1))
-	$$(LINK.cpp) $$(OBJ_$(strip $1)) $$(LDFLAGS) $$(LDLIBS) -o $$@
+	@ $$(LINK.cpp) $$(OBJ_$(strip $1)) $$(LDFLAGS) $$(LDLIBS) -o $$@
 	@ $$(LOG_TIME) "$$(C_BLUE) LD $$(C_PURPLE) $$(notdir $$@) $$(C_RESET)"
 	@ $$(LOG_TIME) "$$(C_GREEN) OK  Compilation finished $$(C_RESET)"
 
