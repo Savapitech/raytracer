@@ -24,7 +24,11 @@ C_CYAN := $(call mk-color, 36)
   endif
 endif
 
-NOW = $(shell date +%s%3N)
+ifneq ($(shell uname),Darwin)
+  NOW = $(shell date +%s%3N)
+else
+  NOW = $(shell gdate +%s%3N)
+endif
 
 ifndef STIME
 STIME := $(call NOW)
