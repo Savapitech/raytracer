@@ -7,6 +7,7 @@ Chrome::Chrome(const libconfig::Setting&)
     this->metallic = 1.0f;
     this->roughness = 0.05f;
     this->ior = 1.0f;
+    this->textureType = TextureType::NONE;
 }
 
 Chrome::Chrome()
@@ -16,4 +17,5 @@ Chrome::Chrome()
     this->metallic = 1.0f;
     this->roughness = 0.05f;
     this->ior = 1.0f;
+    this->textureType = TextureType::NONE;
 }

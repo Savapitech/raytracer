@@ -84,6 +84,7 @@ class BVH {
 
         std::vector<node_t> _spacialThree;
         std::vector<int> _indexTab;
+        std::vector<int> _indexInfiniteObject;
 
         std::vector<bvh_stack_t> _myStacks;
         std::vector<AABB> _leftSide;

@@ -27,7 +27,7 @@ class TextureManager
         Vec3 getTexturePix(int index, Vec2 uv)
         {
             if (index < 0 || index >= (int)TexturePool.size())
-                return Vec3(1.0f, 0.0f, 1.0f); 
+                return Vec3(255.0f, 255.0f, 255.0f) / 255; 
             const sf::Image& img = TexturePool[index];
             auto size = img.getSize();
     
@@ -43,10 +43,29 @@ class TextureManager
                 y += (int)size.y;
                     
             sf::Color color = img.getPixel({(unsigned int)x, (unsigned int)y});
-            return Vec3(color.r, color.g, color.b);
+            return Vec3(color.r, color.g, color.b) / 255;
         }
 
     private:
         std::vector<std::string> TexturePathPool;
         std::vector<sf::Image> TexturePool;
+};
+
+namespace ProceduralTexture {
+
+    inline Vec3 getChessboard(Vec2 uv, Vec3 color1, Vec3 color2, float freq) {
+        float s = std::floor(uv.x * freq);
+        float t = std::floor(uv.y * freq);
+
+        if (std::fmod(s + t, 2.0f) == 0.0f) {
+            return color1;
+        }
+        return color2;
+    }
+}
+
+enum class TextureType {
+    NONE,
+    CHESSBOARD,
+    LOAD_IMAGE,
 };

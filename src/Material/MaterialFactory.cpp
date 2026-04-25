@@ -31,6 +31,9 @@ MaterialFactory::MaterialFactory()
     materialRegistry["default"] = [](const libconfig::Setting& s) {
         return std::make_unique<Default>(s);
     };
+    materialRegistry["perso"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Perso>(s);
+    };
 }
 
 TextureManager AMaterial::textureManager;
@@ -50,8 +53,6 @@ std::unique_ptr<AMaterial> MaterialFactory::getMaterial(const libconfig::Setting
             Log::Logger::debug("Type FOUND");
             type = (std::string)s1["type"];
             Log::Logger::debug("Type load");
-            if (s1.exists(TEXTURE))
-                textureIndex = this->textureManager.uploadTexture(s1[TEXTURE]);
         }
         else
             type = "default";
@@ -65,6 +66,8 @@ std::unique_ptr<AMaterial> MaterialFactory::getMaterial(const libconfig::Setting
             aMaterial = fcntMaterial(s);
         else
             aMaterial = fcntMaterial(s[MATERIAL]);
+        if (aMaterial->textureType == TextureType::LOAD_IMAGE)
+            textureIndex = this->textureManager.uploadTexture(s[MATERIAL][TEXTURE]);
         aMaterial->textureIndex = textureIndex;
         Log::Logger::debug("IndexTexture: " + std::to_string(textureIndex));
         if (textureIndex == -1)
