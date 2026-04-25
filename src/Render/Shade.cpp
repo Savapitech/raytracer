@@ -223,17 +223,21 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Hit reflectHit;
             Vec3 bounceColor(0.1f, 0.1f, 0.1f);
 
-            if (this->bvh.intersect(reflectedRay, reflectHit)) {
-                bounceColor = this->shade<false>(reflectedRay, reflectHit, depth - 1);
-            }
-
             Vec3 baseReflectivity = Vec3(0.04f, 0.04f, 0.04f);
             baseReflectivity = lerp(baseReflectivity, albedoNorm, material->metallic);
             
             float cosTheta = std::max(dot(normal, viewDir), 0.0f);
             Vec3 fresnelTerm = computeFresnelSchlick(cosTheta, baseReflectivity);
 
-            
+            if (this->bvh.intersect(reflectedRay, reflectHit)) {
+                bounceColor = this->shade<false>(reflectedRay, reflectHit, depth - 1);
+            } else {
+                Vec2 hdriUv;
+                hdriUv.x = 0.5f + (std::atan2(reflectDir.z, reflectDir.x) / (2.0f * M_PI));
+                hdriUv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
+                finalColorNorm += AMaterial::textureManager.getTexturePix(0, hdriUv) * fresnelTerm * (1.0f - material->roughness);
+            }
+
             Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
             Vec2 uv;
             uv.x = 0.5f + (std::atan2(reflectDir.z, reflectDir.x) / (2.0f * M_PI));
@@ -316,16 +320,15 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Vec3 bounceDir;
             Vec3 bounceOrigin;
 
-            
-
+        
             if (cannotRefract || fastRandomFloat(0.0f, 1.0f) < reflectance) {
                 Vec3 reflected = reflect(unitIncidentDir, hit.normal);
-                bounceDir = normalize(reflected + randomUnitVector() * material->roughness);
-                bounceOrigin = hit.position - hit.normal * (hit.frontFace ? 1.0f : -1.0f) * 0.001f;
+                bounceDir    = normalize(reflected + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position + hit.normal * 0.001f;
             } else {
                 Vec3 refracted = computeRefraction(unitIncidentDir, hit.normal, refractionRatio);
-                bounceDir = normalize(refracted + randomUnitVector() * material->roughness);
-                bounceOrigin = hit.position + hit.normal * (hit.frontFace ? 1.0f : -1.0f) * 0.001f;
+                bounceDir    = normalize(refracted + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position - hit.normal * 0.001f;
             }
 
             Ray bounceRay(bounceOrigin, bounceDir);
