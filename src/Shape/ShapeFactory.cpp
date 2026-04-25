@@ -8,7 +8,10 @@
 #include "Sphere.hpp"
 #include "RectangleXZ.hpp"
 #include "Cylinder.hpp"
+#include "CylinderInf.hpp"
 #include "Triangle.hpp"
+#include "Cone.hpp"
+#include "ConeInf.hpp"
 #include "Cube.hpp"
 
 #include "Plane.hpp"
@@ -36,8 +39,17 @@ ShapeFactory::ShapeFactory()
     shapeRegistry["cylinder"] = [](const libconfig::Setting& s) {
         return std::make_unique<Cylinder>(s);
     };
+    shapeRegistry["CylinderInf"] = [](const libconfig::Setting& s) {
+        return std::make_unique<CylinderInf>(s);
+    };
     shapeRegistry["cube"] = [](const libconfig::Setting& s) {
         return std::make_unique<Cube>(s);
+    };
+    shapeRegistry["Cone"] = [](const libconfig::Setting& s) {
+        return std::make_unique<Cone>(s);
+    };
+    shapeRegistry["ConeInf"] = [](const libconfig::Setting& s) {
+        return std::make_unique<ConeInf>(s);
     };
     shapeRegistry["sphereMarching"] = [](const libconfig::Setting& s) {
         return std::make_unique<SphereMarching>(s);

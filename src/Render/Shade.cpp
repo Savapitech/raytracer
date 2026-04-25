@@ -228,6 +228,15 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             float cosTheta = std::max(dot(normal, viewDir), 0.0f);
             Vec3 fresnelTerm = computeFresnelSchlick(cosTheta, baseReflectivity);
 
+<<<<<<< HEAD
+            
+            Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
+            Vec2 uv;
+            uv.x = 0.5f + (std::atan2(reflectDir.z, reflectDir.x) / (2.0f * M_PI));
+            uv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
+            
+            finalColorNorm += reflectionContrib * AMaterial::textureManager.getTexturePix(0, uv);
+=======
             if (_bvh.intersect(reflectedRay, reflectHit)) {
                 bounceColor = this->shade<false>(reflectedRay, reflectHit, depth - 1);
             } else {
@@ -239,6 +248,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
 
             finalColorNorm += reflectionContrib;
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
         }
     }
     else {
@@ -286,12 +296,23 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
                 refractColor =  AMaterial::textureManager.getTexturePix(0, uv);
             }
+<<<<<<< HEAD
+            else{
+                Vec2 uv;
+                uv.x = 0.5f + (std::atan2(ray.dir.z, ray.dir.x) / (2.0f * M_PI));
+                uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
+                refractColor =  AMaterial::textureManager.getTexturePix(0, uv);
+            }
+            
+=======
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
             finalGlassColor = reflectColor * schlickFresnel + refractColor * (1.0f - schlickFresnel);
         }
 
         finalColorNorm = finalGlassColor * albedoNorm;
         }
     }
+
     else 
     {
         if (material->transmission > 0.0f) {
@@ -313,15 +334,25 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Vec3 bounceDir;
             Vec3 bounceOrigin;
 
+<<<<<<< HEAD
+            
+
+=======
         
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
             if (cannotRefract || fastRandomFloat(0.0f, 1.0f) < reflectance) {
                 Vec3 reflected = reflect(unitIncidentDir, hit.normal);
                 bounceDir    = normalize(reflected + randomUnitVector() * material->roughness);
                 bounceOrigin = hit.position + hit.normal * 0.001f;
             } else {
                 Vec3 refracted = computeRefraction(unitIncidentDir, hit.normal, refractionRatio);
+<<<<<<< HEAD
+                bounceDir = normalize(refracted + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position + hit.normal * (hit.frontFace ? 1.0f : -1.0f) * 0.001f;
+=======
                 bounceDir    = normalize(refracted + randomUnitVector() * material->roughness);
                 bounceOrigin = hit.position - hit.normal * 0.001f;
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
             }
 
             Ray bounceRay(bounceOrigin, bounceDir);
