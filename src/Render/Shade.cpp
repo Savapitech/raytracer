@@ -237,13 +237,9 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 hdriUv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
                 finalColorNorm += AMaterial::textureManager.getTexturePix(0, hdriUv) * fresnelTerm * (1.0f - material->roughness);
             }
-
             Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
-            Vec2 uv;
-            uv.x = 0.5f + (std::atan2(reflectDir.z, reflectDir.x) / (2.0f * M_PI));
-            uv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
-            
-            finalColorNorm += reflectionContrib * AMaterial::textureManager.getTexturePix(0, uv);
+
+            finalColorNorm += reflectionContrib;
         }
     }
     else {
