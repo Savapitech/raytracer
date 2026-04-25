@@ -45,10 +45,10 @@ namespace scene
     class Obj{
         public:
             Obj(std::string path, const libconfig::Setting &s);
-            std::vector<std::unique_ptr<Object>> &getObjects(void) {return objects;}
+            std::vector<std::unique_ptr<Object>> &getObjects(void) {return _objects;}
         private:
-            std::vector<Vec3> vertices;
-            std::vector<std::unique_ptr<Object>> objects;
+            std::vector<Vec3> _vertices;
+            std::vector<std::unique_ptr<Object>> _objects;
     };
 
     class Scene
@@ -56,28 +56,28 @@ namespace scene
     public:
         Scene(const std::string &scene_path);
 
-        const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return objects;}
+        const std::vector<std::unique_ptr<Object>> &getObjects(void) const{return _objects;}
         const std::vector<std::unique_ptr<ILight>> &getLights(void) {return _lights;}
-        
-        const Camera &getCamera(void) const{return cameraInfo;}
+
+        const Camera &getCamera(void) const{return _cameraInfo;}
         void updateCamera(Vec3 pos){
-            cameraInfo.pos.x = pos.x;
-            cameraInfo.pos.y = pos.y; 
-            cameraInfo.pos.z = pos.z;
+            _cameraInfo.pos.x = pos.x;
+            _cameraInfo.pos.y = pos.y;
+            _cameraInfo.pos.z = pos.z;
         }
         void updateCameraDir(Vec3 dir){
-            cameraInfo.dir = dir;
-            cameraInfo.setupCam();
+            _cameraInfo.dir = dir;
+            _cameraInfo.setupCam();
         }
         
     private:
-        Factory factory;
+        Factory _factory;
 
-        double deapth;
+        double _deapth;
         void insertObjInObjects(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
-        Camera cameraInfo;
-        std::vector<std::unique_ptr<Object>> objects; // send
+        Camera _cameraInfo;
+        std::vector<std::unique_ptr<Object>> _objects;
         std::vector<std::unique_ptr<ILight>> _lights;
     };
 } 

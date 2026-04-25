@@ -25,7 +25,7 @@ void Sfml::addSprite(sf::Sprite &sprite)
 
 void Sfml::handleEvent()
 {
-    while (const std::optional event = this->_window.pollEvent())
+    while (const std::optional event = _window.pollEvent())
         if (event->is<sf::Event::Closed>())
             _window.close();
 }

@@ -6,25 +6,25 @@
 
 Sphere::Sphere(const libconfig::Setting& s){
     _type = "Sphere";
-    radius = (float)s["radius"];
+    _radius = (float)s["radius"];
     _pos = scene::readVec3(s["pos"]);
     _color = scene::readVec3(s["color"]);
-}    
+}
 
 AABB Sphere::getObjectAABB() const noexcept
 {
-    return {{ _pos.x - radius, _pos.y - radius, _pos.z - radius }, { _pos.x + radius, _pos.y + radius, _pos.z + radius }};
-} 
-
-Vec3 Sphere::getCentroid() const noexcept 
-{
-    return this->_pos;
+    return {{ _pos.x - _radius, _pos.y - _radius, _pos.z - _radius }, { _pos.x + _radius, _pos.y + _radius, _pos.z + _radius }};
 }
 
-Vec2 Sphere::getUv(Vec3 &hitPos) const noexcept 
+Vec3 Sphere::getCentroid() const noexcept
+{
+    return _pos;
+}
+
+Vec2 Sphere::getUv(Vec3 &hitPos) const noexcept
 {
     Vec2 uv;
-    Vec3 localP = (hitPos - this->_pos) / this->radius;
+    Vec3 localP = (hitPos - _pos) / _radius;
 
     uv.x = 0.5 + (atan2(localP.z, localP.x) / (2 * M_PI));
     uv.y = 0.5 + (asin(localP.y) / M_PI);
@@ -34,8 +34,8 @@ Vec2 Sphere::getUv(Vec3 &hitPos) const noexcept
 bool Sphere::intersect(Ray &ray, Hit &hit) const noexcept
 {
     Vec3 u  = ray.dir;
-    Vec3 oc = ray.origin - this->_pos;
-    float r = this->radius;
+    Vec3 oc = ray.origin - _pos;
+    float r = _radius;
 
     float a = dot(u, u);               
     float b = 2.0f * dot(u, oc);
@@ -63,7 +63,7 @@ bool Sphere::intersect(Ray &ray, Hit &hit) const noexcept
 
     hit.t = t;
     hit.position = ray.origin + u * t;
-    Vec3 outwardNormal = normalize(hit.position - this->_pos);
+    Vec3 outwardNormal = normalize(hit.position - _pos);
     hit.frontFace = dot(ray.dir, outwardNormal) < 0;
     hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
     return true;

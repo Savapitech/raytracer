@@ -38,7 +38,7 @@ namespace RayTracer {
             void run();
     
         private:
-            scene::Scene scene;
-            Render render;
+            scene::Scene _scene;
+            Render _render;
     };
 }

@@ -41,13 +41,13 @@ namespace scene {
         Log::Logger::debug("Objects size: " + std::to_string(count));
         
         for (int i = 0; i < count; i++){
-            objects.push_back(factory.getObject(list[i]));
+            objects.push_back(_factory.getObject(list[i]));
             Log::Logger::debug("Objects add: " + std::to_string(count));
             Log::Logger::debug("Objects type: Shape:" + objects.back()->getShape()->getType());
             if (objects.back()->getMaterial() != nullptr)
                 Log::Logger::debug("Objects type: Material:" + objects.back()->getMaterial()->type);
         }
-        this->insertObjInObjects(s, objects);
+        insertObjInObjects(s, objects);
     }
 
     Scene::Scene(const std::string &scene_path)
@@ -61,14 +61,20 @@ namespace scene {
             Setting &root = cfg.getRoot();
             Setting &scene = root["scene"];
             
-            this->cameraInfo = readcam(scene);
-            readObject(scene, this->objects);
-            this->_lights.push_back(std::make_unique<AreaLight>(this->cameraInfo.pos,   Vec3{1.0f, 1.0f, 1.0f}, 8));
+            _cameraInfo = readcam(scene);
+            readObject(scene, _objects);
+            this->_lights.push_back(std::make_unique<AreaLight>(_cameraInfo.pos,   Vec3{1.0f, 1.0f, 1.0f}, 8));
             //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{0, 80, 10},        Vec3{1.0f, 1.0f, 1.0f}, 8));
             //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{30, 40, -20},      Vec3{1.0f, 1.0f, 1.0f}, 8));
             //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{-30, 20, 30},      Vec3{10.00f, 10.0f, 10.00f}, 8));
 
             if (scene.exists("background"))
                 AMaterial::textureManager.uploadTexture((std::string)scene["background"]);
+            _cameraInfo = readcam(scene);
+            readObject(scene, _objects);
+            _lights.push_back(std::make_unique<AreaLight>(_cameraInfo.pos,   Vec3{10.0f, 10.0f, 10.0f}, 8));
+            //lights.push_back(std::make_unique<AreaLight>(Vec3{0, 80, 10},        Vec3{1.0f, 1.0f, 1.0f}, 8));
+            //lights.push_back(std::make_unique<AreaLight>(Vec3{30, 40, -20},      Vec3{1.0f, 1.0f, 1.0f}, 8));
+            _lights.push_back(std::make_unique<AreaLight>(Vec3{-30, 20, 30},      Vec3{10.00f, 10.0f, 10.00f}, 8));
         }
 }

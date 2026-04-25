@@ -25,13 +25,13 @@ namespace ParserCmd
             }
             pos = cmd.find('=');
             if (pos == std::string::npos) {
-                this->_cmdArg.push_back(cmd);
+                _cmdArg.push_back(cmd);
                 continue;
             }
-            value = cmd.substr(pos + 1);   
+            value = cmd.substr(pos + 1);
             cmd.erase(pos);
-            this->_cmdArg.push_back(cmd);
-            this->_cmdArg.push_back(value);       
+            _cmdArg.push_back(cmd);
+            _cmdArg.push_back(value);       
         }
         for (std::string str : _cmdArg){
             Log::Logger::debug("List Arg: " + str);
@@ -71,6 +71,6 @@ namespace ParserCmd
 
     const CmdConfig::config_t &Parser::getConfig() const
     {
-        return this->_config;
+        return _config;
     }
 }

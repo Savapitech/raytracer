@@ -33,8 +33,8 @@ class Render
         Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept;
 
     private:
-        scene::Scene& scene;
-        BVH bvh;
+        scene::Scene& _scene;
+        BVH _bvh;
         std::vector<uint8_t> _frameBuffer;
         bool _imageIsRender;
         const CmdConfig::config_t &_config;

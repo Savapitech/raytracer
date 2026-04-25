@@ -10,5 +10,5 @@ class Sphere final : public AShape
         Vec2 getUv(Vec3 &hitPos) const noexcept override;
         Sphere(const libconfig::Setting& s);
     private:
-        float radius;
+        float _radius;
 };

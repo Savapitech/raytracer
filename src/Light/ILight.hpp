@@ -22,38 +22,38 @@ public:
     virtual bool castsShadows() const = 0; 
 };
 
-class ALight : public ILight 
+class ALight : public ILight
 {
 public:
-    Vec3 getColor() const override { return color; }
-    float getSize() const override { return size; }
-    
+    Vec3 getColor() const override { return _color; }
+    float getSize() const override { return _size; }
+
 protected:
-    Vec3 color;
-    float size;
-    Vec3 position;
+    Vec3 _color;
+    float _size;
+    Vec3 _position;
 };
 
 class AreaLight : public ALight
 {
 public:
     AreaLight(Vec3 pos, Vec3 col, float s) {
-        this->position = pos;
-        this->color = col;
-        this->size = s;
+        _position = pos;
+        _color = col;
+        _size = s;
     }
 
-    Vec3 getCenter() const override { return position; }
+    Vec3 getCenter() const override { return _position; }
 
     Vec3 getSamplePosition() const override {
-        float halfSize = size / 2.0f;
+        float halfSize = _size / 2.0f;
         float jitterX = fastRandomFloat(-halfSize, halfSize);
         float jitterZ = fastRandomFloat(-halfSize, halfSize);
-        return position + Vec3(jitterX, 0.0f, jitterZ);
+        return _position + Vec3(jitterX, 0.0f, jitterZ);
     }
 
     Vec3 getRadiance(const Vec3&) const override {
-        return color; 
+        return _color;
     }
 
     bool castsShadows() const override { return true; }
@@ -63,13 +63,13 @@ class AmbiantLight : public ALight
 {
 public:
     AmbiantLight(Vec3 col) {
-        this->color = col;
-        this->size = 0.0f;
+        _color = col;
+        _size = 0.0f;
     }
 
     Vec3 getCenter() const override { return Vec3(0,0,0); }
-    
+
     Vec3 getSamplePosition() const override { return Vec3(0,0,0); }
-    Vec3 getRadiance(const Vec3&) const override { return color; }
+    Vec3 getRadiance(const Vec3&) const override { return _color; }
     bool castsShadows() const override { return false; }
 };

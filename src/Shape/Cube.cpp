@@ -20,7 +20,7 @@ AABB Cube::getObjectAABB() const noexcept
 
 Vec3 Cube::getCentroid() const noexcept
 {
-    return this->_pos;
+    return _pos;
 }
 
 Vec2 Cube::getUv(Vec3 &) const noexcept

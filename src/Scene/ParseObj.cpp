@@ -58,7 +58,7 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
 
             v = v + pos;
 
-            this->vertices.push_back(v);
+            _vertices.push_back(v);
         } else if (type == "f") {
             std::vector<int> faceIndex;
             std::string vertexStr;
@@ -84,15 +84,15 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
                     size_t i2 = faceIndex[i];
                     size_t i3 = faceIndex[i + 1];
 
-                    if (i1 >= 0 && i2 >= 0 && i3 >= 0 && 
-                        i1 < vertices.size() && i2 < vertices.size() && i3 < vertices.size()) {
-                        
-                        std::unique_ptr<IShape> shape = std::make_unique<Triangle>(vertices[i1], vertices[i3], vertices[i2]);
+                    if (i1 >= 0 && i2 >= 0 && i3 >= 0 &&
+                        i1 < _vertices.size() && i2 < _vertices.size() && i3 < _vertices.size()) {
+
+                        std::unique_ptr<IShape> shape = std::make_unique<Triangle>(_vertices[i1], _vertices[i3], _vertices[i2]);
                         std::unique_ptr<AMaterial> material = std::make_unique<Default>();
                         shape->setColor({255, 0, 255});
                         std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
                         
-                        this->objects.push_back(std::move(obj));
+                        _objects.push_back(std::move(obj));
                         
                     } else {
                         Log::Logger::warning("Invalid face: index out of range");
