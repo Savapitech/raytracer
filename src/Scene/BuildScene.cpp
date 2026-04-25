@@ -62,7 +62,7 @@ namespace scene {
             Setting &scene = root["scene"];
             
             if (scene.exists("background"))
-                AMaterial::textureManager.uploadTexture((std::string)scene["background"]);
+                Material::textureManager.uploadTexture((std::string)scene["background"]);
 
             _cameraInfo = readcam(scene);
             readObject(scene, _objects);

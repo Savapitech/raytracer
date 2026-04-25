@@ -18,7 +18,7 @@ Object::Object(const libconfig::Setting &s)
     _centroid = _shape->getCentroid();
 }
 
-Object::Object(std::unique_ptr<IShape> shape, std::unique_ptr<AMaterial> material)
+Object::Object(std::unique_ptr<IShape> shape, std::unique_ptr<Material> material)
 {
     _shape = std::move(shape);
     _material = std::move(material);

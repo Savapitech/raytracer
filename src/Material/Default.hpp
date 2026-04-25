@@ -2,7 +2,7 @@
 
 #include "IMaterials.hpp"
 
-class Default final : public AMaterial
+class Default final : public Material
 {
     public:
         Default(const libconfig::Setting& s);

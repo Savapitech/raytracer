@@ -2,7 +2,7 @@
 
 #include "IMaterials.hpp"
 
-class Glass : public AMaterial  
+class Glass : public Material  
 {
     public:
         Glass(const libconfig::Setting& s);

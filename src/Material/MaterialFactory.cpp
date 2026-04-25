@@ -13,7 +13,7 @@
 #define MATERIAL    "material"
 #define TEXTURE     "texture"
 
-using MaterialCtor = std::function<std::unique_ptr<AMaterial>(const libconfig::Setting &s)>;
+using MaterialCtor = std::function<std::unique_ptr<Material>(const libconfig::Setting &s)>;
 
 std::map<std::string, MaterialCtor> materialRegistry;
 
@@ -36,14 +36,14 @@ MaterialFactory::MaterialFactory()
     };
 }
 
-TextureManager AMaterial::textureManager;
+TextureManager Material::textureManager;
 
-std::unique_ptr<AMaterial> MaterialFactory::getMaterial(const libconfig::Setting &s)
+std::unique_ptr<Material> MaterialFactory::getMaterial(const libconfig::Setting &s)
     {
         
         int textureIndex = -1;
         std::string type;
-        std::unique_ptr<AMaterial> aMaterial;
+        std::unique_ptr<Material> Material;
 
         if (s.exists(MATERIAL)) {
             const libconfig::Setting &s1 = s[MATERIAL];
@@ -63,15 +63,15 @@ std::unique_ptr<AMaterial> MaterialFactory::getMaterial(const libconfig::Setting
             throw std::invalid_argument("Type: " + type + " didn't exist.");
 
         if (type == "default")
-            aMaterial = fcntMaterial(s);
+            Material = fcntMaterial(s);
         else
-            aMaterial = fcntMaterial(s[MATERIAL]);
-        if (aMaterial->textureType == TextureType::LOAD_IMAGE)
+            Material = fcntMaterial(s[MATERIAL]);
+        if (Material->textureType == TextureType::LOAD_IMAGE)
             textureIndex = this->textureManager.uploadTexture(s[MATERIAL][TEXTURE]);
-        aMaterial->textureIndex = textureIndex;
+        Material->textureIndex = textureIndex;
         Log::Logger::debug("IndexTexture: " + std::to_string(textureIndex));
         if (textureIndex == -1)
-            return aMaterial;
-        AMaterial::textureManager = this->textureManager;
-        return aMaterial;
+            return Material;
+        Material::textureManager = this->textureManager;
+        return Material;
     }

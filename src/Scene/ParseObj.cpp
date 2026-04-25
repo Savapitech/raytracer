@@ -88,7 +88,7 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
                         i1 < _vertices.size() && i2 < _vertices.size() && i3 < _vertices.size()) {
 
                         std::unique_ptr<IShape> shape = std::make_unique<Triangle>(_vertices[i1], _vertices[i3], _vertices[i2]);
-                        std::unique_ptr<AMaterial> material = std::make_unique<Default>();
+                        std::unique_ptr<Material> material = std::make_unique<Default>();
                         shape->setColor({255, 0, 255});
                         std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
                         

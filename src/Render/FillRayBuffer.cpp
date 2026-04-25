@@ -38,7 +38,7 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
             Vec2 uv;
             uv.x = 0.5f + (std::atan2(ray.dir.z, ray.dir.x) / (2.0f * M_PI));
             uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
-            sampleColor = AMaterial::textureManager.getTexturePix(0, uv);
+            sampleColor = Material::textureManager.getTexturePix(0, uv);
         }
         accumulatedLight += sampleColor;
     }

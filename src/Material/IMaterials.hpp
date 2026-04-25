@@ -10,13 +10,7 @@
 class Ray;
 class Hit;
 
-class IMaterial
-{
-    public:
-        virtual ~IMaterial() = default;
-};
-
-class AMaterial : public IMaterial
+class Material
 {
     public:
         void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
@@ -33,11 +27,9 @@ class AMaterial : public IMaterial
         float transmission = 0.0f;
 
         TextureType textureType;
-
-        
 };
 
-class Perso  : public AMaterial
+class Perso  : public Material
 {
     public:
         Perso(const libconfig::Setting& s);
@@ -49,5 +41,5 @@ class MaterialFactory{
     public:
         MaterialFactory();
         TextureManager textureManager;
-        std::unique_ptr<AMaterial> getMaterial(const libconfig::Setting &s);
+        std::unique_ptr<Material> getMaterial(const libconfig::Setting &s);
 };

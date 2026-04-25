@@ -234,7 +234,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 Vec2 hdriUv;
                 hdriUv.x = 0.5f + (std::atan2(reflectDir.z, reflectDir.x) / (2.0f * M_PI));
                 hdriUv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
-                finalColorNorm += AMaterial::textureManager.getTexturePix(0, hdriUv) * fresnelTerm * (1.0f - material->roughness);
+                finalColorNorm += Material::textureManager.getTexturePix(0, hdriUv) * fresnelTerm * (1.0f - material->roughness);
             }
             Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
 
@@ -284,7 +284,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 Vec2 uv;
                 uv.x = 0.5f + (std::atan2(ray.dir.z, ray.dir.x) / (2.0f * M_PI));
                 uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
-                refractColor =  AMaterial::textureManager.getTexturePix(0, uv);
+                refractColor =  Material::textureManager.getTexturePix(0, uv);
             }
             finalGlassColor = reflectColor * schlickFresnel + refractColor * (1.0f - schlickFresnel);
         }
@@ -333,7 +333,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 Vec2 uv;
                 uv.x = 0.5f + (std::atan2(ray.dir.z, ray.dir.x) / (2.0f * M_PI));
                 uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
-                finalColorNorm = AMaterial::textureManager.getTexturePix(0, uv);
+                finalColorNorm = Material::textureManager.getTexturePix(0, uv);
             }
         }
         else {
@@ -377,7 +377,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 Vec2 uv;
                 uv.x = 0.5f + (std::atan2(bounceRay.dir.z, bounceRay.dir.x) / (2.0f * M_PI));
                 uv.y = 0.5f + (std::asin(bounceRay.dir.y) / M_PI);
-                indirectLighting = reflectionFilter * AMaterial::textureManager.getTexturePix(0, uv);
+                indirectLighting = reflectionFilter * Material::textureManager.getTexturePix(0, uv);
             }
             finalColorNorm = directLighting + indirectLighting;
         }

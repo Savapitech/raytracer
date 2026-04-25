@@ -2,7 +2,7 @@
 
 #include "IMaterials.hpp"
 
-class Mirror : public AMaterial  
+class Mirror : public Material  
 {
     public:
         Mirror(const libconfig::Setting& s);
