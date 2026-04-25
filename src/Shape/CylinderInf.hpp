@@ -1,6 +1,6 @@
+#pragma once
+
 #include "IShape.hpp"
-
-
 
 class CylinderInf : public AShape
 {
