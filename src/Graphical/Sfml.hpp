@@ -13,6 +13,6 @@ class Sfml : public IGraphical {
     bool handleMovement(scene::Scene &) override;
 
   private:
-    sf::RenderWindow window;
-    std::vector<std::reference_wrapper<sf::Sprite>> spriteTab;
+    sf::RenderWindow _window;
+    std::vector<std::reference_wrapper<sf::Sprite>> _spriteTab;
 };
