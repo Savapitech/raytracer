@@ -47,7 +47,7 @@ class Render
         IGraphical *_gr;
 
         #define TILE_SIZE 16
-        #define DISPLAY_INTERVAL_MS 33
+        #define DISPLAY_INTERVAL_MS 4
         
         float _aspect;
         float _scale;
