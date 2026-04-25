@@ -42,7 +42,7 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const noexcept
     float r = _radius;
     float h = _heigth;
     Vec3 v = normalize(_dir);
-    Vec3 origin = ray.origin - this->_pos;
+    Vec3 origin = ray.origin - _pos;
     Vec3 ray_dir = ray.dir;
 
     float a = (dot(ray_dir, ray_dir)) - ((dot(ray_dir, v))*(dot(ray_dir, v)));
@@ -73,11 +73,11 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const noexcept
 
     if (validT1 && t1 > ray.minHit && t1 < ray.maxHit) {
         t = t1;
-        normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m1));
+        normal_at_hit = normalize((ray.origin + ray.dir * t) - _pos - (v * m1));
     }
     if (validT2 && t2 > ray.minHit && t2 < t) {
         t = t2;
-        normal_at_hit = normalize((ray.origin + ray.dir * t) - this->_pos - (v * m2));
+        normal_at_hit = normalize((ray.origin + ray.dir * t) - _pos - (v * m2));
     }
 
     Vec3 top_center = center + v * halfHeight;

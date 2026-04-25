@@ -12,23 +12,23 @@ class TextureManager
         TextureManager() = default;
         int uploadTexture(std::string Path)
             {
-                for (size_t i = 0; i != TexturePathPool.size(); i++)
-                    if (Path == TexturePathPool[i])
+                for (size_t i = 0; i != _texturePathPool.size(); i++)
+                    if (Path == _texturePathPool[i])
                         return i;
-                
+
                 sf::Image texture;
                 if (texture.loadFromFile(Path) == false)
                     throw std::runtime_error("Error");
-                TexturePathPool.push_back(Path);
-                TexturePool.push_back(texture);
-                return TexturePool.size() - 1;
+                _texturePathPool.push_back(Path);
+                _texturePool.push_back(texture);
+                return _texturePool.size() - 1;
             }
 
         Vec3 getTexturePix(int index, Vec2 uv)
         {
-            if (index < 0 || index >= (int)TexturePool.size())
-                return Vec3(255.0f, 255.0f, 255.0f) / 255; 
-            const sf::Image& img = TexturePool[index];
+            if (index < 0 || index >= (int)_texturePool.size())
+                return Vec3(255.0f, 255.0f, 255.0f) / 255;
+            const sf::Image& img = _texturePool[index];
             auto size = img.getSize();
     
             if (size.x == 0 || size.y == 0) 
@@ -47,8 +47,8 @@ class TextureManager
         }
 
     private:
-        std::vector<std::string> TexturePathPool;
-        std::vector<sf::Image> TexturePool;
+        std::vector<std::string> _texturePathPool;
+        std::vector<sf::Image> _texturePool;
 };
 
 namespace ProceduralTexture {

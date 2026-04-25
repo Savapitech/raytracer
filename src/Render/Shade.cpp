@@ -1,8 +1,7 @@
-#include "Ray.hpp"
 #include <cmath>
 #include <algorithm>
-#include <cstdint>
-#include <array>
+
+#include "Ray.hpp"
 
 Vec3 computeSpecular(const Vec3& viewDir, const Vec3& normal, const Vec3& lightDir, float shininess) noexcept
 {
@@ -20,8 +19,8 @@ bool Render::launchShadowRay(const Vec3& lightPos, const Vec3& hitPoint, const V
     Ray shadowRay(hitPoint + normal * epsilon, lightDir);
     float distToLight = norm(lightPos - hitPoint);
 
-    if (this->bvh.intersect(shadowRay, shadowHit) == true) {
-        const auto& hitMaterial = this->scene.getObjects()[shadowHit.ObjectIdx]->getMaterial();
+    if (_bvh.intersect(shadowRay, shadowHit) == true) {
+        const auto& hitMaterial = _scene.getObjects()[shadowHit.ObjectIdx]->getMaterial();
         if (hitMaterial->transmission > 0.0f)
             return false;
 
@@ -84,7 +83,7 @@ Vec3 computeFresnelSchlick(float cosTheta, const Vec3 &baseReflectivity) noexcep
 template <bool IsPathTracer>
 Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 {
-    const auto& material = this->scene.getObjects()[minHit.ObjectIdx]->getMaterial();
+    const auto& material = _scene.getObjects()[minHit.ObjectIdx]->getMaterial();
     Vec3 totalRadiance = Vec3(0.0f, 0.0f, 0.0f);
     Vec3 ambientRadiance = Vec3(0.0f, 0.0f, 0.0f);
 
@@ -98,7 +97,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 
     if constexpr (IsPathTracer)
     {
-        for (const auto& light : this->scene.getLights())
+        for (const auto& light : _scene.getLights())
         {
             if (!light->castsShadows())
                 continue;
@@ -134,7 +133,7 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 
     if constexpr (!IsPathTracer)
     {
-        for (const auto& light : this->scene.getLights())
+        for (const auto& light : _scene.getLights())
         {
             if (!light->castsShadows()) {
                 ambientRadiance += light->getRadiance(hitPoint) * albedoNorm;
@@ -182,11 +181,11 @@ Vec3 Render::applyPBR(Ray& ray, Hit& minHit, const Vec3& albedoNorm) noexcept
 template <bool IsPathTracer>
 Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
 {
-    
+
     if (depth <= 0)
         return Vec3(0, 0, 0);
 
-    const auto& object = this->scene.getObjects()[hit.ObjectIdx];
+    const auto& object = _scene.getObjects()[hit.ObjectIdx];
     const auto& material = object->getMaterial();
 
     Vec2 uv = object->getShape()->getUv(hit.position);
@@ -211,9 +210,9 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
     if constexpr (IsPathTracer == false)
     {
         Log::Logger::debug("Start Ray Tracing");
-        
+
     if (material->transmission == 0.0f) {
-        finalColorNorm = applyPBR<false>(ray, hit, albedoNorm); 
+        finalColorNorm = applyPBR<false>(ray, hit, albedoNorm);
         if (material->roughness < 0.3f) {
             Vec3 viewDir = normalize(-ray.dir);
             Vec3 normal = hit.normal;
@@ -223,16 +222,13 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Hit reflectHit;
             Vec3 bounceColor(0.1f, 0.1f, 0.1f);
 
-            if (this->bvh.intersect(reflectedRay, reflectHit)) {
-                bounceColor = this->shade<false>(reflectedRay, reflectHit, depth - 1);
-            }
-
             Vec3 baseReflectivity = Vec3(0.04f, 0.04f, 0.04f);
             baseReflectivity = lerp(baseReflectivity, albedoNorm, material->metallic);
-            
+
             float cosTheta = std::max(dot(normal, viewDir), 0.0f);
             Vec3 fresnelTerm = computeFresnelSchlick(cosTheta, baseReflectivity);
 
+<<<<<<< HEAD
             
             Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
             Vec2 uv;
@@ -240,22 +236,35 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             uv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
             
             finalColorNorm += reflectionContrib * AMaterial::textureManager.getTexturePix(0, uv);
+=======
+            if (_bvh.intersect(reflectedRay, reflectHit)) {
+                bounceColor = this->shade<false>(reflectedRay, reflectHit, depth - 1);
+            } else {
+                Vec2 hdriUv;
+                hdriUv.x = 0.5f + (std::atan2(reflectDir.z, reflectDir.x) / (2.0f * M_PI));
+                hdriUv.y = 0.5f + (std::asin(reflectDir.y) / M_PI);
+                finalColorNorm += AMaterial::textureManager.getTexturePix(0, hdriUv) * fresnelTerm * (1.0f - material->roughness);
+            }
+            Vec3 reflectionContrib = bounceColor * fresnelTerm * (1.0f - material->roughness);
+
+            finalColorNorm += reflectionContrib;
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
         }
     }
     else {
-        int glassDepth = std::min(depth, 5); 
+        int glassDepth = std::min(depth, 5);
 
-        if (glassDepth <= 0) 
+        if (glassDepth <= 0)
             return Vec3(0, 0, 0);
 
         float refractionRatio = hit.frontFace ? (1.0f / material->ior) : material->ior;
         Vec3 unitIncidentDir = normalize(ray.dir);
-        
+
         float cosTheta = std::min(dot(-unitIncidentDir, hit.normal), 1.0f);
         float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
 
-        bool totalInternalReflection = refractionRatio * sinTheta > 1.0f; 
-        
+        bool totalInternalReflection = refractionRatio * sinTheta > 1.0f;
+
         float schlickBase = (1.0f - refractionRatio) / (1.0f + refractionRatio);
         schlickBase = schlickBase * schlickBase;
         float schlickFresnel = schlickBase + (1.0f - schlickBase) * std::pow((1.0f - cosTheta), 5.0f);
@@ -266,20 +275,20 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
         Ray reflectedRay(hit.position + hit.normal * 0.001f, reflectDir);
         Hit reflectHit;
         Vec3 reflectColor(0.1f, 0.1f, 0.1f);
-        if (this->bvh.intersect(reflectedRay, reflectHit)) {
-            reflectColor = this->shade<false>(reflectedRay, reflectHit, glassDepth - 1);
+        if (_bvh.intersect(reflectedRay, reflectHit)) {
+            reflectColor = shade<false>(reflectedRay, reflectHit, glassDepth - 1);
         }
 
         Vec3 finalGlassColor;
 
         if (totalInternalReflection) {
-            finalGlassColor = reflectColor; 
+            finalGlassColor = reflectColor;
         } else {
             Ray refractedRay(hit.position + refractDir * 0.001f, refractDir);
             Hit refractHit;
-            Vec3 refractColor(0.1f, 0.1f, 0.1f); 
-            if (this->bvh.intersect(refractedRay, refractHit)) {
-                refractColor = this->shade<false>(refractedRay, refractHit, glassDepth - 1);
+            Vec3 refractColor(0.1f, 0.1f, 0.1f);
+            if (_bvh.intersect(refractedRay, refractHit)) {
+                refractColor = shade<false>(refractedRay, refractHit, glassDepth - 1);
             }
             else{
                 Vec2 uv;
@@ -287,11 +296,20 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
                 refractColor =  AMaterial::textureManager.getTexturePix(0, uv);
             }
+<<<<<<< HEAD
+            else{
+                Vec2 uv;
+                uv.x = 0.5f + (std::atan2(ray.dir.z, ray.dir.x) / (2.0f * M_PI));
+                uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
+                refractColor =  AMaterial::textureManager.getTexturePix(0, uv);
+            }
             
+=======
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
             finalGlassColor = reflectColor * schlickFresnel + refractColor * (1.0f - schlickFresnel);
         }
-        
-        finalColorNorm = finalGlassColor * albedoNorm; 
+
+        finalColorNorm = finalGlassColor * albedoNorm;
         }
     }
 
@@ -304,8 +322,8 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             float cosTheta = std::min(dot(-unitIncidentDir, hit.normal), 1.0f);
             float sinTheta = std::sqrt(1.0f - cosTheta * cosTheta);
 
-            bool cannotRefract = refractionRatio * sinTheta > 1.0f; 
-            
+            bool cannotRefract = refractionRatio * sinTheta > 1.0f;
+
             float reflectance = 1.0f;
             if (!cannotRefract) {
                 float r0 = (1.0f - refractionRatio) / (1.0f + refractionRatio);
@@ -316,22 +334,31 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             Vec3 bounceDir;
             Vec3 bounceOrigin;
 
+<<<<<<< HEAD
             
 
+=======
+        
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
             if (cannotRefract || fastRandomFloat(0.0f, 1.0f) < reflectance) {
                 Vec3 reflected = reflect(unitIncidentDir, hit.normal);
-                bounceDir = normalize(reflected + randomUnitVector() * material->roughness);
-                bounceOrigin = hit.position - hit.normal * (hit.frontFace ? 1.0f : -1.0f) * 0.001f;
+                bounceDir    = normalize(reflected + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position + hit.normal * 0.001f;
             } else {
                 Vec3 refracted = computeRefraction(unitIncidentDir, hit.normal, refractionRatio);
+<<<<<<< HEAD
                 bounceDir = normalize(refracted + randomUnitVector() * material->roughness);
                 bounceOrigin = hit.position + hit.normal * (hit.frontFace ? 1.0f : -1.0f) * 0.001f;
+=======
+                bounceDir    = normalize(refracted + randomUnitVector() * material->roughness);
+                bounceOrigin = hit.position - hit.normal * 0.001f;
+>>>>>>> 146b508e3435fe69f0bbcdf45fe1dbd56a0908d7
             }
 
             Ray bounceRay(bounceOrigin, bounceDir);
             Hit bounceHit;
-            if (this->bvh.intersect(bounceRay, bounceHit)) {
-                Vec3 glassCol = this->shade<true>(bounceRay, bounceHit, depth - 1);
+            if (_bvh.intersect(bounceRay, bounceHit)) {
+                Vec3 glassCol = shade<true>(bounceRay, bounceHit, depth - 1);
                 finalColorNorm = albedoNorm * glassCol;
             } else {
                 Vec2 uv;
@@ -339,18 +366,18 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                 uv.y = 0.5f + (std::asin(ray.dir.y) / M_PI);
                 finalColorNorm = AMaterial::textureManager.getTexturePix(0, uv);
             }
-        } 
+        }
         else {
             Vec3 directLighting = applyPBR<true>(ray, hit, albedoNorm);
             Vec3 indirectLighting(0.0f, 0.0f, 0.0f);
-            
+
             Vec3 unitIncidentDir = normalize(ray.dir);
             Vec3 viewDir = -unitIncidentDir;
             Vec3 baseReflectivity = lerp(Vec3(0.04f, 0.04f, 0.04f), albedoNorm, material->metallic);
             float cosTheta = std::max(dot(hit.normal, viewDir), 0.0f);
             Vec3 fresnelTerm = computeFresnelSchlick(cosTheta, baseReflectivity);
             float specProbability = std::clamp((fresnelTerm.x + fresnelTerm.y + fresnelTerm.z) / 3.0f, 0.0f, 1.0f);
-            
+
             Vec3 bounceDir;
             Vec3 bounceOrigin = hit.position + hit.normal * 0.001f;
             Vec3 reflectionFilter(1.0f, 1.0f, 1.0f);
@@ -362,7 +389,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
                     bounceDir = bounceDir - hit.normal * dot(bounceDir, hit.normal) * 2.0f;
                 }
                 reflectionFilter = lerp(Vec3(1.0f, 1.0f, 1.0f), albedoNorm, material->metallic);
-            } 
+            }
             else {
                 Vec3 randDir = randomUnitVector();
                 bounceDir = hit.normal + randDir;
@@ -374,8 +401,8 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
 
             Ray bounceRay(bounceOrigin, bounceDir);
             Hit bounceHit;
-            if (this->bvh.intersect(bounceRay, bounceHit)) {
-                Vec3 bounceCol = this->shade<true>(bounceRay, bounceHit, depth - 1);
+            if (_bvh.intersect(bounceRay, bounceHit)) {
+                Vec3 bounceCol = shade<true>(bounceRay, bounceHit, depth - 1);
                 indirectLighting = reflectionFilter * bounceCol;
             } else{
                 Vec2 uv;

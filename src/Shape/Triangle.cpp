@@ -20,7 +20,7 @@ Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
     this->x = x;
     this->y = y;
     this->z = z;
-    this->_color = {255, 0, 255};
+    _color = {255, 0, 255};
 }
 
 Vec2 Triangle::getUv(Vec3 &) const noexcept {

@@ -119,7 +119,7 @@ void BVH::appliedSah(bvh_stack_t &stack, int &outPivot, float &outBestCost, floa
 void BVH::fillNode(std::vector<bvh_stack_t> &_myStacks)
 {
     int pivot = 0;
-    int nodeIndex = this->_spacialThree.size();
+    int nodeIndex = _spacialThree.size();
     node_t newNode;
     bvh_stack_t stack = _myStacks.back();
     Axis axis;
@@ -138,7 +138,7 @@ void BVH::fillNode(std::vector<bvh_stack_t> &_myStacks)
     buildleftrightAABB(stack);
 
     float parentArea = newNode.nodeShape.surfaceArea();
-    this->appliedSah(stack, pivot, splitCost, parentArea);
+    appliedSah(stack, pivot, splitCost, parentArea);
 
     const int MAX_LEAF_SIZE = 8; 
     if (newNode.count <= 2 || (leafCost <= splitCost && newNode.count <= MAX_LEAF_SIZE)) {
@@ -157,9 +157,9 @@ void BVH::fillNode(std::vector<bvh_stack_t> &_myStacks)
     /*===set the left or right node of the parent to build the three===*/
     if (stack.parentIndex != -1){
         if (stack.isLeftChild == true)
-            this->_spacialThree[stack.parentIndex].left = nodeIndex;
+            _spacialThree[stack.parentIndex].left = nodeIndex;
         if (stack.isLeftChild == false)
-            this->_spacialThree[stack.parentIndex].right = nodeIndex;
+            _spacialThree[stack.parentIndex].right = nodeIndex;
     }
     
     _spacialThree.push_back(newNode);
@@ -176,16 +176,16 @@ void BVH::fillNode(std::vector<bvh_stack_t> &_myStacks)
 void BVH::buildSpacePartitionning(void)
 {
     /*===Binary Space three===*/
-    this->_spacialThree.reserve(THREE_ALLOC(_objects.size()));
+    _spacialThree.reserve(THREE_ALLOC(_objects.size()));
     /*===Index list for sorting obj===*/
-    this->_indexTab.reserve(_objects.size());
-    
+    _indexTab.reserve(_objects.size());
+
     /*===Alloc heap stack to build a binary tree and init is first node===*/
-    this->_myStacks.reserve(THREE_ALLOC(_objects.size()));
-    this->_myStacks.push_back(bvh_stack_t(0, (int)_objects.size(), -1, false));
+    _myStacks.reserve(THREE_ALLOC(_objects.size()));
+    _myStacks.push_back(bvh_stack_t(0, (int)_objects.size(), -1, false));
     /*===Alloc two array of node for SAH algo===*/
-    this->_leftSide.reserve(_objects.size());
-    this->_rightSide.reserve(_objects.size());
+    _leftSide.reserve(_objects.size());
+    _rightSide.reserve(_objects.size());
 
     Log::Logger::debug("Three alloc:" + std::to_string(THREE_ALLOC(_objects.size())));
 
@@ -197,14 +197,14 @@ void BVH::buildSpacePartitionning(void)
     }
 
     /*===Clean Memory===*/
-    this->_myStacks.clear();
-    this->_myStacks.shrink_to_fit();
-    
-    this->_leftSide.clear();
-    this->_leftSide.shrink_to_fit();
-    
-    this->_rightSide.clear();
-    this->_rightSide.shrink_to_fit();
+    _myStacks.clear();
+    _myStacks.shrink_to_fit();
+
+    _leftSide.clear();
+    _leftSide.shrink_to_fit();
+
+    _rightSide.clear();
+    _rightSide.shrink_to_fit();
 
     /*===Debug: Display three node===*/
     if (Log::Logger::GetLogLvl() == Log::Logger::LogLvl::DEBUG)

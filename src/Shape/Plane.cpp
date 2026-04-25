@@ -17,7 +17,7 @@ AABB Plane::getObjectAABB() const noexcept
 
 Vec3 Plane::getCentroid() const noexcept
 {
-    return this->_pos;
+    return _pos;
 }
 
 Vec2 Plane::getUv(Vec3 &hitPos) const noexcept
@@ -31,7 +31,7 @@ Vec2 Plane::getUv(Vec3 &hitPos) const noexcept
     Vec3 u_axis = normalize(cross(up, _normale));
     Vec3 v_axis = cross(_normale, u_axis);
 
-    Vec3 p = hitPos - this->_pos;
+    Vec3 p = hitPos - _pos;
 
     float u = dot(p, u_axis);
     float v = dot(p, v_axis);
@@ -44,7 +44,7 @@ bool Plane::intersect(Ray& ray, Hit& hit) const noexcept
     float denom = dot(_normale, ray.dir);
 
     if (std::abs(denom) > EPS) {
-        Vec3 dirRayToPlan = this->_pos - ray.origin;
+        Vec3 dirRayToPlan = _pos - ray.origin;
         float t = dot(dirRayToPlan, _normale) / denom; 
 
         if (t > EPS && t < hit.t) {

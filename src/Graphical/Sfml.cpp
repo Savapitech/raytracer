@@ -1,36 +1,33 @@
 #include "Sfml.hpp"
-#include "Render.hpp"
 
-Sfml::Sfml(void)  :
-    window(sf::VideoMode({WIDTH, HEIGHT}), "Raytracer")
-    {
-
-    }
+Sfml::Sfml(std::uint16_t width, std::uint16_t height) :
+  _window(sf::VideoMode({width, height}), "Raytracer")
+{
+}
 
 void Sfml::display()
 {
-    this->window.clear();
-    for (sf::Sprite &sprite : this->spriteTab)
-        this->window.draw(sprite);
-    this->window.display();
+    _window.clear();
+    for (sf::Sprite &sprite : _spriteTab)
+        _window.draw(sprite);
+    _window.display();
 }
 
 bool Sfml::isOpen(void)
 {
-    return window.isOpen();
+    return _window.isOpen();
 }
 
 void Sfml::addSprite(sf::Sprite &sprite)
 {
-    this->spriteTab.push_back(sprite);
+    _spriteTab.push_back(sprite);
 }
 
 void Sfml::handleEvent()
 {
-    while (const std::optional event = this->window.pollEvent()) {
+    while (const std::optional event = _window.pollEvent())
         if (event->is<sf::Event::Closed>())
-            this->window.close();
-    }            
+            _window.close();
 }
 
 bool Sfml::handleMovement(scene::Scene &scene)

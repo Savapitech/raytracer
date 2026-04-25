@@ -6,7 +6,7 @@ bool AFractals::intersect(Ray &ray, Hit &hit) const
 
     for (int i = 0; i < _maxIt; i++) {
         Vec3 currentPosition = ray.origin + ray.dir * t;
-        Vec3 localPosition = currentPosition - this->_pos;
+        Vec3 localPosition = currentPosition - _pos;
         float dist = evaluateSDF(localPosition);
         if (dist < _collisionEpsilon) {
             hit.t = t;

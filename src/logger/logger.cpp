@@ -19,52 +19,52 @@ namespace Log{
 
     void Logger::info(const std::string &str) noexcept
     {
-        if (Logger::LoggerLvl < Logger::INFO)
+        if (Logger::_loggerLvl < Logger::INFO)
             return;
         log_info(LogLvl::INFO, str);
     }
 
     void Logger::warning(const std::string &str) noexcept
     {
-        if (Logger::LoggerLvl < Logger::WARNING)
+        if (Logger::_loggerLvl < Logger::WARNING)
             return;
         log_info(LogLvl::WARNING, str);
     }
 
     void Logger::error(const std::string &str) noexcept
     {
-        if (Logger::LoggerLvl < Logger::ERROR)
+        if (Logger::_loggerLvl < Logger::ERROR)
             return;
         log_info(LogLvl::ERROR, str);
     }
 
     void Logger::debug(const std::string &str) noexcept
     {
-        if (Logger::LoggerLvl < Logger::DEBUG)
+        if (Logger::_loggerLvl < Logger::DEBUG)
             return;
         log_info(LogLvl::DEBUG, str);
     }
 
-    Log::Logger::LogLvl Logger::LoggerLvl = Logger::NONE;
+    Log::Logger::LogLvl Logger::_loggerLvl = Logger::NONE;
 
     void Logger::SetLogLvl(const LogLvl lvl) noexcept
     {
-        Logger::LoggerLvl = lvl;
+        Logger::_loggerLvl = lvl;
     }
 
     void Logger::SetLogLvlStr(const std::string &lvl) noexcept
     {
         if (lvl == "NONE")
-            Logger::LoggerLvl = LogLvl::NONE;
+            Logger::_loggerLvl = LogLvl::NONE;
         else if (lvl == "INFO")
-            Logger::LoggerLvl = LogLvl::INFO;
+            Logger::_loggerLvl = LogLvl::INFO;
         else if (lvl == "WARNING")
-            Logger::LoggerLvl = LogLvl::WARNING;
+            Logger::_loggerLvl = LogLvl::WARNING;
         else  if (lvl == "ERROR")
-            Logger::LoggerLvl = LogLvl::ERROR;
+            Logger::_loggerLvl = LogLvl::ERROR;
         else if (lvl == "DEBUG")
-            Logger::LoggerLvl= LogLvl::DEBUG;
+            Logger::_loggerLvl= LogLvl::DEBUG;
         else 
-            Logger::LoggerLvl= LogLvl::NONE;
+            Logger::_loggerLvl= LogLvl::NONE;
     }
 }

@@ -7,12 +7,9 @@
 #include "Render.hpp"
 #include "Sfml.hpp"
 
-#define WIDTH 1920
-#define HEIGHT 1080
-
 Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
-    : scene(scene),
-      bvh(scene.getObjects()),
+    : _scene(scene),
+      _bvh(scene.getObjects()),
       _frameBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       _imageIsRender(false),
       _config(config),
@@ -23,18 +20,18 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
 {
     for (int i = 3; i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i+=4)
         _frameBuffer[i] = 255;
-    this->_aspect = float(scene.getCamera().width) / float(scene.getCamera().height);
-    this->_scale  = tanf((scene.getCamera().fov * 0.5f) * (M_PI / 180.0f));
-    this->_invWidth  = 1.0f / scene.getCamera().width;
-    this->_invHeight = 1.0f / scene.getCamera().height;
-    this->_gr = new Sfml();
+    _aspect = float(scene.getCamera().width) / float(scene.getCamera().height);
+    _scale  = tanf((scene.getCamera().fov * 0.5f) * (M_PI / 180.0f));
+    _invWidth  = 1.0f / scene.getCamera().width;
+    _invHeight = 1.0f / scene.getCamera().height;
+    _gr = new Sfml(WIDTH, HEIGHT);
     Log::Logger::info("Window Open");
 }
 
 void Render::fillTile(int startX, int startY)
 {
     /*===Creation of tile to access the L1 cache===*/
-    const auto &cam = scene.getCamera();
+    const auto &cam = _scene.getCamera();
 
     int endX = std::min(startX + TILE_SIZE, cam.width);
     int endY = std::min(startY + TILE_SIZE, cam.height);
@@ -48,7 +45,7 @@ void Render::fillTile(int startX, int startY)
 
 void Render::createRayBuffer(void) noexcept
 {
-    const auto &cam = scene.getCamera();
+    const auto &cam = _scene.getCamera();
     int width  = cam.width;
     int height = cam.height;
 
@@ -89,10 +86,10 @@ void Render::createRayBuffer(void) noexcept
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplay).count();
 
         if (elapsed >= DISPLAY_INTERVAL_MS) {
-            this->_TframeBuffer.update(_frameBuffer.data());
-            this->_SframeBuffer.setTexture(this->_TframeBuffer);
-            this->_gr->display();
-            this->_gr->handleEvent();
+            _TframeBuffer.update(_frameBuffer.data());
+            _SframeBuffer.setTexture(_TframeBuffer);
+            _gr->display();
+            _gr->handleEvent();
             lastDisplay = now;
         }
     }
@@ -105,11 +102,11 @@ void Render::createRayBuffer(void) noexcept
     Log::Logger::info("Render Time: " + std::to_string(renderTimeMs) + "ms");
 
     /*==============Final frame buffer push==============*/
-    this->_TframeBuffer.update(_frameBuffer.data());
-    this->_SframeBuffer.setTexture(this->_TframeBuffer);
-    this->_gr->display();
+    _TframeBuffer.update(_frameBuffer.data());
+    _SframeBuffer.setTexture(_TframeBuffer);
+    _gr->display();
 
-    this->_imageIsRender = true;
+    _imageIsRender = true;
 }
 
 /*
@@ -120,27 +117,27 @@ void Render::runRender(void) noexcept
     Log::Logger::info("Start Render");
 
     /*===Build the binary space three===*/
-    this->bvh.buildSpacePartitionning();
+    _bvh.buildSpacePartitionning();
 
     /*===add frame buffer sprite to the pool of sprite to draw===*/
-    this->_gr->addSprite(this->_SframeBuffer);
+    _gr->addSprite(_SframeBuffer);
 
     /*===Start the main loop===*/
-    while (this->_gr->isOpen()) {
+    while (_gr->isOpen()) {
 
         /*===Check the if we need to rebuild the frame buffer in case of movement===*/
-        if (this->_imageIsRender == false){
-            this->createRayBuffer();
+        if (_imageIsRender == false){
+            createRayBuffer();
             Log::Logger::info("Render complete");
         }
 
         /*===Check window event for closing the window===*/
-        this->_gr->handleEvent();
+        _gr->handleEvent();
 
         /*===Change the camera data in case of inputs===*/
-        if (this->_gr->handleMovement(this->scene) == true){
-            this->_imageIsRender = false;
-            std::fill(this->_frameBuffer.begin(), this->_frameBuffer.end(), 0);
+        if (_gr->handleMovement(_scene) == true){
+            _imageIsRender = false;
+            std::fill(_frameBuffer.begin(), _frameBuffer.end(), 0);
         }
     }
     Log::Logger::info("Window Close");
