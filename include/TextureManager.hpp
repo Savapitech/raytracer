@@ -27,7 +27,7 @@ class TextureManager
         Vec3 getTexturePix(int index, Vec2 uv)
         {
             if (index < 0 || index >= (int)TexturePool.size())
-                return Vec3(1.0f, 0.0f, 1.0f); 
+                return Vec3(255.0f, 255.0f, 255.0f) / 255; 
             const sf::Image& img = TexturePool[index];
             auto size = img.getSize();
     
@@ -43,7 +43,7 @@ class TextureManager
                 y += (int)size.y;
                     
             sf::Color color = img.getPixel({(unsigned int)x, (unsigned int)y});
-            return Vec3(color.r, color.g, color.b);
+            return Vec3(color.r, color.g, color.b) / 255;
         }
 
     private:
