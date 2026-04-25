@@ -1,9 +1,5 @@
 #pragma once
 
-#include "logger.hpp"
-
-
-
 namespace CmdConfig {
     struct config_t
     {
@@ -14,5 +10,7 @@ namespace CmdConfig {
         bool pathtracing = false;
 
         int sample = 1;
+
+        std::string output;
     };
 }

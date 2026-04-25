@@ -6,6 +6,7 @@
 
 #include "Render.hpp"
 #include "Sfml.hpp"
+#include "Ppm.hpp"
 
 Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     : _scene(scene),
@@ -24,8 +25,11 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     _scale  = tanf((scene.getCamera().fov * 0.5f) * (M_PI / 180.0f));
     _invWidth  = 1.0f / scene.getCamera().width;
     _invHeight = 1.0f / scene.getCamera().height;
-    _gr = new Sfml(WIDTH, HEIGHT);
-    Log::Logger::info("Window Open");
+    if (config.output.empty())
+        _gr = new Sfml(WIDTH, HEIGHT);
+    else
+        _gr = new Ppm(config.output);
+    Log::Logger::info(config.output.empty() ? "Window Open" : "PPM mode");
 }
 
 void Render::fillTile(int startX, int startY)
@@ -82,15 +86,19 @@ void Render::createRayBuffer(void) noexcept
     auto lastDisplay = std::chrono::steady_clock::now();
 
     while (doneTiles.load(std::memory_order_acquire) < numTiles) {
-        auto now = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplay).count();
+        if (_gr->needsLiveUpdate()) {
+            auto now = std::chrono::steady_clock::now();
+            auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastDisplay).count();
 
-        if (elapsed >= DISPLAY_INTERVAL_MS) {
-            _TframeBuffer.update(_frameBuffer.data());
-            _SframeBuffer.setTexture(_TframeBuffer);
-            _gr->display();
-            _gr->handleEvent();
-            lastDisplay = now;
+            if (elapsed >= DISPLAY_INTERVAL_MS) {
+                _TframeBuffer.update(_frameBuffer.data());
+                _SframeBuffer.setTexture(_TframeBuffer);
+                _gr->display();
+                _gr->handleEvent();
+                lastDisplay = now;
+            }
+        } else {
+            std::this_thread::sleep_for(std::chrono::milliseconds(DISPLAY_INTERVAL_MS));
         }
     }
 
@@ -102,9 +110,12 @@ void Render::createRayBuffer(void) noexcept
     Log::Logger::info("Render Time: " + std::to_string(renderTimeMs) + "ms");
 
     /*==============Final frame buffer push==============*/
-    _TframeBuffer.update(_frameBuffer.data());
-    _SframeBuffer.setTexture(_TframeBuffer);
-    _gr->display();
+    if (_gr->needsLiveUpdate()) {
+        _TframeBuffer.update(_frameBuffer.data());
+        _SframeBuffer.setTexture(_TframeBuffer);
+        _gr->display();
+    }
+    _gr->save(_frameBuffer.data(), WIDTH, HEIGHT);
 
     _imageIsRender = true;
 }

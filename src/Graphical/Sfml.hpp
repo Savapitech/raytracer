@@ -12,6 +12,9 @@ class Sfml : public IGraphical {
     void handleEvent(void) override;
     bool handleMovement(scene::Scene &) override;
 
+    void save(const uint8_t *, uint32_t, uint32_t) override {}
+    bool needsLiveUpdate(void) const override { return true; }
+
   private:
     sf::RenderWindow _window;
     std::vector<std::reference_wrapper<sf::Sprite>> _spriteTab;
