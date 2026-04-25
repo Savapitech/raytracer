@@ -73,7 +73,6 @@ namespace scene
     private:
         Factory _factory;
 
-        double _deapth;
         void insertObjInObjects(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         Camera _cameraInfo;
