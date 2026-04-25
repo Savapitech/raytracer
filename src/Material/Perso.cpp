@@ -31,5 +31,8 @@ Perso::Perso(const libconfig::Setting& s)
     } else {
         this->textureType = TextureType::NONE;
     }
-    this->transmission = 1.0f;
+    if (s.exists("transmission"))
+        this->transmission = (float)(s["transmission"]);
+    else
+        this->transmission = 0.0f;
 }
