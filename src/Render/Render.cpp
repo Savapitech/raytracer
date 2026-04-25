@@ -7,9 +7,6 @@
 #include "Render.hpp"
 #include "Sfml.hpp"
 
-#define WIDTH 1920
-#define HEIGHT 1080
-
 Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     : scene(scene),
       bvh(scene.getObjects()),
@@ -27,7 +24,7 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     this->_scale  = tanf((scene.getCamera().fov * 0.5f) * (M_PI / 180.0f));
     this->_invWidth  = 1.0f / scene.getCamera().width;
     this->_invHeight = 1.0f / scene.getCamera().height;
-    this->_gr = new Sfml();
+    this->_gr = new Sfml(WIDTH, HEIGHT);
     Log::Logger::info("Window Open");
 }
 

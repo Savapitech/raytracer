@@ -8,6 +8,9 @@
 #include "Object.hpp"
 #include "BVH.hpp"
 
+#define WIDTH 1920
+#define HEIGHT 1080
+
 #define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
 
 namespace scene
@@ -24,8 +27,8 @@ namespace scene
             Vec3 up;
             float fov = 30;
             double distance = 540;
-            int width = 1920;
-            int height = 1080;
+            int width = WIDTH;
+            int height = HEIGHT;
 
             void setupCam();
 

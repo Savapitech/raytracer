@@ -1,11 +1,9 @@
 #include "Sfml.hpp"
-#include "Render.hpp"
 
-Sfml::Sfml(void)  :
-    window(sf::VideoMode({WIDTH, HEIGHT}), "Raytracer")
-    {
-
-    }
+Sfml::Sfml(std::uint16_t width, std::uint16_t height) :
+  window(sf::VideoMode({width, height}), "Raytracer")
+{
+}
 
 void Sfml::display()
 {

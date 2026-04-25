@@ -4,7 +4,7 @@
 
 class Sfml : public IGraphical {
   public:
-    Sfml(void);
+    Sfml(std::uint16_t width, std::uint16_t height);
     void display(void) override;
     bool isOpen(void) override;
     void addSprite(sf::Sprite &) override;
