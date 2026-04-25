@@ -1,13 +1,13 @@
 #include "Render.hpp"
 #include "Ray.hpp"
 
-void Render::writePixel(int x, int y, sf::Color color) noexcept
+void Render::writePixel(int x, int y, const Vec3 &color) noexcept
 {
     int acutalPixel = (y * _scene.getCamera().width + x) * 4;
 
-    _frameBuffer[R(acutalPixel)] = color.r;
-    _frameBuffer[G(acutalPixel)] = color.g;
-    _frameBuffer[B(acutalPixel)] = color.b;
+    _frameBuffer[R(acutalPixel)] = color.x;
+    _frameBuffer[G(acutalPixel)] = color.y;
+    _frameBuffer[B(acutalPixel)] = color.z;
     _frameBuffer[A(acutalPixel)] = 255;
 }
 
@@ -54,11 +54,8 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept
 
     averageLight = averageLight * 255.0f;
 
-    sf::Color finalColor(
-        std::clamp((int)averageLight.x, 0, 255),
-        std::clamp((int)averageLight.y, 0, 255),
-        std::clamp((int)averageLight.z, 0, 255),
-        255
-    );
-    writePixel(x, y, finalColor);
+    averageLight.x = std::clamp(static_cast<int>(averageLight.x), 0, 255);
+    averageLight.y = std::clamp(static_cast<int>(averageLight.y), 0, 255);
+    averageLight.z = std::clamp(static_cast<int>(averageLight.z), 0, 255);
+    writePixel(x, y, averageLight);
 }

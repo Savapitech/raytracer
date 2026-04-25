@@ -21,7 +21,7 @@ class Render
         void createRayBuffer(void) noexcept;
         void fillRayBuffer(float offsetX, float offsetY, int x, int y) noexcept;
         void fillTile(int startX, int startY);
-        void writePixel(int x, int y, sf::Color color) noexcept;
+        void writePixel(int x, int y, const Vec3 &color) noexcept;
 
         template <bool IsPathTracer>
         Vec3 shade(Ray &ray, Hit &minHit, int depth) noexcept;
