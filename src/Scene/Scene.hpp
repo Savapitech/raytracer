@@ -72,9 +72,11 @@ namespace scene
         
     private:
         Factory _factory;
+        LightFactory _lightFactory;
 
         void insertObjInObjects(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
         void readObject(const libconfig::Setting &s, std::vector<std::unique_ptr<Object>> &objects);
+        void readLight(const libconfig::Setting &s, std::vector<std::unique_ptr<ILight>> &lights);
         Camera _cameraInfo;
         std::vector<std::unique_ptr<Object>> _objects;
         std::vector<std::unique_ptr<ILight>> _lights;

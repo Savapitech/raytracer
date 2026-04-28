@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math3d.hpp"
+#include <libconfig.h++>
 
 class ILight
 {

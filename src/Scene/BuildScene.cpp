@@ -1,3 +1,4 @@
+#include "ILight.hpp"
 #include "Scene.hpp"
 #include <memory>
 #include <libconfig.h++>
@@ -50,6 +51,26 @@ namespace scene {
         insertObjInObjects(s, objects);
     }
 
+    void Scene::readLight(const Setting &s, std::vector<std::unique_ptr<ILight>> &lights)
+    {
+        if (!s.exists("lights"))
+            throw std::runtime_error("'lights' field is missing in scene");
+    
+        Setting &list = s["lights"];
+    
+        if (!list.isList())
+            throw std::runtime_error("'lights' must be a list ( ... )");
+    
+        int count = list.getLength();
+        Log::Logger::debug("lights size: " + std::to_string(count));
+        
+        for (int i = 0; i < count; i++){
+            lights.push_back(_lightFactory.getLight(list[i]));
+            Log::Logger::debug("Lights add: " + std::to_string(count));
+        }
+      }
+
+
     Scene::Scene(const std::string &scene_path)
         {
             if (scene_path.empty() == true)
@@ -66,11 +87,10 @@ namespace scene {
 
             _cameraInfo = readcam(scene);
             readObject(scene, _objects);
-            this->_lights.push_back(std::make_unique<AreaLight>(_cameraInfo.pos,   Vec3{1.0f, 1.0f, 1.0f}, 8));
+            readLight(scene, _lights);
+            //this->_lights.push_back(std::make_unique<AreaLight>(_cameraInfo.pos,   Vec3{1.0f, 1.0f, 1.0f}, 8));
             //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{0, 80, 10},        Vec3{1.0f, 1.0f, 1.0f}, 8));
             //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{30, 40, -20},      Vec3{1.0f, 1.0f, 1.0f}, 8));
-            //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{-30, 20, 30},      Vec3{10.00f, 10.0f, 10.00f}, 8));
-
-            
+            //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{-30, 20, 30},      Vec3{10.00f, 10.0f, 10.00f}, 8)); 
         }
 }
