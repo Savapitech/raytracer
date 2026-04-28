@@ -23,7 +23,6 @@ hotspot*
 
 *.png
 perf.*
-*.cfg
 .envrc
 .vscode
 .idea
