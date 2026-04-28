@@ -30,6 +30,8 @@
           libconfig
           pkg-config
           sfml
+          cmake
+          ninja_1_11
         ];
 
         env.NIX_CFLAGS_COMPILE =

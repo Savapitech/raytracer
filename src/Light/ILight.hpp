@@ -2,13 +2,6 @@
 
 #include "math3d.hpp"
 
-//class LightFactory
-//{
-//    public:
-//        LightFactory();
-//        std::unique_ptr<ILight> getLight(const libconfig::Setting &s);
-//};
-
 class ILight
 {
 public:
@@ -34,42 +27,10 @@ protected:
     Vec3 _position;
 };
 
-class AreaLight : public ALight
+
+class LightFactory
 {
-public:
-    AreaLight(Vec3 pos, Vec3 col, float s) {
-        _position = pos;
-        _color = col;
-        _size = s;
-    }
-
-    Vec3 getCenter() const override { return _position; }
-
-    Vec3 getSamplePosition() const override {
-        float halfSize = _size / 2.0f;
-        float jitterX = fastRandomFloat(-halfSize, halfSize);
-        float jitterZ = fastRandomFloat(-halfSize, halfSize);
-        return _position + Vec3(jitterX, 0.0f, jitterZ);
-    }
-
-    Vec3 getRadiance(const Vec3&) const override {
-        return _color;
-    }
-
-    bool castsShadows() const override { return true; }
-};
-
-class AmbiantLight : public ALight
-{
-public:
-    AmbiantLight(Vec3 col) {
-        _color = col;
-        _size = 0.0f;
-    }
-
-    Vec3 getCenter() const override { return Vec3(0,0,0); }
-
-    Vec3 getSamplePosition() const override { return Vec3(0,0,0); }
-    Vec3 getRadiance(const Vec3&) const override { return _color; }
-    bool castsShadows() const override { return false; }
+    public:
+        LightFactory();
+        std::unique_ptr<ILight> getLight(const libconfig::Setting &s);
 };
