@@ -82,8 +82,10 @@ namespace scene {
             Setting &root = cfg.getRoot();
             Setting &scene = root["scene"];
             
-            if (scene.exists("background"))
-                Material::textureManager.uploadTexture((std::string)scene["background"]);
+            if (scene.exists("background")){
+                Log::Logger::debug("Add Background" + (std::string)scene["background"] + ":" +  std::to_string(Material::textureManager.uploadTexture((std::string)scene["background"])));
+                
+            }
 
             _cameraInfo = readcam(scene);
             readObject(scene, _objects);
