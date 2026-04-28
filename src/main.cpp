@@ -22,6 +22,9 @@ int main(int ac, char **av)
         parser.initParser();
         parser.buildConfig();
 
+        if (parser.getConfig().gui == true)
+            gui();
+
         /*===Init the main class who init the scene and the render===*/
         RayTracer::RayTracer raytracer(parser.getConfig());
 

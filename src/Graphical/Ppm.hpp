@@ -12,6 +12,7 @@ class Ppm : public IGraphical {
     void addSprite(sf::Sprite &) override {}
 
     void handleEvent(void) override {}
+    void handleGui(void) override {}
     bool handleMovement(scene::Scene &) override { return false; }
 
     void save(const uint8_t *data, uint32_t width, uint32_t height) override;
