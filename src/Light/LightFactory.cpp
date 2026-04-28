@@ -23,9 +23,6 @@ LightFactory::LightFactory() {
   lightRegistry["Area"] = [](const libconfig::Setting& s) {
     return std::make_unique<AreaLight>(s);
   };
-  lightRegistry["Area"] = [](const libconfig::Setting& s) {
-    return std::make_unique<Area>(s);
-  };
 }
 
 std::unique_ptr<ILight> LightFactory::getLight(const libconfig::Setting &s)
