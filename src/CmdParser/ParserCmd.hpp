@@ -25,5 +25,5 @@ namespace ParserCmd {
             CmdConfig::config_t _config;
     };
 }
-
+void gui();
 #include "BindField.tpp"

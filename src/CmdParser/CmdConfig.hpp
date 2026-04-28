@@ -12,5 +12,7 @@ namespace CmdConfig {
         int sample = 1;
 
         std::string output;
+
+        bool gui = false;
     };
 }

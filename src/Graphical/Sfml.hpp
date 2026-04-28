@@ -10,6 +10,7 @@ class Sfml : public IGraphical {
     void addSprite(sf::Sprite &) override;
 
     void handleEvent(void) override;
+    void handleGui(void) override;
     bool handleMovement(scene::Scene &) override;
 
     void save(const uint8_t *, uint32_t, uint32_t) override {}

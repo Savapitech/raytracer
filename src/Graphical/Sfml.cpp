@@ -30,6 +30,16 @@ void Sfml::handleEvent()
             _window.close();
 }
 
+void Sfml::handleGui()
+{
+    while (const std::optional event = _window.pollEvent()) {
+        if (event->is<sf::Event::Closed>())
+            std::exit(0);
+        if (event->is<sf::Event::KeyPressed>() || sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
+            _window.close();
+    }
+}
+
 bool Sfml::handleMovement(scene::Scene &scene)
 {
     scene::Camera cam = scene.getCamera();
