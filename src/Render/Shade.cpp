@@ -197,7 +197,7 @@ Vec3 Render::shade(Ray& ray, Hit& hit, int depth) noexcept
             albedo = ProceduralTexture::getChessboard(uv, material->color, material->colorChess, 2.f);
             break;
         case TextureType::LOAD_IMAGE :
-            albedo = material->textureManager.getTexturePix(material->textureIndex, uv);
+            albedo = material->textureManager.getTexturePix(material->textureIndex, uv) * 255;
             break;
         default:
             albedo = object->getShape()->getColor();

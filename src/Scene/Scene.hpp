@@ -4,6 +4,7 @@
 #include <vector>
 #include <libconfig.h++>
 
+#include "MaterialRegistry.hpp"
 #include "ILight.hpp"
 #include "Object.hpp"
 #include "BVH.hpp"
@@ -44,9 +45,11 @@ namespace scene
 
     class Obj{
         public:
-            Obj(std::string path, const libconfig::Setting &s);
+            Obj(const std::string & path, const libconfig::Setting &s);
             std::vector<std::unique_ptr<Object>> &getObjects(void) {return _objects;}
+            void parseMtl(const std::string &path);
         private:
+            MaterialRegistry _materialRegistry;
             std::vector<Vec3> _vertices;
             std::vector<std::unique_ptr<Object>> _objects;
     };

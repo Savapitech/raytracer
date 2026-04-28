@@ -2,7 +2,7 @@
 
 #include "Scene.hpp"
 
-Perso::Perso(const libconfig::Setting& s)
+Material::Material(const libconfig::Setting& s)
 {
     this->type = "Perso";
     if (s.exists("color"))

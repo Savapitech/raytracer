@@ -61,16 +61,14 @@ namespace scene {
             Setting &root = cfg.getRoot();
             Setting &scene = root["scene"];
             
-            if (scene.exists("background"))
-                Material::textureManager.uploadTexture((std::string)scene["background"]);
+            if (scene.exists("background")){
+                Log::Logger::debug("Add Background" + (std::string)scene["background"] + ":" +  std::to_string(Material::textureManager.uploadTexture((std::string)scene["background"])));
+                
+            }
 
             _cameraInfo = readcam(scene);
             readObject(scene, _objects);
             this->_lights.push_back(std::make_unique<AreaLight>(_cameraInfo.pos,   Vec3{1.0f, 1.0f, 1.0f}, 8));
-            //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{0, 80, 10},        Vec3{1.0f, 1.0f, 1.0f}, 8));
-            //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{30, 40, -20},      Vec3{1.0f, 1.0f, 1.0f}, 8));
-            //this->_lights.push_back(std::make_unique<AreaLight>(Vec3{-30, 20, 30},      Vec3{10.00f, 10.0f, 10.00f}, 8));
-
-            
+            this->_lights.push_back(std::make_unique<AreaLight>(Vec3(0.1, -0.1, 0.1), Vec3{10.0f, 0.0f, 10.0f}, 8));
         }
 }

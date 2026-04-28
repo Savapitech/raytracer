@@ -38,6 +38,7 @@ MaterialFactory::MaterialFactory()
 
 TextureManager Material::textureManager;
 
+
 std::unique_ptr<Material> MaterialFactory::getMaterial(const libconfig::Setting &s)
     {
         
@@ -67,11 +68,8 @@ std::unique_ptr<Material> MaterialFactory::getMaterial(const libconfig::Setting 
         else
             Material = fcntMaterial(s[MATERIAL]);
         if (Material->textureType == TextureType::LOAD_IMAGE)
-            textureIndex = this->textureManager.uploadTexture(s[MATERIAL][TEXTURE]);
+            textureIndex = Material::textureManager.uploadTexture(s[MATERIAL][TEXTURE]);
         Material->textureIndex = textureIndex;
         Log::Logger::debug("IndexTexture: " + std::to_string(textureIndex));
-        if (textureIndex == -1)
-            return Material;
-        Material::textureManager = this->textureManager;
         return Material;
     }

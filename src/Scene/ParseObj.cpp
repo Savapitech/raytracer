@@ -2,7 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-
+#include <filesystem>
+#include <cmath>
+#include <algorithm>
 
 #include "Scene.hpp"
 #include "Triangle.hpp"
@@ -11,7 +13,110 @@
 
 using namespace libconfig;
 
-scene::Obj::Obj(std::string path, const libconfig::Setting &s)
+void scene::Obj::parseMtl(const std::string &path)
+{
+    std::filesystem::path objPath(path);
+    std::filesystem::path mtlPath = objPath;
+    mtlPath.replace_extension(".mtl");
+
+    Log::Logger::info("Trying to load MTL: " + mtlPath.string());
+
+    std::ifstream file(mtlPath);
+    if (!file.is_open()) {
+        Log::Logger::warning("No MTL found or cannot open: " + mtlPath.string());
+        return;
+    }
+
+    std::string line;
+    std::string currentMaterial = "";
+    Material currentMatObj;
+
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
+        std::string type;
+        iss >> type;
+
+        if (type == "newmtl") {
+            if (!currentMaterial.empty()) {
+                _materialRegistry.uploadMaterial(currentMaterial, currentMatObj);
+            }
+            
+            iss >> currentMaterial;
+            currentMatObj = Material();
+            currentMatObj.type = currentMaterial;
+            currentMatObj.color = {255, 0, 255};
+            currentMatObj.metallic = 0.0f;
+            currentMatObj.roughness = 0.5f;
+            currentMatObj.ior = 1.5f;
+            currentMatObj.transmission = 0.0f;
+            currentMatObj.textureType = TextureType::NONE;
+            currentMatObj.textureIndex = -1;
+        } 
+        else if (type == "Kd" && !currentMaterial.empty()) {
+            float r, g, b;
+            iss >> r >> g >> b;
+            currentMatObj.color = {r * 255.0f, g * 255.0f, b * 255.0f};
+        } 
+        else if (type == "Ns" && !currentMaterial.empty()) {
+            float ns;
+            iss >> ns;
+            currentMatObj.roughness = std::sqrt(2.0f / (ns + 2.0f));
+        } 
+        else if (type == "d" && !currentMaterial.empty()) {
+            float d;
+            iss >> d;
+            currentMatObj.transmission = 1.0f - d;
+        } 
+        else if (type == "Ka" && !currentMaterial.empty()) {
+            float r, g, b;
+            iss >> r >> g >> b;
+            if (r > 0.5f || g > 0.5f || b > 0.5f) {
+                currentMatObj.color = currentMatObj.color * 5.0f;
+            }
+        }
+        else if (type == "map_Kd" && !currentMaterial.empty()) {
+            std::string texPath;
+            std::getline(iss >> std::ws, texPath);
+            if (!texPath.empty() && texPath.back() == '\r') {
+                texPath.pop_back();
+            }
+
+            std::replace(texPath.begin(), texPath.end(), '\\', '/');
+
+            std::filesystem::path rawTexPath(texPath);
+            std::filesystem::path fileName = rawTexPath.filename();
+            std::filesystem::path parentDir = objPath.parent_path();
+
+            std::filesystem::path finalTexPath = parentDir / fileName;
+            
+            if (!std::filesystem::exists(finalTexPath)) {
+                std::filesystem::path tryTextures = parentDir / "textures" / fileName;
+                if (std::filesystem::exists(tryTextures)) {
+                    finalTexPath = tryTextures;
+                } else {
+                    std::filesystem::path tryTexturesCap = parentDir / "Textures" / fileName;
+                    if (std::filesystem::exists(tryTexturesCap)) {
+                        finalTexPath = tryTexturesCap;
+                    }
+                }
+            }
+            int texIndex = Material::textureManager.uploadTexture(finalTexPath.string());
+            if (texIndex != -1) {
+                currentMatObj.textureType = TextureType::LOAD_IMAGE;
+                currentMatObj.textureIndex = texIndex;
+                Log::Logger::debug("Loaded texture for " + currentMaterial + ": " + finalTexPath.string());
+            } else {
+                Log::Logger::warning("Failed to load texture: " + finalTexPath.string());
+            }
+        }
+    }
+    if (!currentMaterial.empty()) {
+        _materialRegistry.uploadMaterial(currentMaterial, currentMatObj);
+    }
+    Log::Logger::info("MTL Parsing done.");
+}
+
+scene::Obj::Obj(const std::string &path, const libconfig::Setting &s)
 {
     Vec3 pos = s.exists("pos") ? scene::readVec3(s["pos"]) : Vec3(0, 0, 0);
     Vec3 rot = s.exists("rot") ? scene::readVec3(s["rot"]) : Vec3(0, 0, 0);
@@ -21,18 +126,23 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
     float ry = DEG_TO_RAD(rot.y);
     float rz = DEG_TO_RAD(rot.z);
 
+    parseMtl(path);
+
     std::ifstream file(path);
     if (!file.is_open()) {
         Log::Logger::warning("Error with the path obj:" + path);
         return;
     }
     std::string line;
+    std::string currentMaterialName = "";
     while (std::getline(file, line)) {
         std::istringstream iss(line);
         std::string type;
         iss >> type;
-
-        if (type == "v") {
+        if (type == "usemtl") {
+            iss >> currentMaterialName;
+        } 
+        else if (type == "v") {
             float x, y, z;
             iss >> x >> y >> z;
             Vec3 v(x, y, z);
@@ -88,8 +198,8 @@ scene::Obj::Obj(std::string path, const libconfig::Setting &s)
                         i1 < _vertices.size() && i2 < _vertices.size() && i3 < _vertices.size()) {
 
                         std::unique_ptr<IShape> shape = std::make_unique<Triangle>(_vertices[i1], _vertices[i3], _vertices[i2]);
-                        std::unique_ptr<Material> material = std::make_unique<Default>();
-                        shape->setColor({255, 0, 255});
+                        std::unique_ptr<Material> material = std::make_unique<Material>(_materialRegistry.getMaterial(currentMaterialName));
+                        
                         std::unique_ptr<Object> obj = std::make_unique<Object>(std::move(shape), std::move(material));
                         
                         _objects.push_back(std::move(obj));

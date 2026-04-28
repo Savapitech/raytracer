@@ -15,6 +15,8 @@ class Material
     public:
         void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
         static TextureManager textureManager;
+        Material(){}
+        Material(const libconfig::Setting& s);
 
         int textureIndex = -1;
         std::string type;
@@ -34,12 +36,12 @@ class Perso  : public Material
     public:
         Perso(const libconfig::Setting& s);
         void ShowMaterial(void){Log::Logger::debug("Object Material:" + type);}
-        static TextureManager textureManager;
+        //static TextureManager textureManager;
 };
 
 class MaterialFactory{
     public:
         MaterialFactory();
-        TextureManager textureManager;
+        //TextureManager textureManager;
         std::unique_ptr<Material> getMaterial(const libconfig::Setting &s);
 };
