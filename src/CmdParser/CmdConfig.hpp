@@ -1,18 +1,22 @@
 #pragma once
 
 namespace CmdConfig {
-    struct config_t
-    {
-        std::string LogLvl;
+struct config_t {
+  std::string LogLvl;
 
-        std::string scene;
+  std::string scene;
 
-        bool pathtracing = false;
+  bool pathtracing = false;
 
-        int sample = 1;
+  int sample = 1;
 
-        std::string output;
+  std::string output;
 
-        bool gui = false;
-    };
-}
+  bool gui = false;
+
+  std::string clusterServer;
+  std::string clusterSlave;
+  int clusterPort = 4242;
+  bool headless = false;
+};
+} // namespace CmdConfig
