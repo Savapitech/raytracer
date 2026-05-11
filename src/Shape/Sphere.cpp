@@ -1,70 +1,65 @@
 #include <cmath>
 
-#include "Sphere.hpp"
-#include "Ray.hpp"
 #include "Object.hpp"
+#include "Ray.hpp"
+#include "Sphere.hpp"
 
-Sphere::Sphere(const libconfig::Setting& s){
-    _type = "Sphere";
-    _radius = (float)s["radius"];
-    _pos = scene::readVec3(s["pos"]);
-    _color = scene::readVec3(s["color"]);
+Sphere::Sphere(const libconfig::Setting &s) {
+  _type = "Sphere";
+  _radius = (float)s["radius"];
+  _pos = scene::readVec3(s["pos"]);
+  _color = scene::readVec3(s["color"]);
 }
 
-AABB Sphere::getObjectAABB() const noexcept
-{
-    return {{ _pos.x - _radius, _pos.y - _radius, _pos.z - _radius }, { _pos.x + _radius, _pos.y + _radius, _pos.z + _radius }};
+AABB Sphere::getObjectAABB() const noexcept {
+  return {{_pos.x - _radius, _pos.y - _radius, _pos.z - _radius},
+          {_pos.x + _radius, _pos.y + _radius, _pos.z + _radius}};
 }
 
-Vec3 Sphere::getCentroid() const noexcept
-{
-    return _pos;
+Vec3 Sphere::getCentroid() const noexcept { return _pos; }
+
+Vec2 Sphere::getUv(Vec3 &hitPos) const noexcept {
+  Vec2 uv;
+  Vec3 localP = (hitPos - _pos) / _radius;
+
+  uv.x = 0.5 + (atan2(localP.z, localP.x) / (2 * M_PI));
+  uv.y = 0.5 + (asin(localP.y) / M_PI);
+  return uv;
 }
 
-Vec2 Sphere::getUv(Vec3 &hitPos) const noexcept
-{
-    Vec2 uv;
-    Vec3 localP = (hitPos - _pos) / _radius;
+bool Sphere::intersect(Ray &ray, Hit &hit) const noexcept {
+  Vec3 u = ray.dir;
+  Vec3 oc = ray.origin - _pos;
+  float r = _radius;
 
-    uv.x = 0.5 + (atan2(localP.z, localP.x) / (2 * M_PI));
-    uv.y = 0.5 + (asin(localP.y) / M_PI);
-    return uv;
-}
+  float a = dot(u, u);
+  float b = 2.0f * dot(u, oc);
+  float c = dot(oc, oc) - r * r;
 
-bool Sphere::intersect(Ray &ray, Hit &hit) const noexcept
-{
-    Vec3 u  = ray.dir;
-    Vec3 oc = ray.origin - _pos;
-    float r = _radius;
+  float delta = b * b - 4.0f * a * c;
+  if (delta < 0.0f)
+    return false;
 
-    float a = dot(u, u);               
-    float b = 2.0f * dot(u, oc);
-    float c = dot(oc, oc) - r * r;
+  float sqrtD = std::sqrt(delta);
+  float inv2a = 0.5f / a;
 
-    float delta = b * b - 4.0f * a * c;
-    if (delta < 0.0f)
-        return false;
+  float t1 = (-b - sqrtD) * inv2a;
+  float t2 = (-b + sqrtD) * inv2a;
 
-    float sqrtD = std::sqrt(delta);
-    float inv2a = 0.5f / a;
+  float t = std::numeric_limits<float>::infinity();
 
-    float t1 = (-b - sqrtD) * inv2a;
-    float t2 = (-b + sqrtD) * inv2a;
+  if (t1 > ray.minHit && t1 < ray.maxHit)
+    t = t1;
+  if (t2 > ray.minHit && t2 < t)
+    t = t2;
 
-    float t = std::numeric_limits<float>::infinity();
+  if (!std::isfinite(t))
+    return false;
 
-    if (t1 > ray.minHit && t1 < ray.maxHit)
-        t = t1;
-    if (t2 > ray.minHit && t2 < t)
-        t = t2;
-
-    if (!std::isfinite(t))
-        return false;
-
-    hit.t = t;
-    hit.position = ray.origin + u * t;
-    Vec3 outwardNormal = normalize(hit.position - _pos);
-    hit.frontFace = dot(ray.dir, outwardNormal) < 0;
-    hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
-    return true;
+  hit.t = t;
+  hit.position = ray.origin + u * t;
+  Vec3 outwardNormal = normalize(hit.position - _pos);
+  hit.frontFace = dot(ray.dir, outwardNormal) < 0;
+  hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
+  return true;
 }

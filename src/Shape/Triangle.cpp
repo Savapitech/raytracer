@@ -1,87 +1,71 @@
-#include "Ray.hpp"
-#include "Object.hpp"
 #include "Triangle.hpp"
+#include "Object.hpp"
+#include "Ray.hpp"
+#include <algorithm>
 #include <cmath>
 #include <limits>
-#include <algorithm>
 
-Triangle::Triangle(const libconfig::Setting& s)
-{
-    _type = "Triangle";
-    x = scene::readVec3(s["x"]);
-    y = scene::readVec3(s["y"]);
-    z = scene::readVec3(s["z"]);
-    _color = scene::readVec3(s["color"]);
+Triangle::Triangle(const libconfig::Setting &s) {
+  _type = "Triangle";
+  x = scene::readVec3(s["x"]);
+  y = scene::readVec3(s["y"]);
+  z = scene::readVec3(s["z"]);
+  _color = scene::readVec3(s["color"]);
 }
 
-Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z)
-{
-    _type = "Triangle";
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    _color = {255, 0, 255};
+Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z) {
+  _type = "Triangle";
+  this->x = x;
+  this->y = y;
+  this->z = z;
+  _color = {255, 0, 255};
 }
 
-Vec2 Triangle::getUv(Vec3 &) const noexcept {
-    return {0, 0};
+Vec2 Triangle::getUv(Vec3 &) const noexcept { return {0, 0}; }
+
+AABB Triangle::getObjectAABB() const noexcept {
+  Vec3 minP(std::min({x.x, y.x, z.x}), std::min({x.y, y.y, z.y}),
+            std::min({x.z, y.z, z.z}));
+  Vec3 maxP(std::max({x.x, y.x, z.x}), std::max({x.y, y.y, z.y}),
+            std::max({x.z, y.z, z.z}));
+  return {minP, maxP};
 }
 
+Vec3 Triangle::getCentroid() const noexcept { return (x + y + z) / 3.0f; }
 
-AABB Triangle::getObjectAABB() const noexcept
-{
-    Vec3 minP(
-        std::min({x.x, y.x, z.x}),
-        std::min({x.y, y.y, z.y}),
-        std::min({x.z, y.z, z.z})
-    );
-    Vec3 maxP(
-        std::max({x.x, y.x, z.x}),
-        std::max({x.y, y.y, z.y}),
-        std::max({x.z, y.z, z.z})
-    );
-    return { minP, maxP };
-}
+bool Triangle::intersect(Ray &ray, Hit &hit) const noexcept {
+  Vec3 edge1 = y - x;
+  Vec3 edge2 = z - x;
 
-Vec3 Triangle::getCentroid() const noexcept
-{
-    return (x + y + z) / 3.0f;
-}
+  Vec3 pvec = cross(ray.dir, edge2);
+  float det = dot(edge1, pvec);
 
-bool Triangle::intersect(Ray &ray, Hit &hit) const noexcept
-{
-    Vec3 edge1 = y - x;
-    Vec3 edge2 = z - x;
+  if (std::fabs(det) < EPS)
+    return false;
 
-    Vec3 pvec = cross(ray.dir, edge2);
-    float det = dot(edge1, pvec);
+  float invDet = 1.0f / det;
+  Vec3 tvec = ray.origin - x;
+  float u = dot(tvec, pvec) * invDet;
 
-    if (std::fabs(det) < EPS)
-        return false;
+  if (u < 0.0f || u > 1.0f)
+    return false;
 
-    float invDet = 1.0f / det;
-    Vec3 tvec = ray.origin - x;
-    float u = dot(tvec, pvec) * invDet;
+  Vec3 qvec = cross(tvec, edge1);
+  float v = dot(ray.dir, qvec) * invDet;
+  if (v < 0.0f || u + v > 1.0f)
+    return false;
 
-    if (u < 0.0f || u > 1.0f)
-        return false;
+  float t = dot(edge2, qvec) * invDet;
 
-    Vec3 qvec = cross(tvec, edge1);
-    float v = dot(ray.dir, qvec) * invDet;
-    if (v < 0.0f || u + v > 1.0f)
-        return false;
+  if (t < ray.minHit || t > ray.maxHit)
+    return false;
+  hit.t = t;
+  hit.position = ray.origin + ray.dir * t;
 
-    float t = dot(edge2, qvec) * invDet;
+  Vec3 outwardNormal = normalize(cross(edge1, edge2));
 
-    if (t < ray.minHit || t > ray.maxHit)
-        return false;
-    hit.t = t;
-    hit.position = ray.origin + ray.dir * t;
+  hit.frontFace = dot(ray.dir, outwardNormal) < 0;
+  hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
 
-    Vec3 outwardNormal = normalize(cross(edge1, edge2));
-
-    hit.frontFace = dot(ray.dir, outwardNormal) < 0;
-    hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
-
-    return true;
+  return true;
 }
