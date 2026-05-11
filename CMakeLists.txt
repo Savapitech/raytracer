@@ -26,6 +26,7 @@ target_include_directories(raytracer PRIVATE
     include
     src
     src/CmdParser
+    src/Cluster
     src/Factory
     src/Graphical
     src/Light
