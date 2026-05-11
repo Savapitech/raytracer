@@ -65,6 +65,6 @@ namespace Log{
         else if (lvl == "DEBUG")
             Logger::_loggerLvl= LogLvl::DEBUG;
         else 
-            Logger::_loggerLvl= LogLvl::NONE;
+            Logger::_loggerLvl= LogLvl::INFO;
     }
 }
