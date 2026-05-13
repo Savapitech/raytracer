@@ -21,6 +21,8 @@
 #include "MobiusStrip.hpp"
 #include "SphereMarching.hpp"
 
+#include "CompositeShape.hpp"
+
 using ShapeCtor =
     std::function<std::unique_ptr<IShape>(const libconfig::Setting &s)>;
 
@@ -65,6 +67,9 @@ ShapeFactory::ShapeFactory() {
   };
   shapeRegistry["MobiusStrip"] = [](const libconfig::Setting &s) {
     return std::make_unique<MobiusStrip>(s);
+  };
+  shapeRegistry["Composite"] = [](const libconfig::Setting &s) {
+    return std::make_unique<CompositeShape>(s);
   };
 }
 
