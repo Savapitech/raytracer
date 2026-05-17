@@ -11,6 +11,12 @@ Parser::Parser(int argc, char **argv) {
   std::string value;
   size_t pos;
 
+  if (argc == 2){
+    _config.scene = argv[1];
+    _skip = true;
+    return;
+  }
+
   for (int i = 1; i < argc; i++) {
     cmd = argv[i];
     if (cmd.rfind("--", 0) == 0)
@@ -53,6 +59,9 @@ void Parser::buildConfig(void) {
   std::string arg;
   std::string value;
 
+  Log::Logger::SetLogLvlStr(_config.LogLvl);
+  if (_skip == true)  
+    return;
   if (_cmdArg.size() % 2 != 0)
     throw std::invalid_argument("_cmdArg odd size");
   for (size_t i = 0; i < _cmdArg.size(); i += 2) {

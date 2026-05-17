@@ -22,6 +22,8 @@ private:
 
   std::map<std::string, std::function<void(std::string)>>
       _bind; // std::map qui bind une string (instruction) à une fonction.
+  
+    bool _skip = false;
 
   template <typename T>
   void bindField(T &target,

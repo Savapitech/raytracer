@@ -73,9 +73,12 @@ Scene::Scene(const std::string &scene_path) {
   Log::Logger::debug("Scene:" + scene_path);
   Config cfg;
 
+  
   cfg.readFile(scene_path.data());
   Setting &root = cfg.getRoot();
   Setting &scene = root["scene"];
+
+
 
   if (scene.exists("background")) {
     Log::Logger::debug("Add Background" + (std::string)scene["background"] +
