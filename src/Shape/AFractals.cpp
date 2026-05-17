@@ -1,5 +1,22 @@
 #include "AFractals.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 bool AFractals::intersect(Ray &ray, Hit &hit) const {
   float t = ray.minHit;
 
@@ -40,3 +57,5 @@ Vec3 AFractals::calculateNormale(const Vec3 &p) const {
   Vec3 vec(dx, dy, dz);
   return normalize(vec);
 }
+
+} // namespace shape

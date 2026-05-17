@@ -2,6 +2,22 @@
 
 #include "math3d.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace space {
+    using namespace object;
+    using namespace shape;
+    using namespace material;
+
 class AABB {
 public:
   Vec3 min;
@@ -22,3 +38,5 @@ public:
   bool intersect(const Ray &r) const;
   void normalize();
 };
+
+} // namespace space

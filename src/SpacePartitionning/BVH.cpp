@@ -2,6 +2,22 @@
 #include "Ray.hpp"
 #include <algorithm>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace space {
+    using namespace object;
+    using namespace shape;
+    using namespace material;
+
 void BVH::centroidSort(bvh_stack_t &stack, int axis) {
   std::sort(_indexTab.begin() + stack.start, _indexTab.begin() + stack.end,
             [&](int a, int b) {
@@ -245,3 +261,5 @@ bool BVH::intersect(Ray &ray, Hit &hit) noexcept {
 
   return hitValide;
 }
+
+} // namespace space

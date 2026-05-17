@@ -1,5 +1,22 @@
 #include "Mandelbox.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 Mandelbox::Mandelbox(const libconfig::Setting &s) {
   _type = "Mandelbox";
   _scale = s.exists("scale") ? (float)s["scale"] : -1.5f;
@@ -50,3 +67,5 @@ float Mandelbox::evaluateSDF(const Vec3 &p) const {
   }
   return norm(z) / std::abs(dr);
 }
+
+} // namespace shape

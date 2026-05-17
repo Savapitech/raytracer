@@ -2,6 +2,22 @@
 
 #include "Object.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace object {
+    using namespace space;
+    using namespace shape;
+    using namespace material;
+
 Object::Object(const libconfig::Setting &s) {
   if (!s["shape"].exists("type"))
     throw std::runtime_error("Type need to be implemented in a shape");
@@ -25,3 +41,5 @@ Object::Object(std::unique_ptr<IShape> shape,
   _aabb = _shape->getObjectAABB();
   _centroid = _shape->getCentroid();
 }
+
+} // namespace object

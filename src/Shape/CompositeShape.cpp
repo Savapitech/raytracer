@@ -3,6 +3,23 @@
 #include "Ray.hpp"
 #include <algorithm>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 CompositeShape::CompositeShape(const libconfig::Setting &s) {
     _type = "Composite";
     _pos = {0, 0, 0};
@@ -59,3 +76,4 @@ Vec3 CompositeShape::getCentroid() const noexcept {
 Vec2 CompositeShape::getUv(Vec3 &) const noexcept {
     return {0, 0};
 }
+} // namespace shape

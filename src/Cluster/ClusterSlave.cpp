@@ -18,7 +18,25 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
 namespace Cluster {
+    using namespace render;
+    using namespace object;
+    using namespace space;
+    using namespace shape;
+    using namespace material;
+    using namespace light;
+    using namespace graphical;
+
 
 ClusterSlave::ClusterSlave(const std::string &host, int port)
     : _host(host), _port(port) {}

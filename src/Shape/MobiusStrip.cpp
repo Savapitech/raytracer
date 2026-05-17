@@ -1,5 +1,22 @@
 #include "MobiusStrip.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 MobiusStrip::MobiusStrip(const libconfig::Setting &s) {
   _type = "MobiusStrip";
   _pos = scene::readVec3(s["pos"]);
@@ -34,3 +51,5 @@ float MobiusStrip::evaluateSDF(const Vec3 &p) const {
                    (std::max(dy, 0.0f) * std::max(dy, 0.0f))) +
          std::min(std::max(dx, dy), 0.0f);
 }
+
+} // namespace shape

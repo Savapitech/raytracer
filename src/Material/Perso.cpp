@@ -2,6 +2,23 @@
 
 #include "Scene.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace material {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 Perso::Perso(const libconfig::Setting &s) {
   this->type = "Perso";
   if (s.exists("color"))
@@ -38,3 +55,4 @@ Perso::Perso(const libconfig::Setting &s) {
   else
     this->transmission = 0.0f;
 }
+} // namespace material

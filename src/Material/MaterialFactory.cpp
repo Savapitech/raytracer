@@ -10,6 +10,23 @@
 
 #include "Scene.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace material {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 #define MATERIAL "material"
 #define TEXTURE "texture"
 
@@ -71,3 +88,4 @@ MaterialFactory::getMaterial(const libconfig::Setting &s) {
   Log::Logger::debug("IndexTexture: " + std::to_string(textureIndex));
   return Material;
 }
+} // namespace material

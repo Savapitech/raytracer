@@ -7,9 +7,21 @@
 
 class Ray;
 class Hit;
-class ShapeFactory;
-class AABB;
-class IShape;
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace object {
+    using namespace space;
+    using namespace shape;
+    using namespace material;
 
 class ObjectFactory {
 public:
@@ -38,3 +50,4 @@ inline ObjectFactory &getObjectFactory() {
   static ObjectFactory instance;
   return instance;
 }
+} // namespace object

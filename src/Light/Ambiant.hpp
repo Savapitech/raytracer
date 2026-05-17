@@ -3,6 +3,23 @@
 #include "ILight.hpp"
 #include "Ray.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace light {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 class AmbiantLight : public ALight {
 public:
   AmbiantLight(Vec3 col) {
@@ -21,3 +38,5 @@ public:
   Vec3 getRadiance(const Vec3 &hitPoint) const override { return _color; }
   bool castsShadows() const override { return false; }
 };
+
+} // namespace light

@@ -1,5 +1,22 @@
 #include "Chrome.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace material {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 Chrome::Chrome(const libconfig::Setting &) {
   this->type = "Chrome";
   this->color = {255, 255, 255};
@@ -17,3 +34,4 @@ Chrome::Chrome() {
   this->ior = 1.0f;
   this->textureType = TextureType::NONE;
 }
+} // namespace material

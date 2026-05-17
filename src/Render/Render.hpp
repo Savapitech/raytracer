@@ -6,6 +6,26 @@
 #include "IGraphical.hpp"
 #include "Scene.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace render {
+    using namespace space;
+    using namespace graphical;
+    using namespace object;
+    using namespace material;
+    using namespace light;
+    using namespace scene;
+    using namespace shape;
+
 #define R(x) (x)
 #define G(x) (x + 1)
 #define B(x) (x + 2)
@@ -67,3 +87,5 @@ private:
   float _invWidth;
   float _invHeight;
 };
+
+} // namespace render

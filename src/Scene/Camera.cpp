@@ -1,5 +1,22 @@
 #include "Ray.hpp"
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+using namespace object;
+using namespace space;
+using namespace light;
+using namespace material;
+using namespace shape;
+
+
 namespace scene {
 void Camera::setupCam() {
   Vec3 worldUp(0, 1, 0);

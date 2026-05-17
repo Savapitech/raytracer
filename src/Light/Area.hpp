@@ -3,6 +3,23 @@
 #include "ILight.hpp"
 #include "Scene.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace light {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 class AreaLight : public ALight {
 public:
   AreaLight(Vec3 pos, Vec3 col, float s) {
@@ -30,3 +47,5 @@ public:
 
   bool castsShadows() const override { return true; }
 };
+
+} // namespace light

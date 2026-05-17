@@ -7,8 +7,28 @@
 #include "logger.hpp"
 #include "math3d.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
 class Ray;
 class Hit;
+
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+class Ray;
+class Hit;
+
+namespace material {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
 
 class Material {
 public:
@@ -43,3 +63,5 @@ public:
   // TextureManager textureManager;
   std::unique_ptr<Material> getMaterial(const libconfig::Setting &s);
 };
+
+} // namespace material

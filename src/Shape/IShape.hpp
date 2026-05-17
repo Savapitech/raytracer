@@ -7,8 +7,28 @@
 #include "logger.hpp"
 #include "math3d.hpp"
 
+
+
+namespace object {}
 class Ray;
 class Hit;
+
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+class Ray;
+class Hit;
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
 
 class IShape {
 public:
@@ -46,3 +66,4 @@ public:
   ShapeFactory();
   std::unique_ptr<IShape> getShape(const libconfig::Setting &s);
 };
+} // namespace shape

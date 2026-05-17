@@ -14,7 +14,23 @@
 
 #define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
 namespace scene {
+    using namespace object;
+    using namespace space;
+    using namespace light;
+    using namespace material;
+    using namespace shape;
+
 Vec2 readVec2(const libconfig::Setting &s);
 Vec3 readVec3(const libconfig::Setting &s);
 

@@ -3,6 +3,24 @@
 #include "IGraphical.hpp"
 #include <string>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace graphical {
+    using namespace scene;
+    using namespace object;
+    using namespace space;
+    using namespace shape;
+    using namespace material;
+
 class Ppm : public IGraphical {
 public:
   Ppm(const std::string &filename);
@@ -22,3 +40,5 @@ private:
   std::string _filename;
   bool _saved;
 };
+
+} // namespace graphical

@@ -2,6 +2,23 @@
 #include "Object.hpp"
 #include "Ray.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 RectangleXZ::RectangleXZ(const libconfig::Setting &s) {
   _type = "RectangleXZ";
   x = scene::readVec2(s["x"]);
@@ -55,3 +72,4 @@ bool RectangleXZ::intersect(Ray &ray, Hit &hit) const noexcept {
 
   return true;
 }
+} // namespace shape

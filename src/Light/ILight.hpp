@@ -3,6 +3,23 @@
 #include "math3d.hpp"
 #include <libconfig.h++>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace light {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 class ILight {
 public:
   virtual ~ILight() = default;
@@ -31,3 +48,5 @@ public:
   LightFactory();
   std::unique_ptr<ILight> getLight(const libconfig::Setting &s);
 };
+
+} // namespace light

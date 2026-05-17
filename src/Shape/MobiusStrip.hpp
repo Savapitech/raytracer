@@ -3,6 +3,23 @@
 #include <algorithm>
 #include <cmath>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 class MobiusStrip : public AFractals {
 public:
   MobiusStrip(const libconfig::Setting &s);
@@ -15,3 +32,5 @@ private:
   float _thickness;
   float _width;
 };
+
+} // namespace shape

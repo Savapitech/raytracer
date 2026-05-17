@@ -5,6 +5,23 @@
 #include <cmath>
 #include <limits>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 Triangle::Triangle(const libconfig::Setting &s) {
   _type = "Triangle";
   x = scene::readVec3(s["x"]);
@@ -69,3 +86,5 @@ bool Triangle::intersect(Ray &ray, Hit &hit) const noexcept {
 
   return true;
 }
+
+} // namespace shape

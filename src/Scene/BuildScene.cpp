@@ -4,6 +4,23 @@
 #include <memory>
 using namespace libconfig;
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+using namespace object;
+using namespace space;
+using namespace light;
+using namespace material;
+using namespace shape;
+
+
 namespace scene {
 Vec3 readVec3(const Setting &s) {
   if (s.getLength() != 3)

@@ -1,6 +1,22 @@
 #include "AABB.hpp"
 #include "Ray.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace space {
+    using namespace object;
+    using namespace shape;
+    using namespace material;
+
 void AABB::normalize() {
   if (min.x > max.x)
     std::swap(min.x, max.x);
@@ -30,3 +46,4 @@ bool AABB::intersect(const Ray &r) const {
 
   return true;
 }
+} // namespace space

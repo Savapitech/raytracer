@@ -23,6 +23,23 @@
 
 #include "CompositeShape.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 using ShapeCtor =
     std::function<std::unique_ptr<IShape>(const libconfig::Setting &s)>;
 
@@ -84,3 +101,4 @@ std::unique_ptr<IShape> ShapeFactory::getShape(const libconfig::Setting &s) {
   }
   return fcntShape(s);
 }
+} // namespace shape

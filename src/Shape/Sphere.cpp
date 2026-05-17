@@ -4,6 +4,23 @@
 #include "Ray.hpp"
 #include "Sphere.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 Sphere::Sphere(const libconfig::Setting &s) {
   _type = "Sphere";
   _radius = (float)s["radius"];
@@ -63,3 +80,4 @@ bool Sphere::intersect(Ray &ray, Hit &hit) const noexcept {
   hit.normal = hit.frontFace ? outwardNormal : -outwardNormal;
   return true;
 }
+} // namespace shape

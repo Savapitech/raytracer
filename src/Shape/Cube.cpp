@@ -4,6 +4,23 @@
 #include "Object.hpp"
 #include "Ray.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 Cube::Cube(const libconfig::Setting &s) {
   _type = "Cube";
   _pos = scene::readVec3(s["pos"]);
@@ -60,3 +77,4 @@ bool Cube::intersect(Ray &ray, Hit &hit) const noexcept {
 
   return false;
 }
+} // namespace shape

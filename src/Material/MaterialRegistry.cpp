@@ -1,6 +1,23 @@
 
 #include "MaterialRegistry.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace material {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 void MaterialRegistry::uploadMaterial(const std::string &materialName,
                                       const Material &material) {
   _materialRegistry[materialName] = material;
@@ -27,3 +44,4 @@ Material MaterialRegistry::getMaterial(const std::string &materialName) {
 
   return defaultMat;
 }
+} // namespace material

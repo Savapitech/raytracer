@@ -11,6 +11,25 @@
 #include "Ray.hpp"
 #include "logger.hpp"
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+using namespace object;
+using namespace render;
+using namespace graphical;
+using namespace space;
+using namespace shape;
+using namespace material;
+using namespace light;
+
+
 static int parsePort(const std::string &s) { return std::stoi(s); }
 
 static std::pair<std::string, int> parseHostPort(const std::string &s) {

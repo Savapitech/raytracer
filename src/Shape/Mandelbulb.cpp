@@ -1,5 +1,22 @@
 #include "Mandelbulb.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 Mandelbulb::Mandelbulb(const libconfig::Setting &s) {
   _type = "Mandelbulb";
   _power = (float)s["power"];
@@ -49,3 +66,5 @@ float Mandelbulb::evaluateSDF(const Vec3 &p) const {
   }
   return 0.5 * std::log(r) * r / std::max(dr, 0.00001f);
 }
+
+} // namespace shape

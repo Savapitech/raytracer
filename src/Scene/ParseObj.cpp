@@ -13,6 +13,23 @@
 
 using namespace libconfig;
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+using namespace object;
+using namespace space;
+using namespace light;
+using namespace material;
+using namespace shape;
+
+
 void scene::Obj::parseMtl(const std::string &path) {
   std::filesystem::path objPath(path);
   std::filesystem::path mtlPath = objPath;

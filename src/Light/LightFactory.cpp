@@ -8,6 +8,23 @@
 #include <map>
 #include <memory>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace light {
+    using namespace space;
+    using namespace shape;
+    using namespace object;
+    using namespace scene;
+
 using LightCtor =
     std::function<std::unique_ptr<ILight>(const libconfig::Setting &s)>;
 
@@ -36,3 +53,5 @@ std::unique_ptr<ILight> LightFactory::getLight(const libconfig::Setting &s) {
   }
   return fcntShape(s);
 }
+
+} // namespace light

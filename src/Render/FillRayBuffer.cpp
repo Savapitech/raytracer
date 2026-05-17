@@ -1,6 +1,26 @@
 #include "Ray.hpp"
 #include "Render.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace render {
+    using namespace space;
+    using namespace graphical;
+    using namespace object;
+    using namespace material;
+    using namespace light;
+    using namespace scene;
+    using namespace shape;
+
 void Render::writePixel(int x, int y, const Vec3 &color) noexcept {
   int acutalPixel = (y * _scene.getCamera().width + x) * 4;
 
@@ -62,3 +82,5 @@ void Render::fillRayBuffer(float offsetX, float offsetY, int x,
   averageLight.z = std::clamp(static_cast<int>(averageLight.z), 0, 255);
   writePixel(x, y, averageLight);
 }
+
+} // namespace render

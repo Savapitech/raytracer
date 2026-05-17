@@ -3,6 +3,24 @@
 #include <fstream>
 #include <stdexcept>
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace graphical {
+    using namespace scene;
+    using namespace object;
+    using namespace space;
+    using namespace shape;
+    using namespace material;
+
 Ppm::Ppm(const std::string &filename) : _filename(filename), _saved(false) {
   Log::Logger::info("PPM output: " + filename);
 }
@@ -19,3 +37,5 @@ void Ppm::save(const uint8_t *data, uint32_t width, uint32_t height) {
   Log::Logger::info("PPM saved: " + _filename);
   _saved = true;
 }
+
+} // namespace graphical

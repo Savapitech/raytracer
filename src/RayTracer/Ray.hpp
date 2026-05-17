@@ -27,6 +27,22 @@ public:
   bool frontFace = false;
 };
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+using namespace render;
+using namespace object;
+using namespace space;
+using namespace shape;
+using namespace material;
+
 namespace RayTracer {
 
 class RayTracer {

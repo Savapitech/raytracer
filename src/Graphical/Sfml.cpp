@@ -1,5 +1,23 @@
 #include "Sfml.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace graphical {
+    using namespace scene;
+    using namespace object;
+    using namespace space;
+    using namespace shape;
+    using namespace material;
+
 Sfml::Sfml(std::uint16_t width, std::uint16_t height)
     : _window(sf::VideoMode({width, height}), "Raytracer") {}
 
@@ -97,3 +115,5 @@ bool Sfml::handleMovement(scene::Scene &scene) {
   }
   return move;
 }
+
+} // namespace graphical

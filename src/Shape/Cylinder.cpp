@@ -2,6 +2,23 @@
 #include "Object.hpp"
 #include "Ray.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace shape {
+    using namespace space;
+    using namespace object;
+    using namespace material;
+    using namespace scene;
+
 Cylinder::Cylinder(const libconfig::Setting &s) {
   _type = "Cylinder";
   _pos = scene::readVec3(s["pos"]);
@@ -105,3 +122,4 @@ bool Cylinder::intersect(Ray &ray, Hit &hit) const noexcept {
 
   return true;
 }
+} // namespace shape

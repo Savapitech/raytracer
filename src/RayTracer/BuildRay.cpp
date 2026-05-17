@@ -1,6 +1,20 @@
 #include "Ray.hpp"
 #include "Scene.hpp"
 
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+using namespace render;
+using namespace object;
+using namespace space;
+
+
 Ray::Ray(const scene::Camera &camera, float x, float y) {
   float aspect = float(camera.width) / float(camera.height);
   float scale = tanf((camera.fov * 0.5f) * (M_PI / 180.0f));

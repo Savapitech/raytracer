@@ -5,6 +5,28 @@
 #include "Object.hpp"
 #include "math3d.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+class Ray;
+class Hit;
+
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+class Ray;
+class Hit;
+
+namespace space {
+    using namespace object;
+    using namespace shape;
+    using namespace material;
+
 #define THREE_ALLOC(x) ((x * 2) - 1)
 
 enum Axis { X = 'x', Y = 'y', Z = 'z' };
@@ -53,8 +75,6 @@ typedef struct node_s {
   bool isLeaf = false;
 } node_t;
 
-class Object;
-
 using VObjects = const std::vector<std::unique_ptr<Object>> &;
 
 class BVH {
@@ -84,3 +104,5 @@ private:
   std::vector<AABB> _leftSide;
   std::vector<AABB> _rightSide;
 };
+
+} // namespace space

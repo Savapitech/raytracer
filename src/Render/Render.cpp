@@ -9,6 +9,26 @@
 #include "Render.hpp"
 #include "Sfml.hpp"
 
+
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
+namespace render {
+    using namespace space;
+    using namespace graphical;
+    using namespace object;
+    using namespace material;
+    using namespace light;
+    using namespace scene;
+    using namespace shape;
+
 Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     : _scene(scene), _bvh(scene.getObjects()),
       _frameBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
@@ -179,3 +199,5 @@ void Render::runRender(void) noexcept {
   }
   Log::Logger::info("Window Close");
 }
+
+} // namespace render

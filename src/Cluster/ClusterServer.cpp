@@ -19,7 +19,25 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+
+namespace object {}
+namespace shape {}
+namespace space {}
+namespace material {}
+namespace light {}
+namespace scene {}
+namespace render {}
+namespace graphical {}
+
 namespace Cluster {
+    using namespace render;
+    using namespace object;
+    using namespace space;
+    using namespace shape;
+    using namespace material;
+    using namespace light;
+    using namespace graphical;
+
 
 static std::string dirOf(const std::string &p) {
   auto pos = p.rfind('/');
