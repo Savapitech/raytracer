@@ -5,8 +5,6 @@
 #include <cmath>
 #include <limits>
 
-
-
 namespace object {}
 namespace shape {}
 namespace space {}
@@ -38,7 +36,39 @@ Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z) {
   _color = {255, 0, 255};
 }
 
-Vec2 Triangle::getUv(Vec3 &) const noexcept { return {0, 0}; }
+Triangle::Triangle(Vec3 x, Vec3 y, Vec3 z, Vec2 uvX, Vec2 uvY, Vec2 uvZ) {
+  _type = "Triangle";
+  this->x = x;
+  this->y = y;
+  this->z = z;
+  this->uvX = uvX;
+  this->uvY = uvY;
+  this->uvZ = uvZ;
+  _color = {255, 0, 255};
+}
+
+Vec2 Triangle::getUv(Vec3 &hitPos) const noexcept {
+  Vec3 v0 = y - x;
+  Vec3 v1 = z - x;
+  Vec3 v2 = hitPos - x;
+
+  float d00 = dot(v0, v0);
+  float d01 = dot(v0, v1);
+  float d11 = dot(v1, v1);
+  float d20 = dot(v2, v0);
+  float d21 = dot(v2, v1);
+
+  float denom = d00 * d11 - d01 * d01;
+  if (std::abs(denom) < 1e-8f)
+    return {0.0f, 0.0f};
+
+  float v = (d11 * d20 - d01 * d21) / denom;
+  float w = (d00 * d21 - d01 * d20) / denom;
+  float u = 1.0f - v - w;
+
+  return {u * uvX.x + v * uvY.x + w * uvZ.x,
+          u * uvX.y + v * uvY.y + w * uvZ.y};
+}
 
 AABB Triangle::getObjectAABB() const noexcept {
   Vec3 minP(std::min({x.x, y.x, z.x}), std::min({x.y, y.y, z.y}),
