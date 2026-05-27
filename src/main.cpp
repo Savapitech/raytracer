@@ -70,8 +70,10 @@ int main(int ac, char **av) {
     }
 
     // --- Normal local render ---
+#ifndef HEADLESS_BUILD
     if (cfg.gui == true)
       gui();
+#endif
 
     RayTracer::RayTracer raytracer(cfg);
     raytracer.run();

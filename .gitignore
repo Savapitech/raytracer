@@ -3,6 +3,7 @@
 .envrc
 .build
 build
+build*
 
 Exemple
 SFML-3.0.2

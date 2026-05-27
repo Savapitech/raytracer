@@ -2,6 +2,10 @@
 
 #include "Scene.hpp"
 
+#ifndef HEADLESS_BUILD
+#include <SFML/Graphics.hpp>
+#endif
+
 
 
 namespace object {}
@@ -24,7 +28,9 @@ class IGraphical {
 public:
   virtual void display(void) = 0;
   virtual bool isOpen(void) = 0;
+#ifndef HEADLESS_BUILD
   virtual void addSprite(sf::Sprite &) = 0;
+#endif
 
   virtual void handleEvent(void) = 0;
   virtual void handleGui(void) = 0;

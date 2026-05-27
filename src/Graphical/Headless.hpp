@@ -23,7 +23,9 @@ class Headless : public IGraphical {
 public:
   void display() override {}
   bool isOpen() override { return true; }
+#ifndef HEADLESS_BUILD
   void addSprite(sf::Sprite &) override {}
+#endif
   void handleEvent() override {}
   void handleGui() override {}
   bool handleMovement(scene::Scene &) override { return false; }

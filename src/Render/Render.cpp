@@ -1,4 +1,6 @@
+#ifndef HEADLESS_BUILD
 #include <SFML/Graphics.hpp>
+#endif
 #include <atomic>
 #include <chrono>
 #include <cmath>
@@ -7,7 +9,9 @@
 #include "Headless.hpp"
 #include "Ppm.hpp"
 #include "Render.hpp"
+#ifndef HEADLESS_BUILD
 #include "Sfml.hpp"
+#endif
 
 
 
@@ -33,9 +37,10 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
     : _scene(scene), _bvh(scene.getObjects()),
       _frameBuffer(scene.getCamera().width * scene.getCamera().height * 4, 0),
       _imageIsRender(false), _config(config),
-      _isPathTracing(config.pathtracing),
-      _TframeBuffer(sf::Vector2u(WIDTH, HEIGHT)), _SframeBuffer(_TframeBuffer)
-
+      _isPathTracing(config.pathtracing)
+#ifndef HEADLESS_BUILD
+      , _TframeBuffer(sf::Vector2u(WIDTH, HEIGHT)), _SframeBuffer(_TframeBuffer)
+#endif
 {
   for (int i = 3;
        i + 4 < scene.getCamera().width * scene.getCamera().height * 4; i += 4)
@@ -46,8 +51,10 @@ Render::Render(scene::Scene &scene, const CmdConfig::config_t &config) noexcept
   _invHeight = 1.0f / scene.getCamera().height;
   if (config.headless)
     _gr = new Headless();
+#ifndef HEADLESS_BUILD
   else if (config.output.empty())
     _gr = new Sfml(WIDTH, HEIGHT);
+#endif
   else
     _gr = new Ppm(config.output);
   Log::Logger::info(config.output.empty() ? "Window Open" : "PPM mode");
@@ -103,7 +110,7 @@ void Render::createRayBuffer(void) noexcept {
   for (int i = 0; i < numThreads; i++)
     threads.emplace_back(worker);
 
-  sf::Clock timer;
+  auto timerStart = std::chrono::steady_clock::now();
   auto lastDisplay = std::chrono::steady_clock::now();
 
   while (doneTiles.load(std::memory_order_acquire) < numTiles) {
@@ -114,8 +121,10 @@ void Render::createRayBuffer(void) noexcept {
                          .count();
 
       if (elapsed >= DISPLAY_INTERVAL_MS) {
+#ifndef HEADLESS_BUILD
         _TframeBuffer.update(_frameBuffer.data());
         _SframeBuffer.setTexture(_TframeBuffer);
+#endif
         _gr->display();
         _gr->handleEvent();
         lastDisplay = now;
@@ -130,13 +139,17 @@ void Render::createRayBuffer(void) noexcept {
     t.join();
 
   /*==============Render Time==============*/
-  int32_t renderTimeMs = timer.getElapsedTime().asMilliseconds();
+  int32_t renderTimeMs = static_cast<int32_t>(
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::steady_clock::now() - timerStart).count());
   Log::Logger::info("Render Time: " + std::to_string(renderTimeMs) + "ms");
 
   /*==============Final frame buffer push==============*/
   if (_gr->needsLiveUpdate()) {
+#ifndef HEADLESS_BUILD
     _TframeBuffer.update(_frameBuffer.data());
     _SframeBuffer.setTexture(_TframeBuffer);
+#endif
     _gr->display();
   }
   _gr->save(_frameBuffer.data(), WIDTH, HEIGHT);
@@ -176,7 +189,9 @@ void Render::runRender(void) noexcept {
   _bvh.buildSpacePartitionning();
 
   /*===add frame buffer sprite to the pool of sprite to draw===*/
+#ifndef HEADLESS_BUILD
   _gr->addSprite(_SframeBuffer);
+#endif
 
   /*===Start the main loop===*/
   while (_gr->isOpen()) {

@@ -242,6 +242,10 @@ void ClusterServer::resetRender() {
 }
 
 bool ClusterServer::handleMovement() {
+#ifdef HEADLESS_BUILD
+  // No keyboard input in headless mode — camera is fixed
+  return false;
+#else
   const auto &cam = _scene.getCamera();
   bool move = false;
   float rotSpeed = 0.05f;
@@ -295,6 +299,7 @@ bool ClusterServer::handleMovement() {
     move = true;
   }
   return move;
+#endif
 }
 
 std::vector<uint8_t> ClusterServer::buildRerenderPayload() const {
@@ -471,6 +476,26 @@ void ClusterServer::acceptLoop() {
 void ClusterServer::run() {
   std::thread acceptThread([this] { acceptLoop(); });
 
+  Log::Logger::info("Waiting for slaves...");
+
+#ifdef HEADLESS_BUILD
+  // -------------------------------------------------------
+  // Headless mode: no window — block until render is done
+  // -------------------------------------------------------
+  bool renderDone = false;
+  while (_running) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(DISPLAY_INTERVAL_MS));
+    if (!renderDone &&
+        _completedTiles.load(std::memory_order_relaxed) >= _totalTiles) {
+      Log::Logger::info("Render complete");
+      renderDone = true;
+      _running = false;
+    }
+  }
+#else
+  // -------------------------------------------------------
+  // Full mode: SFML window with live preview
+  // -------------------------------------------------------
   sf::Texture texture(sf::Vector2u(static_cast<unsigned>(_width),
                                    static_cast<unsigned>(_height)));
   sf::Sprite sprite(texture);
@@ -481,8 +506,6 @@ void ClusterServer::run() {
 
   auto lastDisplay = std::chrono::steady_clock::now();
   bool renderDone = false;
-
-  Log::Logger::info("Waiting for slaves...");
 
   while (window.isOpen()) {
     while (auto event = window.pollEvent()) {
@@ -518,6 +541,7 @@ void ClusterServer::run() {
       renderDone = true;
     }
   }
+#endif
 
   _running = false;
   ::shutdown(_listenFd, SHUT_RDWR);

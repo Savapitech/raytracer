@@ -1,7 +1,9 @@
 #pragma once
 
+#ifndef HEADLESS_BUILD
 #include <SFML/Graphics.hpp>
 #include <SFML/Window/Keyboard.hpp>
+#endif
 #include <atomic>
 #include <mutex>
 #include <queue>

@@ -27,7 +27,9 @@ public:
 
   void display(void) override {}
   bool isOpen(void) override { return !_saved; }
+#ifndef HEADLESS_BUILD
   void addSprite(sf::Sprite &) override {}
+#endif
 
   void handleEvent(void) override {}
   void handleGui(void) override {}

@@ -20,6 +20,17 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_CXX_COMPILER": "clang++"
       }
+    },
+    {
+      "name": "headless",
+      "displayName": "Release headless — no SFML (server)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build-headless",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "HEADLESS": "ON"
+      }
     }
   ],
   "buildPresets": [
@@ -30,6 +41,10 @@
     {
       "name": "debug",
       "configurePreset": "debug"
+    },
+    {
+      "name": "headless",
+      "configurePreset": "headless"
     }
   ]
 }

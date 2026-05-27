@@ -73,9 +73,11 @@ private:
   const CmdConfig::config_t &_config;
   const bool _isPathTracing;
 
+#ifndef HEADLESS_BUILD
   sf::Image _image;
   sf::Texture _TframeBuffer;
   sf::Sprite _SframeBuffer;
+#endif
 
   IGraphical *_gr;
 

@@ -3,7 +3,13 @@ all:
 	@ cmake --build --preset release
 	@ cp build/compile_commands.json ./ 2>/dev/null
 
-BUILD_DIR := build
+headless:
+	@ cmake --preset headless
+	@ cmake --build --preset headless
+	@ $(LOG_TIME) "$(C_BLUE) HL $(C_GREEN) Headless build done — no SFML $(C_RESET)"
+
+BUILD_DIR      := build
+BUILD_DIR_HL   := build-headless
 
 include utils.mk
 
@@ -17,11 +23,14 @@ clean:
 	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(OBJ) $(C_RESET)"
 
 fclean:
-	@ $(RM) -r $(NAME_release) $(NAME_debug) $(BUILD_DIR)
+	@ $(RM) -r $(NAME_release) $(NAME_debug) $(BUILD_DIR) $(BUILD_DIR_HL)
 	@ $(LOG_TIME) "$(C_YELLOW) RM $(C_PURPLE) $(NAME_release) $(NAME_debug) \
-		$(C_RESET)"
+		$(BUILD_DIR_HL) $(C_RESET)"
 
 re: fclean all
+re_headless: fclean headless
+
+.PHONY: all headless clean fclean re re_headless format
 
 # BIN_NAME = raytracer
 #

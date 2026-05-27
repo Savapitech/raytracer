@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# ---------------------------------------------------------------------------
+# Build modes
+# ---------------------------------------------------------------------------
+option(HEADLESS "Build without SFML — server / headless mode" OFF)
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type (Release|Debug)" FORCE)
 endif()
@@ -19,6 +24,14 @@ set(CMAKE_UNITY_BUILD ON)
 set(CMAKE_UNITY_BUILD_BATCH_SIZE 8)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
+
+# ---------------------------------------------------------------------------
+# Drop SFML-only sources when building headless
+# ---------------------------------------------------------------------------
+if(HEADLESS)
+    list(FILTER SOURCES EXCLUDE REGEX ".*/Graphical/Sfml\\.cpp$")
+    list(FILTER SOURCES EXCLUDE REGEX ".*/Gui/gui\\.cpp$")
+endif()
 
 add_executable(raytracer ${SOURCES})
 
@@ -53,21 +66,24 @@ target_compile_options(raytracer PRIVATE
 )
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SFML    REQUIRED sfml-graphics sfml-window sfml-system)
 pkg_check_modules(LIBCONF REQUIRED libconfig++)
 
-target_include_directories(raytracer PRIVATE
-    ${SFML_INCLUDE_DIRS}
-    ${LIBCONF_INCLUDE_DIRS}
-)
+if(HEADLESS)
+    # No SFML — just tag every TU so guards kick in
+    target_compile_definitions(raytracer PRIVATE HEADLESS_BUILD)
+    message(STATUS "Headless build: SFML disabled")
+else()
+    pkg_check_modules(SFML REQUIRED sfml-graphics sfml-window sfml-system)
+    target_include_directories(raytracer PRIVATE ${SFML_INCLUDE_DIRS})
+    target_link_directories(raytracer PRIVATE ${SFML_LIBRARY_DIRS})
+    target_link_libraries(raytracer PRIVATE ${SFML_LIBRARIES})
+    message(STATUS "Full build: SFML enabled")
+endif()
 
-target_link_directories(raytracer PRIVATE
-    ${SFML_LIBRARY_DIRS}
-    ${LIBCONF_LIBRARY_DIRS}
-)
+target_include_directories(raytracer PRIVATE ${LIBCONF_INCLUDE_DIRS})
+target_link_directories(raytracer PRIVATE ${LIBCONF_LIBRARY_DIRS})
 
 target_link_libraries(raytracer PRIVATE
-    ${SFML_LIBRARIES}
     ${LIBCONF_LIBRARIES}
     m
 )

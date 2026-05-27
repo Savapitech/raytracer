@@ -32,5 +32,7 @@ private:
   CmdConfig::config_t _config;
 };
 } // namespace ParserCmd
+#ifndef HEADLESS_BUILD
 void gui();
+#endif
 #include "BindField.tpp"
