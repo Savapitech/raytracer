@@ -14,7 +14,6 @@
 
 #define DEG_TO_RAD(angle) ((angle) * (M_PI / 180.0))
 
-
 namespace object {}
 namespace shape {}
 namespace space {}
@@ -54,7 +53,6 @@ Camera readcam(const libconfig::Setting &s);
 class Factory {
 public:
   std::unique_ptr<Object> getObject(const libconfig::Setting &s);
-  // void GetILight();
 };
 
 class Obj {
@@ -66,6 +64,7 @@ public:
 private:
   MaterialRegistry _materialRegistry;
   std::vector<Vec3> _vertices;
+  std::vector<Vec2> _uvs; // <- AJOUT POUR LES UVs
   std::vector<std::unique_ptr<Object>> _objects;
 };
 

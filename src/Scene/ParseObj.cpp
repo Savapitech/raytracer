@@ -13,7 +13,6 @@
 
 using namespace libconfig;
 
-
 namespace object {}
 namespace shape {}
 namespace space {}
@@ -28,7 +27,6 @@ using namespace space;
 using namespace light;
 using namespace material;
 using namespace shape;
-
 
 void scene::Obj::parseMtl(const std::string &path) {
   std::filesystem::path objPath(path);
@@ -149,6 +147,14 @@ scene::Obj::Obj(const std::string &path, const libconfig::Setting &s) {
   }
   std::string line;
   std::string currentMaterialName = "";
+
+  // Struct pour lire proprement v/vt/vn
+  struct VertexIndex {
+    int v = -1;
+    int vt = -1;
+    int vn = -1;
+  };
+
   while (std::getline(file, line)) {
     std::istringstream iss(line);
     std::string type;
@@ -180,38 +186,56 @@ scene::Obj::Obj(const std::string &path, const libconfig::Setting &s) {
       v.y = tempY;
 
       v = v + pos;
-
       _vertices.push_back(v);
+    } else if (type == "vt") {
+      float u = 0.0f, v = 0.0f;
+      iss >> u >> v;
+      _uvs.push_back({u, v});
     } else if (type == "f") {
-      std::vector<int> faceIndex;
+      std::vector<VertexIndex> faceIndex;
       std::string vertexStr;
 
-      auto getIndex = [](const std::string &vStr) {
-        size_t pos = vStr.find('/');
-        if (pos != std::string::npos) {
-          return std::stoi(vStr.substr(0, pos)) - 1;
+      // Décodage du face token `v/vt/vn`
+      auto getIndex = [](const std::string &vStr) -> VertexIndex {
+        VertexIndex vi;
+        std::istringstream stream(vStr);
+        std::string val;
+        int part = 0;
+        while (std::getline(stream, val, '/')) {
+          if (!val.empty()) {
+            try {
+              if (part == 0) vi.v = std::stoi(val) - 1;
+              else if (part == 1) vi.vt = std::stoi(val) - 1;
+              else if (part == 2) vi.vn = std::stoi(val) - 1;
+            } catch (...) {}
+          }
+          part++;
         }
-        return std::stoi(vStr) - 1;
+        return vi;
       };
 
       while (iss >> vertexStr) {
-        try {
-          faceIndex.push_back(getIndex(vertexStr));
-        } catch (const std::exception &e) {
-          Log::Logger::warning("stoi error with vertex");
-        }
+        faceIndex.push_back(getIndex(vertexStr));
       }
+
       if (faceIndex.size() >= 3) {
         for (size_t i = 1; i < faceIndex.size() - 1; ++i) {
-          size_t i1 = faceIndex[0];
-          size_t i2 = faceIndex[i];
-          size_t i3 = faceIndex[i + 1];
+          VertexIndex i1 = faceIndex[0];
+          VertexIndex i2 = faceIndex[i];
+          VertexIndex i3 = faceIndex[i + 1];
 
-          if (i1 >= 0 && i2 >= 0 && i3 >= 0 && i1 < _vertices.size() &&
-              i2 < _vertices.size() && i3 < _vertices.size()) {
+          if (i1.v >= 0 && i2.v >= 0 && i3.v >= 0 &&
+              i1.v < (int)_vertices.size() && i2.v < (int)_vertices.size() && i3.v < (int)_vertices.size()) {
 
+            Vec2 uv1 = (i1.vt >= 0 && i1.vt < (int)_uvs.size()) ? _uvs[i1.vt] : Vec2{0.0f, 0.0f};
+            Vec2 uv2 = (i2.vt >= 0 && i2.vt < (int)_uvs.size()) ? _uvs[i2.vt] : Vec2{0.0f, 0.0f};
+            Vec2 uv3 = (i3.vt >= 0 && i3.vt < (int)_uvs.size()) ? _uvs[i3.vt] : Vec2{0.0f, 0.0f};
+
+            // ATTENTION: Toujours passer les UVs dans le même ordre que les sommets (qui sont inversés i3/i2 par l'auteur)
             std::unique_ptr<IShape> shape = std::make_unique<Triangle>(
-                _vertices[i1], _vertices[i3], _vertices[i2]);
+                _vertices[i1.v], _vertices[i3.v], _vertices[i2.v],
+                uv1, uv3, uv2);
+
             std::unique_ptr<Material> material = std::make_unique<Material>(
                 _materialRegistry.getMaterial(currentMaterialName));
 
