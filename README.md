@@ -10,7 +10,7 @@ A physically-based ray tracer written in C++, featuring a BVH acceleration struc
 
 ### Fractal
 
-![Monstre](RENDER/monstre.png)
+![Monstre](rendering/fractal.png)
 
 A Mandelbulb-style 3D fractal rendered with the engine's full PBR pipeline. Intricate self-similar geometry stress-tests the BVH traversal at extreme depth.
 
@@ -18,7 +18,7 @@ A Mandelbulb-style 3D fractal rendered with the engine's full PBR pipeline. Intr
 
 ### KeyNote — Trophy Stage
 
-![KeyNote](RENDER/KeyNote.png)
+![KeyNote](rendering/KeyNote.png)
 
 A showcase scene featuring every supported shape type — spheres, cylinders, triangles, and planes — each displayed on individual pedestals under dramatic studio lighting. The definitive engine demo.
 
@@ -26,7 +26,7 @@ A showcase scene featuring every supported shape type — spheres, cylinders, tr
 
 ### PathTracing — Metal & Diffuse
 
-![PathTracing](RENDER/PathTracing.png)
+![PathTracing](rendering/PathTracing.png)
 
 A minimalist path tracing scene pairing metallic and diffuse materials. Clean geometry lets the light transport speak for itself — soft indirect illumination and accurate Fresnel reflections on the metal surfaces.
 
@@ -34,7 +34,7 @@ A minimalist path tracing scene pairing metallic and diffuse materials. Clean ge
 
 ### RenderTest — Material Grid
 
-![RenderTest](RENDER/RenderTest.png)
+![RenderTest](rendering/RenderTest.png)
 
 A dense grid of spheres covering the full material palette: `Default` (Lambertian diffuse + specular), `Mirror`, `Chrome`, and `Glass` (dielectric with refraction). Used for regression testing shading correctness across engine builds.
 
