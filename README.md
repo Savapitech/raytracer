@@ -6,14 +6,37 @@ A physically-based ray tracer written in C++, featuring a BVH acceleration struc
 
 ## Gallery
 
-> Scenes rendered with the engine — Manhattan skyline, mirror spheres, glass refraction, and more.
+> Scenes rendered with the engine — fractals, showcase stages, path tracing, and material stress tests.
 
-| Scene          | Description                                                       |
-| -------------- | ----------------------------------------------------------------- |
-| Manhattan      | Full city geometry loaded from `.obj` files                       |
-| Mirror Spheres | Reflective surfaces with Fresnel-based PBR                        |
-| Glass          | Refraction with Schlick approximation & total internal reflection |
-| Soft Shadows   | Stratified jittered area light sampling                           |
+### Fractal
+
+![Monstre](RENDER/monstre.png)
+
+A Mandelbulb-style 3D fractal rendered with the engine's full PBR pipeline. Intricate self-similar geometry stress-tests the BVH traversal at extreme depth.
+
+---
+
+### KeyNote — Trophy Stage
+
+![KeyNote](RENDER/KeyNote.png)
+
+A showcase scene featuring every supported shape type — spheres, cylinders, triangles, and planes — each displayed on individual pedestals under dramatic studio lighting. The definitive engine demo.
+
+---
+
+### PathTracing — Metal & Diffuse
+
+![PathTracing](RENDER/PathTracing.png)
+
+A minimalist path tracing scene pairing metallic and diffuse materials. Clean geometry lets the light transport speak for itself — soft indirect illumination and accurate Fresnel reflections on the metal surfaces.
+
+---
+
+### RenderTest — Material Grid
+
+![RenderTest](RENDER/RenderTest.png)
+
+A dense grid of spheres covering the full material palette: `Default` (Lambertian diffuse + specular), `Mirror`, `Chrome`, and `Glass` (dielectric with refraction). Used for regression testing shading correctness across engine builds.
 
 ---
 
@@ -109,6 +132,11 @@ Optional flags:
 ```
 --log=DEBUG|INFO|WARNING|ERROR|NONE
 --pathtracing=true
+--sample X-sample(int)
+--output "scene_render.ppm"
+--server ip:port
+--slave ip:port
+--gui true
 ```
 
 ---
@@ -144,6 +172,27 @@ scene:
                 y    = 0.0;
                 color = [200, 200, 200];
             }
+        }
+    );
+
+    lights = (
+        {
+            type  = "Area"; 
+            pos   = [-5.0, 4.0, 0.0]; 
+            color = [1.0, 1.0, 1.0]; 
+            size  = 1.5; 
+        },
+        {
+            type  = "Directional";
+            pos   = [-20.0, 50.0, 50.0];
+            color = [0.8, 0.8, 0.9]; 
+            size  = 0.0;
+        },
+        {
+            type  = "Ambiant";
+            pos   = [0.0, 10.0, 0.0];
+            color = [0.08, 0.08, 0.1]; 
+            size  = 8.0;
         }
     );
 
